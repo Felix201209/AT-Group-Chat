@@ -360,6 +360,8 @@ const checks = [
       hasText('scripts/at.mjs', 'at-group-chat items') &&
       hasText('scripts/at.mjs', 'at-group-chat activity WORK_ITEM_ID') &&
       hasText('scripts/at.mjs', 'at-group-chat dispatch-work WORK_ITEM_ID') &&
+      hasText('scripts/at.mjs', 'at-group-chat completion zsh') &&
+      hasText('scripts/at.mjs', 'completionContent') &&
       hasText('scripts/at.mjs', 'createWorkItemFromCli') &&
       hasText('scripts/at.mjs', 'randomBytes(32)') &&
       hasText('scripts/at.mjs', 'at-group-chat validate --file at.team.json') &&
@@ -429,6 +431,7 @@ const checks = [
       hasText('tests/sdk-cli.test.js', "at.mjs', 'items'") &&
       hasText('tests/sdk-cli.test.js', "at.mjs', 'activity'") &&
       hasText('tests/sdk-cli.test.js', "at.mjs', 'dispatch-work'") &&
+      hasText('tests/sdk-cli.test.js', "at.mjs', 'completion'") &&
       hasText('tests/sdk-cli.test.js', "at.mjs', 'validate'") &&
       hasText('tests/sdk-cli.test.js', "at.mjs'), 'init', '--dry-run") &&
       hasText('README.md', 'at-group-chat init') &&
@@ -446,6 +449,7 @@ const checks = [
       hasText('README.md', 'at-group-chat proposal') &&
       hasText('README.md', 'at-group-chat work --type review') &&
       hasText('README.md', 'at-group-chat dispatch-work') &&
+      hasText('README.md', 'at-group-chat completion zsh') &&
       hasText('README.md', 'docs/release-notes-1.1.0.md') &&
       hasText('README.md', 'docs/integrations.md') &&
       hasText('README.md', 'docs/environment.md') &&
@@ -471,6 +475,7 @@ const checks = [
       hasText('docs/release-notes-1.1.0.md', 'at-group-chat --version') &&
       hasText('docs/release-notes-1.1.0.md', 'at-group-chat ask') &&
       hasText('docs/release-notes-1.1.0.md', 'dispatch-work') &&
+      hasText('docs/release-notes-1.1.0.md', 'completion zsh') &&
       hasText('docs/release-notes-1.1.0.md', 'npm install -g at-group-chat') &&
       hasText('docs/integrations.md', 'at-group-chat ask') &&
       hasText('docs/integrations.md', 'chat.accepted') &&

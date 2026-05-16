@@ -122,6 +122,8 @@ at-group-chat recipe sdk
 at-group-chat recipe github-actions
 at-group-chat recipe generic-cli
 at-group-chat mcp-config > at-mcp.json
+at-group-chat completion zsh > _at-group-chat
+at-group-chat completion bash
 at-group-chat openapi > at-openapi.json
 ```
 

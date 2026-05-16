@@ -38,6 +38,8 @@ Usage:
   at-group-chat apply-manifest --file at.team.json --dry-run
   at-group-chat watch RUN_ID --max 20
   at-group-chat mcp-config
+  at-group-chat completion zsh
+  at-group-chat completion bash
   at-group-chat token
   at-group-chat token --env
   at-group-chat env
@@ -158,6 +160,72 @@ function generateToken(args) {
       'Use AT_TEAM_HOOK_TOKEN for CI/webhook ingestion only.'
     ]
   };
+}
+
+const cliCommands = [
+  'setup',
+  'serve',
+  'doctor',
+  'health',
+  'status',
+  'room',
+  'ask',
+  'run',
+  'chat',
+  'issue',
+  'proposal',
+  'review',
+  'decision',
+  'artifact',
+  'work',
+  'items',
+  'work-items',
+  'activity',
+  'dispatch-work',
+  'hook',
+  'validate',
+  'apply-manifest',
+  'watch',
+  'mcp-config',
+  'completion',
+  'token',
+  'env',
+  'paths',
+  'template',
+  'recipe',
+  'init',
+  'openapi',
+  'version'
+];
+
+function completionContent(args) {
+  const shell = positionalArgs(args)[0] || 'zsh';
+  const commandList = cliCommands.join(' ');
+  if (shell === 'bash') {
+    return [
+      '# bash completion for at-group-chat',
+      `_at_group_chat_complete() { COMPREPLY=( $(compgen -W "${commandList}" -- "\${COMP_WORDS[1]}") ); }`,
+      'complete -F _at_group_chat_complete at-group-chat'
+    ].join('\n');
+  }
+  if (shell === 'zsh') {
+    return [
+      '#compdef at-group-chat',
+      '',
+      '_at_group_chat() {',
+      '  local -a commands',
+      `  commands=(${cliCommands.map((command) => `${command}:${command}`).join(' ')})`,
+      '  if (( CURRENT == 2 )); then',
+      "    _describe 'at-group-chat command' commands",
+      '  else',
+      '    _files',
+      '  fi',
+      '}',
+      '',
+      '_at_group_chat "$@"'
+    ].join('\n');
+  }
+  throw new Error('completion shell must be zsh or bash');
 }
 
 function envReference(args) {
@@ -634,6 +702,10 @@ async function main() {
   }
   if (command === 'mcp-config') {
     json(mcpConfig(args));
+    return;
+  }
+  if (command === 'completion') {
+    console.log(completionContent(args));
     return;
   }
   if (command === 'token') {

@@ -69,6 +69,13 @@ at-group-chat activity <workItemId>
 at-group-chat dispatch-work <workItemId> --permission readonly
 ```
 
+Daily CLI ergonomics:
+
+```bash
+at-group-chat completion zsh > _at-group-chat
+at-group-chat completion bash
+```
+
 ## External Manager Contract
 
 When another AI acts as the manager, give it this contract:

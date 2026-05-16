@@ -50,6 +50,7 @@ try {
       run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat ask') &&
       run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat --version') &&
       run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat watch RUN_ID') &&
+      run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat completion zsh') &&
       run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat token --env') &&
       run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat env --json') &&
       run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat paths') &&
@@ -104,6 +105,11 @@ try {
   checks.push({
     id: 'bin-mcp-config',
     ok: mcpConfig.mcpServers?.['at-group-chat']?.args?.some((arg) => arg.endsWith('server/mcp.js'))
+  });
+  checks.push({
+    id: 'bin-completion',
+    ok: run(bin, ['completion', 'zsh'], { cwd: tmp, env }).includes('#compdef at-group-chat') &&
+      run(bin, ['completion', 'bash'], { cwd: tmp, env }).includes('complete -F _at_group_chat_complete at-group-chat')
   });
   const tokenOutput = run(bin, ['token'], { cwd: tmp, env });
   const tokenResult = JSON.parse(tokenOutput);

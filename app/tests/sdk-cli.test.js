@@ -146,6 +146,7 @@ test('SDK and CLI expose programmer-facing AT entry points', async () => {
     });
     assert.match(helpOutput, /at-group-chat serve/);
     assert.match(helpOutput, /at-group-chat ask/);
+    assert.match(helpOutput, /at-group-chat completion zsh/);
     assert.match(helpOutput, /at-group-chat token --env/);
     const versionOutput = execFileSync('node', ['scripts/at.mjs', '--version'], {
       cwd: process.cwd(),
@@ -170,6 +171,20 @@ test('SDK and CLI expose programmer-facing AT entry points', async () => {
     assert.ok(mcpConfig.mcpServers['at-group-chat'].args.some((arg) => arg.endsWith('server/mcp.js')));
     assert.equal(mcpConfig.mcpServers['at-group-chat'].env.AT_TEAM_API_BASE_URL, baseUrl);
     assert.equal(mcpConfig.mcpServers['at-group-chat'].env.AT_TEAM_API_TOKEN, 'test-admin-token');
+    const zshCompletion = execFileSync('node', ['scripts/at.mjs', 'completion', 'zsh'], {
+      cwd: process.cwd(),
+      encoding: 'utf8',
+      maxBuffer: 10 * 1024 * 1024
+    });
+    assert.match(zshCompletion, /#compdef at-group-chat/);
+    assert.match(zshCompletion, /dispatch-work/);
+    const bashCompletion = execFileSync('node', ['scripts/at.mjs', 'completion', 'bash'], {
+      cwd: process.cwd(),
+      encoding: 'utf8',
+      maxBuffer: 10 * 1024 * 1024
+    });
+    assert.match(bashCompletion, /complete -F _at_group_chat_complete at-group-chat/);
+    assert.match(bashCompletion, /ask/);
     const tokenOutput = execFileSync('node', ['scripts/at.mjs', 'token'], {
       cwd: process.cwd(),
       encoding: 'utf8',

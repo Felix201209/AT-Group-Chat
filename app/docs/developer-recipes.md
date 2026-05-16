@@ -106,6 +106,15 @@ at-group-chat dispatch-work <workItemId> --permission readonly
 
 This is the terminal equivalent of listing issues, opening a PR/activity thread, and asking the manager to review a specific work item.
 
+## Install shell completion
+
+```bash
+at-group-chat completion zsh > _at-group-chat
+at-group-chat completion bash
+```
+
+The completion output is static and safe to redirect into your shell completion directory or inspect before installing.
+
 ## Use the JavaScript SDK from another local agent
 
 Runnable example:
