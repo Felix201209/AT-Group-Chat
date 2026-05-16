@@ -290,7 +290,7 @@ process.stdin.on('data', async (chunk) => {
         respond(request.id, {
           protocolVersion: '2024-11-05',
           capabilities: { tools: {} },
-          serverInfo: { name: 'at-agent-team', version: '1.0.0' }
+          serverInfo: { name: 'at-agent-team', version: '1.0.3' }
         });
       } else if (request.method === 'tools/list') {
         respond(request.id, { tools });

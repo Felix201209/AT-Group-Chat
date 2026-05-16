@@ -226,7 +226,7 @@ export async function invokeCodexViaAppServer({
 
   try {
     await client.request('initialize', {
-      clientInfo: { name: 'at-group-chat', version: '1.0.0' },
+      clientInfo: { name: 'at-group-chat', version: '1.0.3' },
       capabilities: { experimentalApiMethods: true }
     });
 

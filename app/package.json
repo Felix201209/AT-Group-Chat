@@ -1,6 +1,6 @@
 {
   "name": "at-group-chat",
-  "version": "1.0.0",
+  "version": "1.0.3",
   "description": "Local manager-controlled AI collaboration platform with chat, work items, HTTP/MCP APIs, and a terminal setup wizard.",
   "license": "MIT",
   "homepage": "https://at-group-chat.felixypz.me/",
@@ -36,6 +36,7 @@
     "at-setup": "scripts/setup.mjs"
   },
   "scripts": {
+    "postinstall": "node scripts/postinstall.mjs",
     "setup": "node scripts/setup.mjs",
     "setup:mock": "node scripts/setup.mjs --mock --yes",
     "setup:real": "node scripts/setup.mjs --real",
