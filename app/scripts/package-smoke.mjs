@@ -203,7 +203,12 @@ try {
       contract.http?.postChatMessage === 'POST /api/chat/messages' &&
       contract.http?.runEvents === 'GET /api/runs/:id/events' &&
       contract.mcpTools?.includes('team_get_manager_contract') &&
+      contract.mcpTools?.includes('team_chat_message') &&
+      contract.mcpTools?.includes('team_get_room') &&
+      contract.mcpTools?.includes('team_update_work_item') &&
       contract.mcpTools?.includes('team_dispatch_work_item') &&
+      contract.mcpTools?.includes('team_configure_agent') &&
+      contract.mcpTools?.includes('team_apply_manifest') &&
       contract.prompt?.includes('Manager decision')
   });
   const sdkRecipe = run(bin, ['recipe', 'sdk'], { cwd: tmp, env });

@@ -44,14 +44,23 @@ export function buildManagerContract({
     mcpTools: [
       'team_get_manager_contract',
       'team_create_task',
-      'team_dispatch_agent',
-      'team_get_status',
-      'team_get_memory',
-      'team_set_permission',
+      'team_chat_message',
+      'team_get_room',
       'team_get_work_items',
       'team_create_work_item',
+      'team_update_work_item',
       'team_get_work_item_activity',
-      'team_dispatch_work_item'
+      'team_dispatch_work_item',
+      'team_ingest_developer_event',
+      'team_dispatch_agent',
+      'team_get_status',
+      'team_export_platform',
+      'team_get_memory',
+      'team_set_permission',
+      'team_configure_agent',
+      'team_configure_defaults',
+      'team_apply_manifest',
+      'team_disable_agent'
     ],
     files: {
       prompt: promptPath,

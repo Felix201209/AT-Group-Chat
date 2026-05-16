@@ -68,6 +68,8 @@ test('MCP tools expose the same runtime surface', async () => {
     assert.equal(contractJson.http.createTask, 'POST /api/runs');
     assert.equal(contractJson.http.postChatMessage, 'POST /api/chat/messages');
     assert.ok(contractJson.mcpTools.includes('team_get_manager_contract'));
+    assert.ok(contractJson.mcpTools.includes('team_chat_message'));
+    assert.ok(contractJson.mcpTools.includes('team_disable_agent'));
     assert.ok(contractJson.prompt.includes('Manager decision'));
 
     const call = await request(child, {

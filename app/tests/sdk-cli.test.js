@@ -263,6 +263,8 @@ test('SDK and CLI expose programmer-facing AT entry points', async () => {
     assert.equal(contract.http.getContract, 'GET /api/contract');
     assert.ok(contract.mcpTools.includes('team_dispatch_work_item'));
     assert.ok(contract.mcpTools.includes('team_get_manager_contract'));
+    assert.ok(contract.mcpTools.includes('team_chat_message'));
+    assert.ok(contract.mcpTools.includes('team_apply_manifest'));
     assert.ok(contract.rules.some((rule) => rule.includes('Do not create autonomous discussion loops')));
     assert.match(contract.prompt, /Manager decision/);
     const sdkContract = await client.contract();

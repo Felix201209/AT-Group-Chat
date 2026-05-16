@@ -163,6 +163,8 @@ test('HTTP SSE exposes approval request events from the shared runtime', async (
     assert.equal(contract.http.createTask, 'POST /api/runs');
     assert.equal(contract.http.postChatMessage, 'POST /api/chat/messages');
     assert.ok(contract.mcpTools.includes('team_get_manager_contract'));
+    assert.ok(contract.mcpTools.includes('team_chat_message'));
+    assert.ok(contract.mcpTools.includes('team_configure_agent'));
     assert.ok(contract.rules.some((rule) => rule.includes('Do not create autonomous discussion loops')));
 
     const workCreated = await postJson(baseUrl, '/api/work-items', {
