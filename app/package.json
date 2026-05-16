@@ -1,7 +1,35 @@
 {
   "name": "at-group-chat",
-  "version": "0.1.0",
-  "private": true,
+  "version": "1.0.0",
+  "description": "Local manager-controlled AI collaboration platform with chat, work items, HTTP/MCP APIs, and a terminal setup wizard.",
+  "license": "MIT",
+  "homepage": "https://at-group-chat.felixypz.me/",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Felix201209/AT-Group-Chat.git",
+    "directory": "app"
+  },
+  "bugs": {
+    "url": "https://github.com/Felix201209/AT-Group-Chat/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "files": [
+    "README.md",
+    "index.html",
+    "package.json",
+    "playwright.config.js",
+    "tsconfig.json",
+    "vite.config.js",
+    "docs",
+    "scripts",
+    "server",
+    "src"
+  ],
   "type": "module",
   "bin": {
     "at-group-chat": "scripts/setup.mjs",
