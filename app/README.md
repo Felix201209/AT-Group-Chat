@@ -69,7 +69,7 @@ npm run dev:codex-server
 
 ## 自动化配置向导
 
-AT 自带一个 npm setup wizard，用来生成 `.env`、选择 mock/real 模式、配置 API token、检查本机 CLI 是否可用。
+AT 自带一个终端里的 npm setup wizard。它不是文档页，而是会在命令行里显示 CLI 检查结果，并用编号菜单带你选择 Demo、Real local、Secure local 或 Custom 配置，然后生成 `.env`。
 
 交互式配置：
 

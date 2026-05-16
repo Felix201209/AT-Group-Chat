@@ -42,7 +42,7 @@ function parseArgs(argv) {
 }
 
 function usage() {
-  return `AT Group Chat setup wizard
+  return `AT Group Chat terminal setup wizard
 
 Usage:
   npm run setup
@@ -61,6 +61,21 @@ Options:
   --force           Overwrite existing managed keys without prompting
   --json            Print machine-readable result
 `;
+}
+
+function printBanner() {
+  console.log('\nAT Group Chat setup');
+  console.log('Local manager-controlled AI collaboration platform');
+  console.log('This wizard creates .env and checks your local agent CLIs.\n');
+}
+
+function printCliStatus(cli) {
+  console.log('CLI check:');
+  for (const [name, check] of Object.entries(cli)) {
+    const label = name.padEnd(7, ' ');
+    console.log(`  ${check.ok ? 'OK  ' : 'MISS'} ${label}${check.ok ? check.value : 'not found'}`);
+  }
+  console.log('');
 }
 
 function commandVersion(command, args = ['--version']) {
@@ -130,6 +145,155 @@ async function confirm(rl, question, fallback = true) {
   return /^y(es)?$/i.test(answer);
 }
 
+async function select(rl, title, choices, fallbackIndex = 0) {
+  console.log(title);
+  choices.forEach((choice, index) => {
+    const marker = index === fallbackIndex ? ' default' : '';
+    console.log(`  ${index + 1}. ${choice.label}${marker}`);
+    if (choice.description) console.log(`     ${choice.description}`);
+  });
+  while (true) {
+    const answer = await ask(rl, 'Choose', String(fallbackIndex + 1));
+    const index = Number.parseInt(answer, 10) - 1;
+    if (Number.isInteger(index) && choices[index]) {
+      console.log('');
+      return choices[index];
+    }
+    console.log(`Please enter 1-${choices.length}.`);
+  }
+}
+
+async function runInteractiveWizard({ rl, args, existing, cli }) {
+  printBanner();
+  printCliStatus(cli);
+
+  const profile = await select(rl, 'What kind of setup do you want?', [
+    {
+      value: 'demo',
+      label: 'Demo mode',
+      description: 'Uses mock agents. Best for first run, UI demo, and screenshots.'
+    },
+    {
+      value: 'real',
+      label: 'Real local agents',
+      description: 'Uses Codex, Claude Code, Kimi, or custom CLI adapters installed on this machine.'
+    },
+    {
+      value: 'secure',
+      label: 'Secure local agents',
+      description: 'Real mode plus generated API token and strict localhost browser origin.'
+    },
+    {
+      value: 'custom',
+      label: 'Custom',
+      description: 'Choose each setting manually.'
+    }
+  ], existing.AT_TEAM_AGENT_MODE === 'real' ? 1 : 0);
+
+  let agentMode = args.agentMode || existing.AT_TEAM_AGENT_MODE;
+  let token = args.token;
+  let cors = args.cors ?? existing.AT_TEAM_CORS_ORIGIN;
+  let dbPath = args.dbPath ?? existing.AT_TEAM_DB_PATH;
+
+  if (!agentMode) {
+    if (profile.value === 'demo') agentMode = 'mock';
+    else if (profile.value === 'real' || profile.value === 'secure') agentMode = 'real';
+  }
+
+  if (profile.value === 'custom' && !args.agentMode) {
+    const mode = await select(rl, 'Agent execution mode', [
+      {
+        value: 'mock',
+        label: 'mock',
+        description: 'Fake agent responses. Safe for demos and first-time setup.'
+      },
+      {
+        value: 'real',
+        label: 'real',
+        description: 'Actually invokes configured local CLIs/adapters.'
+      }
+    ], existing.AT_TEAM_AGENT_MODE === 'real' ? 1 : 0);
+    agentMode = mode.value;
+  }
+
+  if (token === undefined) {
+    if (profile.value === 'secure') {
+      token = 'auto';
+    } else {
+      const tokenChoices = [];
+      if (existing.AT_TEAM_API_TOKEN) {
+        tokenChoices.push({
+          value: existing.AT_TEAM_API_TOKEN,
+          label: 'Keep existing token',
+          description: 'Use the token already present in .env.'
+        });
+      }
+      tokenChoices.push(
+        {
+          value: 'auto',
+          label: 'Generate a local API token',
+          description: 'Recommended. Protects HTTP/MCP calls from other local clients.'
+        },
+        {
+          value: '',
+          label: 'No token',
+          description: 'Lower friction, but any local caller can hit the API.'
+        },
+        {
+          value: 'paste',
+          label: 'Paste my own token',
+          description: 'Use a token you already generated elsewhere.'
+        }
+      );
+      const tokenChoice = await select(rl, 'API access token', tokenChoices, existing.AT_TEAM_API_TOKEN ? 0 : 1);
+      token = tokenChoice.value;
+      if (token === 'paste') token = await ask(rl, 'Paste token', '');
+    }
+  }
+  if (token === 'auto') token = makeToken();
+
+  if (!cors) {
+    cors = profile.value === 'secure'
+      ? 'http://127.0.0.1:5173'
+      : await ask(rl, 'Allowed browser origin', 'http://127.0.0.1:5173');
+  } else if (profile.value === 'custom') {
+    cors = await ask(rl, 'Allowed browser origin', cors);
+  }
+
+  if (!dbPath) {
+    dbPath = await ask(rl, 'SQLite database path', './data/at-team.sqlite');
+  } else if (profile.value === 'custom') {
+    dbPath = await ask(rl, 'SQLite database path', dbPath);
+  }
+
+  const summary = {
+    profile: profile.value,
+    agentMode,
+    authEnabled: Boolean(token),
+    cors,
+    dbPath,
+    envFile: args.envFile
+  };
+
+  console.log('Setup summary:');
+  console.log(`  Profile: ${summary.profile}`);
+  console.log(`  Agent mode: ${summary.agentMode}`);
+  console.log(`  API token: ${summary.authEnabled ? 'enabled' : 'disabled'}`);
+  console.log(`  CORS origin: ${summary.cors}`);
+  console.log(`  DB path: ${summary.dbPath}`);
+  console.log(`  Env file: ${summary.envFile}\n`);
+
+  if (existsSync(args.envFile) && !args.force) {
+    const ok = await confirm(rl, 'Update AT managed keys in this env file?', true);
+    if (!ok) throw new Error('Setup cancelled');
+  } else {
+    const ok = await confirm(rl, 'Write this configuration?', true);
+    if (!ok) throw new Error('Setup cancelled');
+  }
+
+  return { agentMode, token, cors, dbPath };
+}
+
 function makeToken() {
   return `at_${randomBytes(24).toString('base64url')}`;
 }
@@ -153,29 +317,25 @@ async function main() {
   try {
     const existing = readEnv(args.envFile).values;
     let agentMode = args.agentMode || existing.AT_TEAM_AGENT_MODE;
-    if (!agentMode) {
-      agentMode = args.yes ? 'mock' : await ask(rl, 'Agent mode: mock for demo, real for local CLIs [mock/real]', 'mock');
-    }
-    if (!['mock', 'real'].includes(agentMode)) throw new Error('Agent mode must be mock or real');
-
     let token = args.token;
-    if (token === undefined) {
-      if (existing.AT_TEAM_API_TOKEN && !args.force) token = existing.AT_TEAM_API_TOKEN;
-      else if (args.yes) token = 'auto';
-      else token = await ask(rl, 'API token: type auto, empty to disable, or paste a token', 'auto');
-    }
-    if (token === 'auto') token = makeToken();
-
     let cors = args.cors ?? existing.AT_TEAM_CORS_ORIGIN;
-    if (!cors) cors = args.yes ? 'http://127.0.0.1:5173' : await ask(rl, 'Allowed browser origin', 'http://127.0.0.1:5173');
-
     let dbPath = args.dbPath ?? existing.AT_TEAM_DB_PATH;
-    if (!dbPath) dbPath = args.yes ? './data/at-team.sqlite' : await ask(rl, 'SQLite database path', './data/at-team.sqlite');
 
-    if (existsSync(args.envFile) && !args.force && !args.yes) {
-      const ok = await confirm(rl, `${args.envFile} already exists. Update AT managed keys?`, true);
-      if (!ok) throw new Error('Setup cancelled');
+    if (args.yes) {
+      if (!agentMode) agentMode = 'mock';
+      if (token === undefined) token = existing.AT_TEAM_API_TOKEN && !args.force ? existing.AT_TEAM_API_TOKEN : 'auto';
+      if (!cors) cors = 'http://127.0.0.1:5173';
+      if (!dbPath) dbPath = './data/at-team.sqlite';
+      if (token === 'auto') token = makeToken();
+    } else {
+      const selected = await runInteractiveWizard({ rl, args, existing, cli });
+      agentMode = selected.agentMode;
+      token = selected.token;
+      cors = selected.cors;
+      dbPath = selected.dbPath;
     }
+
+    if (!['mock', 'real'].includes(agentMode)) throw new Error('Agent mode must be mock or real');
 
     const updates = {
       AT_TEAM_AGENT_MODE: agentMode,

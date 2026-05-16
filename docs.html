@@ -69,7 +69,7 @@ npm run dev</code></pre>
       <p>The local app uses <code>better-sqlite3</code>, which compiles native bindings on install. Ensure you have a C++ compiler available (Xcode Command Line Tools on macOS, <code>build-essential</code> on Linux). The static website itself has no build step.</p>
 
       <h2 id="wizard">Setup Wizard</h2>
-      <p>The app includes an npm configuration wizard. It writes <code>.env</code>, chooses mock or real agent mode, creates an optional local API token, and checks whether Codex, Claude Code, and Kimi are available on your machine.</p>
+      <p>The app includes a real terminal wizard, not just a documentation checklist. Run it and it will show CLI readiness, then guide you through Demo, Real local, Secure local, or Custom setup before writing <code>.env</code>.</p>
 
       <pre><code># Interactive local setup
 npm run setup
