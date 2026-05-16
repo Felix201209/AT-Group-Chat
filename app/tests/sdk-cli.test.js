@@ -247,6 +247,19 @@ test('SDK and CLI expose programmer-facing AT entry points', async () => {
     assert.equal(templateJson.name, 'team');
     assert.ok(templateJson.path.endsWith('at.team.example.json'));
     assert.match(templateJson.content, /AT release review team/);
+    const contractOutput = execFileSync('node', ['scripts/at.mjs', 'contract', '--json'], {
+      cwd: process.cwd(),
+      env: { ...process.env, AT_TEAM_API_BASE_URL: baseUrl },
+      encoding: 'utf8',
+      maxBuffer: 10 * 1024 * 1024
+    });
+    const contract = JSON.parse(contractOutput);
+    assert.equal(contract.mode, 'manager-controlled');
+    assert.equal(contract.apiBaseUrl, baseUrl);
+    assert.equal(contract.http.runEvents, 'GET /api/runs/:id/events');
+    assert.ok(contract.mcpTools.includes('team_dispatch_work_item'));
+    assert.ok(contract.rules.some((rule) => rule.includes('Do not create autonomous discussion loops')));
+    assert.match(contract.prompt, /Manager decision/);
     const recipeText = execFileSync('node', ['scripts/at.mjs', 'recipe', 'sdk'], {
       cwd: process.cwd(),
       encoding: 'utf8',

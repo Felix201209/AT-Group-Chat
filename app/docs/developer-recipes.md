@@ -14,6 +14,14 @@ The rule that must not change: AT is manager-controlled. External tools may crea
 
 From an installed package, use `at-group-chat recipe sdk|external-manager|github-actions|generic-cli|mcp|npm-publish` to print the relevant commands, files, and docs for the integration path you are wiring up.
 
+For AI/IDE tools that want a single machine-readable manager contract:
+
+```bash
+at-group-chat contract --json
+```
+
+The contract includes manager-controlled stop rules, CLI commands, HTTP endpoints, MCP tools, permission profiles, and the external-manager prompt.
+
 ## Initialize a repository
 
 Run this in any code repo when you want AT conventions checked in beside your source code:

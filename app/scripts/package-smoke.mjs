@@ -56,6 +56,7 @@ try {
       run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat env --json') &&
       run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat paths') &&
       run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat template external-manager') &&
+      run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat contract --json') &&
       run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat recipe sdk') &&
       run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat proposal "Title"') &&
       run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat work --type review') &&
@@ -160,6 +161,16 @@ try {
       teamTemplate.name === 'team' &&
       teamTemplate.path.endsWith('at.team.example.json') &&
       teamTemplate.content.includes('AT release review team')
+  });
+  const contract = JSON.parse(run(bin, ['contract', '--json'], { cwd: tmp, env }));
+  checks.push({
+    id: 'bin-contract',
+    ok: contract.ok === true &&
+      contract.mode === 'manager-controlled' &&
+      contract.rules?.some((rule) => rule.includes('Do not create autonomous discussion loops')) &&
+      contract.http?.runEvents === 'GET /api/runs/:id/events' &&
+      contract.mcpTools?.includes('team_dispatch_work_item') &&
+      contract.prompt?.includes('Manager decision')
   });
   const sdkRecipe = run(bin, ['recipe', 'sdk'], { cwd: tmp, env });
   const genericCliRecipe = JSON.parse(run(bin, ['recipe', 'generic-cli', '--json'], { cwd: tmp, env }));

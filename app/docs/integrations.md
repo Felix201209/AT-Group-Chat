@@ -81,6 +81,11 @@ at-group-chat completion bash
 
 When another AI acts as the manager, give it this contract:
 
+```bash
+at-group-chat contract
+at-group-chat contract --json
+```
+
 1. Read `/api/status`, `/api/chat`, or MCP `team_get_status` first.
 2. Post the user's task through `/api/chat/messages` or create a work item.
 3. Decide exactly one next role when dispatching.

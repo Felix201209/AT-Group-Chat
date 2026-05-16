@@ -349,6 +349,8 @@ const checks = [
       pkg.exports?.['./sdk']?.types === './sdk/client.d.ts' &&
       hasText('scripts/at.mjs', 'at-group-chat init --github --manager-prompt') &&
       hasText('scripts/at.mjs', 'at-group-chat init --all') &&
+      hasText('scripts/at.mjs', 'at-group-chat contract --json') &&
+      hasText('scripts/at.mjs', 'managerContract') &&
       hasText('scripts/at.mjs', 'generated:mcp-config') &&
       hasText('scripts/at.mjs', 'generated:openapi') &&
       hasText('scripts/at.mjs', 'at-group-chat serve') &&
@@ -413,6 +415,7 @@ const checks = [
       hasText('scripts/package-smoke.mjs', 'bin-env') &&
       hasText('scripts/package-smoke.mjs', 'bin-paths') &&
       hasText('scripts/package-smoke.mjs', 'bin-template') &&
+      hasText('scripts/package-smoke.mjs', 'bin-contract') &&
       hasText('scripts/package-smoke.mjs', 'bin-recipe') &&
       hasText('scripts/package-smoke.mjs', 'npm run release:dry-run') &&
       hasText('scripts/package-smoke.mjs', "init', '--all', '--dry-run") &&
@@ -446,6 +449,7 @@ const checks = [
       hasText('tests/sdk-cli.test.js', "'init', '--all'") &&
       hasText('README.md', 'at-group-chat init') &&
       hasText('README.md', 'at-group-chat init --all') &&
+      hasText('README.md', 'at-group-chat contract --json') &&
       hasText('README.md', 'at-group-chat serve') &&
       hasText('README.md', 'at-group-chat ask') &&
       hasText('README.md', 'JSON Lines') &&

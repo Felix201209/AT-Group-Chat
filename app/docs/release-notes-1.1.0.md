@@ -51,6 +51,7 @@ at-group-chat token --env
 at-group-chat env --json
 at-group-chat paths
 at-group-chat template external-manager
+at-group-chat contract --json
 at-group-chat recipe sdk
 at-group-chat recipe github-actions
 at-group-chat init --github --manager-prompt
