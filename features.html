@@ -193,6 +193,7 @@ db.<span class="code-fn">pragma</span>(<span class="code-str">"busy_timeout = 50
           <h2 class="feature-detail-title">HTTP + MCP Control</h2>
           <p class="feature-detail-text">Humans can use the UI, while external agents can become the manager by calling the same runtime over HTTP or MCP.</p>
           <ul class="feature-detail-list">
+            <li><code>GET /api/contract</code> and <code>team_get_manager_contract</code> expose the <strong>manager rules</strong></li>
             <li><code>team_create_task</code> and <code>team_dispatch_agent</code> for <strong>agent-to-agent control</strong></li>
             <li><code>POST /api/runs</code> for <strong>external managers</strong></li>
             <li><code>POST /api/work-items/:id/dispatch</code> for <strong>issue-centered review</strong></li>
