@@ -418,6 +418,8 @@ const checks = [
       hasText('scripts/package-smoke.mjs', 'bin-mcp-config') &&
       hasText('scripts/package-smoke.mjs', 'bin-token') &&
       hasText('scripts/package-smoke.mjs', 'bin-env') &&
+      hasText('scripts/package-smoke.mjs', 'postinstall-non-tty-hint') &&
+      hasText('scripts/package-smoke.mjs', 'npx at-group-chat setup') &&
       hasText('scripts/package-smoke.mjs', 'bin-paths') &&
       hasText('scripts/package-smoke.mjs', 'bin-template') &&
       hasText('scripts/package-smoke.mjs', 'bin-contract') &&

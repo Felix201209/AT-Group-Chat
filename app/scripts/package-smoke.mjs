@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { execFileSync } from 'node:child_process';
+import { execFileSync, spawnSync } from 'node:child_process';
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -12,6 +12,22 @@ function run(command, args, options = {}) {
     maxBuffer: 10 * 1024 * 1024,
     ...options
   }).trim();
+}
+
+function runCaptured(command, args, options = {}) {
+  const result = spawnSync(command, args, {
+    cwd: process.cwd(),
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+    maxBuffer: 10 * 1024 * 1024,
+    ...options
+  });
+  return {
+    status: result.status,
+    stdout: result.stdout || '',
+    stderr: result.stderr || '',
+    output: `${result.stdout || ''}${result.stderr || ''}`
+  };
 }
 
 function json(value) {
@@ -92,6 +108,20 @@ try {
       setupJson.authEnabled === true &&
       existsSync(setupEnvPath) &&
       hasText(setupEnvPath, ['AT_TEAM_AGENT_MODE=mock', 'AT_TEAM_API_TOKEN=', 'AT_TEAM_HOOK_TOKEN='])
+  });
+  const postinstall = runCaptured(process.execPath, [join(tmp, 'node_modules/at-group-chat/scripts/postinstall.mjs')], {
+    cwd: tmp,
+    env: {
+      ...process.env,
+      AT_SETUP_SKIP_ON_INSTALL: '',
+      CI: ''
+    }
+  });
+  checks.push({
+    id: 'postinstall-non-tty-hint',
+    ok: postinstall.status === 0 &&
+      postinstall.output.includes('AT Group Chat installed') &&
+      postinstall.output.includes('npx at-group-chat setup')
   });
   const init = JSON.parse(run(bin, ['init', '--dry-run'], { cwd: tmp, env }));
   const initAll = JSON.parse(run(bin, ['init', '--all', '--dry-run'], { cwd: tmp, env }));
