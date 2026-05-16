@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Technology — AT Group Chat</title>
+  <meta name="description" content="AT Group Chat is built on React, Vite, native Node.js, SQLite, HTTP/MCP APIs, and Codex app-server. Designed as a local-first AI collaboration platform.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo" aria-label="AT Group Chat home">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect width="28" height="28" rx="7" fill="#1c1d1f"/>
+          <path d="M8 14C8 10.686 10.686 8 14 8C17.314 8 20 10.686 20 14C20 17.314 17.314 20 14 20" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="14" cy="14" r="2.5" fill="white"/>
+          <path d="M17 17L20 20" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span>AT Group Chat</span>
+      </a>
+      <div class="nav-links" id="nav-links">
+        <a href="features.html">Features</a>
+        <a href="technology.html">Technology</a>
+        <a href="docs.html">Docs</a>
+      </div>
+      <div class="nav-actions">
+        <a href="https://github.com/Felix201209/AT-Group-Chat" class="btn btn-ghost" target="_blank" rel="noopener">GitHub</a>
+        <a href="docs.html" class="btn btn-primary">Get started</a>
+      </div>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <header class="page-header">
+    <div class="container">
+      <p class="section-eyebrow">Technology</p>
+      <h1 class="page-header-title">Built for developers,<br>by developers.</h1>
+      <p class="page-header-desc">A local-first stack with clear runtime boundaries: static showcase, React console, Node API, SQLite storage, and Codex app-server.</p>
+    </div>
+  </header>
+
+  <section class="section section-alt" style="padding-top:0;">
+    <div class="container">
+      <div class="tech-block">
+        <div class="tech-content">
+          <div class="section-header" style="text-align:left; margin-bottom:var(--space-8);">
+            <p class="section-eyebrow">Stack</p>
+            <h2 class="section-title" style="margin-bottom:var(--space-4);">Pragmatic choices<br>over complexity.</h2>
+            <p class="section-desc" style="margin:0;">The platform stays inspectable: one runtime source of truth, route-table HTTP handlers, MCP tools, and explicit agent adapters.</p>
+          </div>
+          <ul class="tech-list">
+            <li>
+              <span class="tech-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <span><strong>React</strong> + Vite for the local control console</span>
+            </li>
+            <li>
+              <span class="tech-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <span><strong>Native Node.js</strong> HTTP, SSE, and MCP-compatible runtime</span>
+            </li>
+            <li>
+              <span class="tech-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <span><strong>better-sqlite3</strong> with WAL mode & prepared statements</span>
+            </li>
+            <li>
+              <span class="tech-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <span><strong>Codex app-server</strong> bridge instead of shelling through <code>codex exec</code></span>
+            </li>
+            <li>
+              <span class="tech-check"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+              <span><strong>Playwright</strong> + Node test runner for E2E</span>
+            </li>
+          </ul>
+        </div>
+        <div class="tech-visual">
+          <div class="code-window">
+            <div class="code-header">
+              <div class="code-dots"><span></span><span></span><span></span></div>
+              <span class="code-filename">server/runtime.js</span>
+            </div>
+            <pre class="code-body"><code><span class="code-kw">const</span> <span class="code-var">activeRuns</span> = <span class="code-kw">new</span> <span class="code-cls">Map</span>();
+<span class="code-kw">let</span> <span class="code-var">rolesCache</span> = <span class="code-kw">null</span>;
+<span class="code-kw">let</span> <span class="code-var">rolesCacheAt</span> = <span class="code-num">0</span>;
+<span class="code-kw">const</span> <span class="code-var">ROLES_CACHE_TTL_MS</span> = <span class="code-num">10_000</span>;
+
+<span class="code-kw">async function</span> <span class="code-fn">runManagerTask</span>({ prompt, permissionProfile }) {
+  <span class="code-kw">const</span> <span class="code-var">run</span> = storage.<span class="code-fn">createRun</span>({ prompt });
+  <span class="code-kw">const</span> <span class="code-var">key</span> = <span class="code-str">`${run.id}:codex-manager`</span>;
+  <span class="code-kw">if</span> (activeRuns.<span class="code-fn">has</span>(key)) <span class="code-kw">return</span> activeRuns.<span class="code-fn">get</span>(key);
+
+  <span class="code-kw">const</span> <span class="code-var">promise</span> = <span class="code-fn">dispatchAgent</span>({
+    runId: run.id,
+    roleId: <span class="code-str">"codex-manager"</span>,
+    task: prompt,
+    permissionProfile
+  }).<span class="code-fn">finally</span>(() => activeRuns.<span class="code-fn">delete</span>(key));
+
+  activeRuns.<span class="code-fn">set</span>(key, promise);
+  <span class="code-kw">return</span> promise;
+}</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-eyebrow">Architecture</p>
+        <h2 class="section-title">How the pieces fit.</h2>
+        <p class="section-desc">Three local surfaces communicate over predictable ports. The public showcase remains static; the control plane stays local.</p>
+      </div>
+      <div class="features-grid" style="max-width: 900px; margin: 0 auto;">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <h3 class="feature-title">Control Console</h3>
+          <p class="feature-text">Vite on port 5173 serves Chat, Work, Team, Platform, and Settings. Hash routing keeps views shareable.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>
+          </div>
+          <h3 class="feature-title">Runtime API</h3>
+          <p class="feature-text">Native Node.js on port 5174 handles REST, SSE, and shared runtime services for both UI and MCP tools.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+          </div>
+          <h3 class="feature-title">Codex Server Bridge</h3>
+          <p class="feature-text">WebSocket JSON-RPC on port 5176 talks to Codex app-server, preserving separate manager and goal-review sessions.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-eyebrow">Security</p>
+        <h2 class="section-title">Defense in depth.</h2>
+        <p class="section-desc">Security is not a feature you add later. It is built into every layer from day one.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          </div>
+          <h3 class="feature-title">Authentication</h3>
+          <p class="feature-text">Optional bearer token via header, query param, or Authorization header. The Settings security panel shows whether it is enabled.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <h3 class="feature-title">Rate Limiting</h3>
+          <p class="feature-text">IP-based sliding window with configurable max requests. Prunes stale entries automatically to prevent memory leaks.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          </div>
+          <h3 class="feature-title">CSP & Headers</h3>
+          <p class="feature-text">Content-Security-Policy, X-Content-Type-Options, and CORS origin restrictions keep the attack surface minimal.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <h3 class="feature-title">Safe Errors</h3>
+          <p class="feature-text">500 responses return generic "Internal server error" messages. Stack traces are logged server-side, never leaked.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-dark">
+    <div class="container cta-block">
+      <h2 class="cta-title">Dive into the code.</h2>
+      <p class="cta-subtitle">The bundled app source is ready for local use now, and the static showcase is ready for Raspberry Pi hosting later.</p>
+      <div class="cta-actions">
+        <a href="docs.html" class="btn btn-light btn-lg">Read the docs</a>
+        <a href="https://github.com/Felix201209/AT-Group-Chat" class="btn btn-outline-light btn-lg" target="_blank" rel="noopener">View on GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect width="28" height="28" rx="7" fill="#1c1d1f"/>
+            <path d="M8 14C8 10.686 10.686 8 14 8C17.314 8 20 10.686 20 14C20 17.314 17.314 20 14 20" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="14" cy="14" r="2.5" fill="white"/>
+            <path d="M17 17L20 20" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>AT Group Chat</span>
+        </a>
+        <p class="footer-tagline">Manager-controlled AI collaboration, local-first outcomes.</p>
+      </div>
+      <div class="footer-columns">
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="features.html">Features</a>
+          <a href="technology.html">Technology</a>
+          <a href="docs.html">Documentation</a>
+        </div>
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <a href="docs.html">Quick start</a>
+          <a href="docs.html">API Reference</a>
+          <a href="docs.html">Changelog</a>
+        </div>
+        <div class="footer-col">
+          <h4>Community</h4>
+          <a href="https://github.com/Felix201209/AT-Group-Chat" target="_blank" rel="noopener">GitHub</a>
+          <a href="app/README.md">Local app</a>
+          <a href="docs.html">Docs</a>
+        </div>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>© 2026 AT Group Chat. Open source under MIT License.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

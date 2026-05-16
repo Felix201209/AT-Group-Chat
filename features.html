@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Features — AT Group Chat</title>
+  <meta name="description" content="Explore AT Group Chat: manager-controlled dispatch, shared transcript, work items, local persistence, HTTP/MCP APIs, and configurable agent roles.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo" aria-label="AT Group Chat home">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect width="28" height="28" rx="7" fill="#1c1d1f"/>
+          <path d="M8 14C8 10.686 10.686 8 14 8C17.314 8 20 10.686 20 14C20 17.314 17.314 20 14 20" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="14" cy="14" r="2.5" fill="white"/>
+          <path d="M17 17L20 20" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span>AT Group Chat</span>
+      </a>
+      <div class="nav-links" id="nav-links">
+        <a href="features.html">Features</a>
+        <a href="technology.html">Technology</a>
+        <a href="docs.html">Docs</a>
+      </div>
+      <div class="nav-actions">
+        <a href="https://github.com/Felix201209/AT-Group-Chat" class="btn btn-ghost" target="_blank" rel="noopener">GitHub</a>
+        <a href="docs.html" class="btn btn-primary">Get started</a>
+      </div>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <header class="page-header">
+    <div class="container">
+      <p class="section-eyebrow">Features</p>
+      <h1 class="page-header-title">Everything you need for<br>AI collaboration.</h1>
+      <p class="page-header-desc">Not another chat toy: AT gives local agents a manager, a shared transcript, work items, and an audit trail.</p>
+    </div>
+  </header>
+
+  <section class="section section-alt" style="padding-top:0;">
+    <div class="container">
+      <div class="feature-detail">
+        <div class="feature-detail-content">
+          <div class="feature-detail-num">01</div>
+          <h2 class="feature-detail-title">Manager-Controlled Team</h2>
+          <p class="feature-detail-text">Define roles with system prompts, model settings, thinking level, and permission profiles. The manager interprets the goal, chooses one next agent, then stops.</p>
+          <ul class="feature-detail-list">
+            <li>No free discussion and no automatic infinite loops</li>
+            <li>Codex manager and Codex goal reviewer stay as separate sessions</li>
+            <li>Claude Code, Kimi Code, Codex, or any CLI adapter can be configured</li>
+            <li>Every dispatch carries an explicit permission profile</li>
+          </ul>
+        </div>
+        <div class="feature-detail-visual">
+          <div class="code-window">
+            <div class="code-header">
+              <div class="code-dots"><span></span><span></span><span></span></div>
+              <span class="code-filename">config/agents.yaml</span>
+            </div>
+            <pre class="code-body"><code><span class="code-kw">roles</span>:
+  <span class="code-kw">-</span> <span class="code-var">id</span>: <span class="code-str">"codex-manager"</span>
+    <span class="code-var">adapter</span>: <span class="code-str">"codex-server"</span>
+    <span class="code-var">permission</span>: <span class="code-str">"write-proposed"</span>
+  <span class="code-kw">-</span> <span class="code-var">id</span>: <span class="code-str">"kimi-ux-review"</span>
+    <span class="code-var">adapter</span>: <span class="code-str">"kimi"</span>
+    <span class="code-var">focus</span>: <span class="code-str">"interaction + UI/UX"</span>
+  <span class="code-kw">-</span> <span class="code-var">id</span>: <span class="code-str">"codex-goal-review"</span>
+    <span class="code-var">adapter</span>: <span class="code-str">"codex-server"</span>
+    <span class="code-var">focus</span>: <span class="code-str">"goal satisfaction"</span></code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-detail reverse">
+        <div class="feature-detail-content">
+          <div class="feature-detail-num">02</div>
+          <h2 class="feature-detail-title">Shared Transcript + Events</h2>
+          <p class="feature-detail-text">Server-Sent Events stream run lifecycle changes while the group chat stays focused on human-readable messages.</p>
+          <ul class="feature-detail-list">
+            <li>Run timeline shows handoff, approval, output, and failures</li>
+            <li>Chat can hide system events when the user just wants the conversation</li>
+            <li>All agents can read the shared transcript for context</li>
+            <li>Each role still keeps project + role isolated memory</li>
+          </ul>
+        </div>
+        <div class="feature-detail-visual">
+          <div class="code-window">
+            <div class="code-header">
+              <div class="code-dots"><span></span><span></span><span></span></div>
+              <span class="code-filename">src/events.js</span>
+            </div>
+            <pre class="code-body"><code><span class="code-kw">const</span> <span class="code-var">source</span> = <span class="code-kw">new</span> <span class="code-cls">EventSource</span>(<span class="code-str">"/api/runs/123/events"</span>);
+
+source.<span class="code-fn">addEventListener</span>(<span class="code-str">"message"</span>, (<span class="code-var">e</span>) => {
+  <span class="code-kw">const</span> <span class="code-var">data</span> = <span class="code-cls">JSON</span>.<span class="code-fn">parse</span>(e.data);
+  <span class="code-fn">appendToTimeline</span>(data);
+});</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-detail">
+        <div class="feature-detail-content">
+          <div class="feature-detail-num">03</div>
+          <h2 class="feature-detail-title">Hardened & Secure</h2>
+          <p class="feature-detail-text">Token-based auth, IP rate limiting, request body size guards, CSP headers, and sanitized error responses make the local service safer to operate.</p>
+          <ul class="feature-detail-list">
+            <li>Optional API token via header, Bearer, or query param</li>
+            <li>IP-based rate limiting with window-based pruning</li>
+            <li>Request body size limits prevent DoS</li>
+            <li>CSP headers and sanitized 500 errors</li>
+          </ul>
+        </div>
+        <div class="feature-detail-visual">
+          <div class="code-window">
+            <div class="code-header">
+              <div class="code-dots"><span></span><span></span><span></span></div>
+              <span class="code-filename">server/http.js</span>
+            </div>
+            <pre class="code-body"><code><span class="code-kw">function</span> <span class="code-fn">requireAuth</span>(<span class="code-var">req</span>) {
+  <span class="code-kw">const</span> <span class="code-var">token</span> = req.headers[<span class="code-str">"x-at-token"</span>]
+    || req.headers[<span class="code-str">"authorization"</span>]
+    || req.query.token;
+  <span class="code-kw">if</span> (token !== <span class="code-var">API_TOKEN</span>) {
+    <span class="code-kw">throw</span> <span class="code-kw">new</span> <span class="code-cls">ClientError</span>(<span class="code-str">"Unauthorized"</span>, <span class="code-num">401</span>);
+  }
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-detail reverse">
+        <div class="feature-detail-content">
+          <div class="feature-detail-num">04</div>
+          <h2 class="feature-detail-title">Work Items</h2>
+          <p class="feature-detail-text">Issues, proposals, reviews, decisions, and artifacts turn the group chat into an actual collaboration platform.</p>
+          <ul class="feature-detail-list">
+            <li>Create a work item from the chat</li>
+            <li>Dispatch a work item to the manager</li>
+            <li>Inspect activity threads linked to messages, runs, and events</li>
+            <li>Persist final reviews and decisions instead of losing them in chat scrollback</li>
+          </ul>
+        </div>
+        <div class="feature-detail-visual">
+          <div class="code-window">
+            <div class="code-header">
+              <div class="code-dots"><span></span><span></span><span></span></div>
+              <span class="code-filename">server/storage.js</span>
+            </div>
+            <pre class="code-body"><code><span class="code-kw">const</span> <span class="code-var">db</span> = <span class="code-kw">new</span> <span class="code-cls">Database</span>(dbPath);
+db.<span class="code-fn">pragma</span>(<span class="code-str">"journal_mode = WAL"</span>);
+db.<span class="code-fn">pragma</span>(<span class="code-str">"busy_timeout = 5000"</span>);
+
+<span class="code-kw">function</span> <span class="code-fn">prepare</span>(<span class="code-var">sql</span>) {
+  <span class="code-kw">let</span> <span class="code-var">stmt</span> = cache.<span class="code-fn">get</span>(sql);
+  <span class="code-kw">if</span> (!stmt) {
+    stmt = db.<span class="code-fn">prepare</span>(sql);
+    cache.<span class="code-fn">set</span>(sql, stmt);
+  }
+  <span class="code-kw">return</span> stmt;
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-detail">
+        <div class="feature-detail-content">
+          <div class="feature-detail-num">05</div>
+          <h2 class="feature-detail-title">HTTP + MCP Control</h2>
+          <p class="feature-detail-text">Humans can use the UI, while external agents can become the manager by calling the same runtime over HTTP or MCP.</p>
+          <ul class="feature-detail-list">
+            <li><code>team_create_task</code> and <code>team_dispatch_agent</code> for agent-to-agent control</li>
+            <li><code>POST /api/runs</code> for external managers</li>
+            <li><code>POST /api/work-items/:id/dispatch</code> for issue-centered review</li>
+            <li>HTTP and MCP share the same runtime, not two separate schedulers</li>
+          </ul>
+        </div>
+        <div class="feature-detail-visual">
+          <div class="code-window">
+            <div class="code-header">
+              <div class="code-dots"><span></span><span></span><span></span></div>
+              <span class="code-filename">server/runtime.js</span>
+            </div>
+            <pre class="code-body"><code><span class="code-kw">const</span> <span class="code-var">activeRuns</span> = <span class="code-kw">new</span> <span class="code-cls">Map</span>();
+<span class="code-kw">let</span> <span class="code-var">rolesCache</span> = <span class="code-kw">null</span>;
+<span class="code-kw">let</span> <span class="code-var">rolesCacheAt</span> = <span class="code-num">0</span>;
+
+<span class="code-kw">async function</span> <span class="code-fn">runManagerTask</span>({ prompt }) {
+  <span class="code-kw">const</span> <span class="code-var">key</span> = <span class="code-str">`${run.id}:${roleId}`</span>;
+  <span class="code-kw">const</span> <span class="code-var">existing</span> = activeRuns.<span class="code-fn">get</span>(key);
+  <span class="code-kw">if</span> (existing) { <span class="code-kw">await</span> existing; <span class="code-kw">return</span>; }
+  <span class="code-cmt">// dispatch with lock</span>
+}</code></pre>
+          </div>
+        </div>
+      </div>
+
+      <div class="feature-detail reverse">
+        <div class="feature-detail-content">
+          <div class="feature-detail-num">06</div>
+          <h2 class="feature-detail-title">Codex Integration</h2>
+          <p class="feature-detail-text">Native WebSocket bridge to OpenAI Codex app-server. Thread-safe resume with automatic recovery from invalid thread states.</p>
+          <ul class="feature-detail-list">
+            <li>JSON-RPC over WebSocket for bidirectional comms</li>
+            <li>Thread resume with selective error handling</li>
+            <li>Only "not found" errors reset thread ID</li>
+            <li>All other errors propagate for observability</li>
+          </ul>
+        </div>
+        <div class="feature-detail-visual">
+          <div class="code-window">
+            <div class="code-header">
+              <div class="code-dots"><span></span><span></span><span></span></div>
+              <span class="code-filename">server/codex.js</span>
+            </div>
+            <pre class="code-body"><code><span class="code-kw">try</span> {
+  <span class="code-kw">await</span> client.<span class="code-fn">request</span>(<span class="code-str">"thread/resume"</span>, { threadId });
+} <span class="code-kw">catch</span> (err) {
+  <span class="code-kw">if</span> (<span class="code-str">/not found|unknown thread/i</span>.<span class="code-fn">test</span>(err.message)) {
+    threadId = <span class="code-kw">null</span>;
+  } <span class="code-kw">else</span> {
+    <span class="code-kw">throw</span> err;
+  }
+}</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-eyebrow">How it works</p>
+        <h2 class="section-title">From prompt to outcome<br>in three steps.</h2>
+      </div>
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">01</div>
+          <h3 class="step-title">Describe your goal</h3>
+          <p class="step-text">Enter a natural language prompt in the chat. The manager agent interprets your intent and decomposes it into structured tasks.</p>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step">
+          <div class="step-num">02</div>
+          <h3 class="step-title">Manager dispatches</h3>
+          <p class="step-text">Specialist agents reply only when the manager calls them. Reviewers audit outputs, and every decision remains traceable in the shared transcript.</p>
+        </div>
+        <div class="step-connector"></div>
+        <div class="step">
+          <div class="step-num">03</div>
+          <h3 class="step-title">Review & iterate</h3>
+          <p class="step-text">Watch the full event timeline in real time. Edit, retry, or extend the conversation. Every decision is traceable.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-dark">
+    <div class="container cta-block">
+      <h2 class="cta-title">Start with the local console.</h2>
+      <p class="cta-subtitle">Use the static site for the public story; use the bundled app source for the actual AT platform.</p>
+      <div class="cta-actions">
+        <a href="docs.html" class="btn btn-light btn-lg">Read the docs</a>
+        <a href="https://github.com/Felix201209/AT-Group-Chat" class="btn btn-outline-light btn-lg" target="_blank" rel="noopener">View on GitHub</a>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect width="28" height="28" rx="7" fill="#1c1d1f"/>
+            <path d="M8 14C8 10.686 10.686 8 14 8C17.314 8 20 10.686 20 14C20 17.314 17.314 20 14 20" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="14" cy="14" r="2.5" fill="white"/>
+            <path d="M17 17L20 20" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>AT Group Chat</span>
+        </a>
+        <p class="footer-tagline">Manager-controlled AI collaboration, local-first outcomes.</p>
+      </div>
+      <div class="footer-columns">
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="features.html">Features</a>
+          <a href="technology.html">Technology</a>
+          <a href="docs.html">Documentation</a>
+        </div>
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <a href="docs.html">Quick start</a>
+          <a href="docs.html">API Reference</a>
+          <a href="docs.html">Changelog</a>
+        </div>
+        <div class="footer-col">
+          <h4>Community</h4>
+          <a href="https://github.com/Felix201209/AT-Group-Chat" target="_blank" rel="noopener">GitHub</a>
+          <a href="app/README.md">Local app</a>
+          <a href="docs.html">Docs</a>
+        </div>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>© 2026 AT Group Chat. Open source under MIT License.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AT Group Chat — Local AI Collaboration Platform</title>
+  <meta name="description" content="AT Group Chat is a local, manager-controlled AI collaboration platform with shared transcript, work items, HTTP/MCP APIs, and Codex app-server support.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo" aria-label="AT Group Chat home">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect width="28" height="28" rx="7" fill="#1c1d1f"/>
+          <path d="M8 14C8 10.686 10.686 8 14 8C17.314 8 20 10.686 20 14C20 17.314 17.314 20 14 20" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="14" cy="14" r="2.5" fill="white"/>
+          <path d="M17 17L20 20" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span>AT Group Chat</span>
+      </a>
+      <div class="nav-links" id="nav-links">
+        <a href="features.html">Features</a>
+        <a href="technology.html">Technology</a>
+        <a href="docs.html">Docs</a>
+      </div>
+      <div class="nav-actions">
+        <a href="https://github.com/Felix201209/AT-Group-Chat" class="btn btn-ghost" target="_blank" rel="noopener">GitHub</a>
+        <a href="docs.html" class="btn btn-primary">Get started</a>
+      </div>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-bg" aria-hidden="true">
+      <div class="hero-grid"></div>
+      <div class="hero-gradient"></div>
+    </div>
+    <div class="container hero-content">
+      <a href="features.html" class="pill">
+        <span class="pill-dot"></span>
+        <span class="pill-text">Introducing v1.0 — Manager-controlled local agent teams</span>
+        <span class="pill-arrow" aria-hidden="true">→</span>
+      </a>
+      <h1 class="hero-title">
+        A local control room<br>for AI teams.
+      </h1>
+      <p class="hero-subtitle">
+        AT Group Chat turns Codex, Claude Code, Kimi Code, and any CLI-backed model
+        into a manager-controlled team with shared memory, work items, and auditable handoffs.
+      </p>
+      <div class="hero-cta">
+        <a href="docs.html" class="btn btn-primary btn-lg">Start building</a>
+        <a href="features.html" class="btn btn-secondary btn-lg">Explore features</a>
+      </div>
+
+      <div class="hero-demo" aria-hidden="true">
+        <div class="demo-frame">
+          <div class="demo-header">
+            <div class="demo-dots"><span></span><span></span><span></span></div>
+            <div class="demo-title">AT Team Workspace</div>
+          </div>
+          <div class="demo-body">
+            <div class="demo-sidebar">
+              <div class="demo-sidebar-item active">Chat</div>
+              <div class="demo-sidebar-item">Team</div>
+              <div class="demo-sidebar-item">Work</div>
+              <div class="demo-sidebar-item">Settings</div>
+            </div>
+            <div class="demo-main">
+              <div class="demo-chat">
+                <div class="demo-msg demo-msg-manager">
+                  <div class="demo-msg-avatar">M</div>
+                  <div class="demo-msg-bubble">I will create the run, choose one specialist, and stop after the result.</div>
+                </div>
+                <div class="demo-msg demo-msg-agent">
+                  <div class="demo-msg-avatar">UX</div>
+                  <div class="demo-msg-bubble">Reviewing the user flow and interface clarity from the shared transcript.</div>
+                </div>
+                <div class="demo-msg demo-msg-agent">
+                  <div class="demo-msg-avatar">PG</div>
+                  <div class="demo-msg-bubble">Checking whether the outcome satisfies the original goal and plan.</div>
+                </div>
+                <div class="demo-typing"><span></span><span></span><span></span></div>
+              </div>
+              <div class="demo-input">
+                <div class="demo-input-placeholder">Describe your goal...</div>
+                <div class="demo-input-send">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M3 8h10M10 5l3 3-3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section class="section">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-eyebrow">Capabilities</p>
+        <h2 class="section-title">Built for local AI collaboration.</h2>
+        <p class="section-desc">Chat is the front door. Work items, reviews, decisions, and event logs keep the collaboration real.</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+          <h3 class="feature-title">Manager-Controlled Team</h3>
+          <p class="feature-text">One manager decides who speaks next. Specialists can see the transcript, but they do not free-run into loops.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <h3 class="feature-title">Shared Transcript</h3>
+          <p class="feature-text">Every role has isolated memory plus access to team context, so reviews and decisions stay grounded.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          </div>
+          <h3 class="feature-title">Work Items</h3>
+          <p class="feature-text">Create issues, proposals, reviews, decisions, and dispatch a work item directly back to the manager.</p>
+        </div>
+      </div>
+      <div style="text-align:center; margin-top: var(--space-10);">
+        <a href="features.html" class="btn btn-secondary btn-lg">See all features</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-dark">
+    <div class="container cta-block">
+      <h2 class="cta-title">Ready to assemble your<br>AI team?</h2>
+      <p class="cta-subtitle">The showcase is static; the actual control console runs locally with Codex app-server, HTTP, and MCP.</p>
+      <div class="cta-actions">
+        <a href="docs.html" class="btn btn-light btn-lg">Read the docs</a>
+        <a href="https://github.com/Felix201209/AT-Group-Chat" class="btn btn-outline-light btn-lg" target="_blank" rel="noopener">View on GitHub</a>
+      </div>
+      <div class="cta-install">
+        <code>git clone https://github.com/Felix201209/AT-Group-Chat.git && cd AT-Group-Chat/app && npm install && npm run dev</code>
+        <button class="cta-copy" id="cta-copy" aria-label="Copy install command">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect width="28" height="28" rx="7" fill="#1c1d1f"/>
+            <path d="M8 14C8 10.686 10.686 8 14 8C17.314 8 20 10.686 20 14C20 17.314 17.314 20 14 20" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="14" cy="14" r="2.5" fill="white"/>
+            <path d="M17 17L20 20" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>AT Group Chat</span>
+        </a>
+        <p class="footer-tagline">Manager-controlled AI collaboration, local-first outcomes.</p>
+      </div>
+      <div class="footer-columns">
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="features.html">Features</a>
+          <a href="technology.html">Technology</a>
+          <a href="docs.html">Documentation</a>
+        </div>
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <a href="docs.html">Quick start</a>
+          <a href="docs.html">API Reference</a>
+          <a href="docs.html">Changelog</a>
+        </div>
+        <div class="footer-col">
+          <h4>Community</h4>
+          <a href="https://github.com/Felix201209/AT-Group-Chat" target="_blank" rel="noopener">GitHub</a>
+          <a href="app/README.md">Local app</a>
+          <a href="docs.html">Docs</a>
+        </div>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>© 2026 AT Group Chat. Open source under MIT License.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>

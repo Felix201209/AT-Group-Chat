@@ -1,0 +1,19 @@
+.DS_Store
+node_modules/
+dist/
+test-results/
+
+# Bundled local AT app runtime state
+app/node_modules/
+app/dist/
+app/data/
+app/test-results/
+app/.env
+app/.env.*
+
+# Logs and local databases
+*.log
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+events.jsonl

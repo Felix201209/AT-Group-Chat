@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentation — AT Group Chat</title>
+  <meta name="description" content="Get started with AT Group Chat. Installation, configuration, environment variables, and API reference.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <nav class="nav" id="nav">
+    <div class="nav-inner">
+      <a href="index.html" class="nav-logo" aria-label="AT Group Chat home">
+        <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <rect width="28" height="28" rx="7" fill="#1c1d1f"/>
+          <path d="M8 14C8 10.686 10.686 8 14 8C17.314 8 20 10.686 20 14C20 17.314 17.314 20 14 20" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="14" cy="14" r="2.5" fill="white"/>
+          <path d="M17 17L20 20" stroke="white" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <span>AT Group Chat</span>
+      </a>
+      <div class="nav-links" id="nav-links">
+        <a href="features.html">Features</a>
+        <a href="technology.html">Technology</a>
+        <a href="docs.html">Docs</a>
+      </div>
+      <div class="nav-actions">
+        <a href="https://github.com/Felix201209/AT-Group-Chat" class="btn btn-ghost" target="_blank" rel="noopener">GitHub</a>
+        <a href="docs.html" class="btn btn-primary">Get started</a>
+      </div>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <div class="docs-layout">
+    <aside class="docs-sidebar">
+      <div class="docs-sidebar-title">Documentation</div>
+      <nav class="docs-sidebar-nav">
+        <a href="#quickstart">Quick start</a>
+        <a href="#install">Installation</a>
+        <a href="#config">Configuration</a>
+        <a href="#api">API Overview</a>
+        <a href="#env">Environment Variables</a>
+        <a href="#testing">Testing</a>
+      </nav>
+    </aside>
+
+    <main class="docs-content">
+      <h1 id="quickstart">Documentation</h1>
+      <p>Get AT Group Chat running locally in under five minutes. This guide covers the static showcase, the bundled app source, configuration, and your first manager-controlled run.</p>
+
+      <h2 id="install">Installation</h2>
+      <p>The publish-ready source is bundled in this website folder under <code>app/</code>. After the GitHub repository is created, the command will be:</p>
+      <pre><code>git clone https://github.com/Felix201209/AT-Group-Chat.git
+cd AT-Group-Chat/app
+npm install</code></pre>
+
+      <p>The local app uses <code>better-sqlite3</code>, which compiles native bindings on install. Ensure you have a C++ compiler available (Xcode Command Line Tools on macOS, <code>build-essential</code> on Linux). The static website itself has no build step.</p>
+
+      <h2 id="config">Configuration</h2>
+      <p>Create a <code>.env</code> file in <code>app/</code> when you want to override defaults. No direct <code>OPENAI_API_KEY</code> is required by AT itself; Codex, Claude Code, and Kimi authenticate through their own CLIs.</p>
+
+      <table>
+        <thead>
+          <tr><th>Variable</th><th>Required</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>AT_TEAM_API_TOKEN</code></td><td>No</td><td>API auth token for browser, HTTP, and MCP callers</td></tr>
+          <tr><td><code>AT_TEAM_AGENT_MODE</code></td><td>No</td><td><code>real</code> or <code>mock</code> (default: <code>real</code>)</td></tr>
+          <tr><td><code>AT_TEAM_CORS_ORIGIN</code></td><td>No</td><td>Allowed browser origin for the local API</td></tr>
+          <tr><td><code>AT_TEAM_RATE_LIMIT_MAX</code></td><td>No</td><td>Max requests per window (default: 600)</td></tr>
+          <tr><td><code>AT_TEAM_MAX_BODY_BYTES</code></td><td>No</td><td>Max request body size (default: 1MB)</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="api">API Overview</h2>
+      <p>The API server runs on port <code>5174</code> by default. Key endpoints:</p>
+
+      <h3>Platform</h3>
+      <ul>
+        <li><code>GET /api/status</code> — Current project, team, runs, work items, and events</li>
+        <li><code>GET /api/platform</code> — Setup readiness, CLI availability, auth state, data path, and security fields</li>
+        <li><code>GET /api/chat</code> — Group chat transcript and participants</li>
+      </ul>
+
+      <h3>Projects</h3>
+      <ul>
+        <li><code>GET /api/projects</code> — List all projects</li>
+        <li><code>POST /api/projects</code> — Create a new project</li>
+      </ul>
+
+      <h3>Agents and Runs</h3>
+      <ul>
+        <li><code>GET /api/agents</code> — List configured agents</li>
+        <li><code>POST /api/agents</code> — Configure an agent role</li>
+        <li><code>POST /api/runs</code> — Start a manager task</li>
+        <li><code>POST /api/runs/:id/dispatch</code> — Dispatch a selected role from a run</li>
+        <li><code>GET /api/runs/:id/events</code> — SSE stream of run events</li>
+      </ul>
+
+      <h3>Work Items</h3>
+      <ul>
+        <li><code>GET /api/work-items</code> — List issues, proposals, reviews, decisions, and artifacts</li>
+        <li><code>POST /api/work-items</code> — Create a work item from chat or UI</li>
+        <li><code>GET /api/work-items/:id/activity</code> — Linked messages, runs, and events for one work item</li>
+        <li><code>POST /api/work-items/:id/dispatch</code> — Send a work item to the manager</li>
+      </ul>
+
+      <h3>Authentication</h3>
+      <p>When <code>AT_TEAM_API_TOKEN</code> is set, include the token via one of:</p>
+      <pre><code># Header
+x-at-token: your-token
+
+# Bearer
+Authorization: Bearer your-token
+
+# Query parameter
+?token=your-token</code></pre>
+
+      <h2 id="env">Environment Variables</h2>
+      <p>Common environment variables for server-side configuration:</p>
+      <table>
+        <thead>
+          <tr><th>Variable</th><th>Default</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>AT_TEAM_API_TOKEN</code></td><td>—</td><td>API bearer token</td></tr>
+          <tr><td><code>AT_TEAM_CORS_ORIGIN</code></td><td><code>http://127.0.0.1:5173</code></td><td>CORS allowed origin</td></tr>
+          <tr><td><code>AT_TEAM_RATE_LIMIT_MAX</code></td><td><code>600</code></td><td>Rate limit requests per window</td></tr>
+          <tr><td><code>AT_TEAM_MAX_BODY_BYTES</code></td><td><code>1048576</code></td><td>Max body size in bytes</td></tr>
+          <tr><td><code>AT_TEAM_AGENT_MODE</code></td><td><code>real</code></td><td>Agent dispatch mode; use <code>mock</code> only for demos and UI testing</td></tr>
+          <tr><td><code>AT_TEAM_DB_PATH</code></td><td><code>./data/at.db</code></td><td>SQLite database path</td></tr>
+        </tbody>
+      </table>
+
+      <p>Frontend environment variables (Vite):</p>
+      <table>
+        <thead>
+          <tr><th>Variable</th><th>Default</th><th>Description</th></tr>
+        </thead>
+        <tbody>
+          <tr><td><code>VITE_AT_TEAM_API_BASE_URL</code></td><td>—</td><td>API base URL</td></tr>
+          <tr><td><code>VITE_AT_TEAM_API_TOKEN</code></td><td>—</td><td>API token for browser requests</td></tr>
+        </tbody>
+      </table>
+
+      <h2 id="testing">Testing</h2>
+      <p>Run the test suite:</p>
+      <pre><code># Unit and integration tests
+npm test
+
+# Browser E2E tests
+npm run test:browser
+
+# Audit checks
+npm run audit
+
+# Build verification
+npm run build</code></pre>
+
+      <p>Tests use Node's built-in test runner for server logic and Playwright for browser automation. No Jest, no Vitest — just native tooling.</p>
+
+      <div style="margin-top: var(--space-16); padding: var(--space-8); background: var(--porcelain); border-radius: var(--radius-md); text-align: center;">
+        <p style="font-family: var(--font-serif); font-size: var(--text-2xl); color: var(--ink); margin-bottom: var(--space-3);">Still have questions?</p>
+        <p style="color: var(--metal); margin-bottom: var(--space-5);">Open an issue on GitHub or inspect the bundled local app in <code>app/</code>.</p>
+        <a href="https://github.com/Felix201209/AT-Group-Chat/issues/new" class="btn btn-primary" target="_blank" rel="noopener">Open GitHub Issue</a>
+      </div>
+    </main>
+  </div>
+
+  <footer class="footer" style="margin-top: var(--space-12);">
+    <div class="container footer-inner">
+      <div class="footer-brand">
+        <a href="index.html" class="nav-logo">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect width="28" height="28" rx="7" fill="#1c1d1f"/>
+            <path d="M8 14C8 10.686 10.686 8 14 8C17.314 8 20 10.686 20 14C20 17.314 17.314 20 14 20" stroke="white" stroke-width="2" stroke-linecap="round"/>
+            <circle cx="14" cy="14" r="2.5" fill="white"/>
+            <path d="M17 17L20 20" stroke="white" stroke-width="2" stroke-linecap="round"/>
+          </svg>
+          <span>AT Group Chat</span>
+        </a>
+        <p class="footer-tagline">Manager-controlled AI collaboration, local-first outcomes.</p>
+      </div>
+      <div class="footer-columns">
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="features.html">Features</a>
+          <a href="technology.html">Technology</a>
+          <a href="docs.html">Documentation</a>
+        </div>
+        <div class="footer-col">
+          <h4>Resources</h4>
+          <a href="docs.html">Quick start</a>
+          <a href="docs.html">API Reference</a>
+          <a href="docs.html">Changelog</a>
+        </div>
+        <div class="footer-col">
+          <h4>Community</h4>
+          <a href="https://github.com/Felix201209/AT-Group-Chat" target="_blank" rel="noopener">GitHub</a>
+          <a href="app/README.md">Local app</a>
+          <a href="docs.html">Docs</a>
+        </div>
+      </div>
+    </div>
+    <div class="container footer-bottom">
+      <p>© 2026 AT Group Chat. Open source under MIT License.</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
