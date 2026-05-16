@@ -94,6 +94,7 @@ export class ATClient {
   memory(roleId: string, projectId?: string): Promise<any>;
   runEvents(runId: string, options?: { after?: number; signal?: AbortSignal }): AsyncGenerator<any, void, unknown>;
   openApi(): Promise<any>;
+  contract(): Promise<any>;
 }
 
 export function createATClient(options?: ATClientOptions): ATClient;

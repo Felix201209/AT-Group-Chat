@@ -68,6 +68,13 @@ export const openApiSpec = {
         responses: { 200: { description: 'OpenAPI 3.1 JSON document.' } }
       }
     },
+    '/api/contract': {
+      get: {
+        summary: 'Get the external manager contract',
+        description: 'Machine-readable manager-controlled contract for external AI agents, IDE tools, CLI wrappers, and MCP clients.',
+        responses: { 200: { description: 'Stop rules, CLI/HTTP/MCP entry points, permissions, file paths, and manager prompt.' } }
+      }
+    },
     '/api/chat': {
       get: {
         summary: 'Get group chat room',

@@ -351,6 +351,11 @@ const checks = [
       hasText('scripts/at.mjs', 'at-group-chat init --all') &&
       hasText('scripts/at.mjs', 'at-group-chat contract --json') &&
       hasText('scripts/at.mjs', 'managerContract') &&
+      hasText('server/managerContract.js', 'buildManagerContract') &&
+      hasText('server/http.js', '/api/contract') &&
+      hasText('server/mcp.js', 'team_get_manager_contract') &&
+      hasText('server/openapi.js', '/api/contract') &&
+      hasText('sdk/client.mjs', 'contract()') &&
       hasText('scripts/at.mjs', 'generated:mcp-config') &&
       hasText('scripts/at.mjs', 'generated:openapi') &&
       hasText('scripts/at.mjs', 'at-group-chat serve') &&
@@ -437,6 +442,7 @@ const checks = [
       hasText('tests/sdk-cli.test.js', "at.mjs', 'env'") &&
       hasText('tests/sdk-cli.test.js', "at.mjs', 'paths'") &&
       hasText('tests/sdk-cli.test.js', "at.mjs', 'template'") &&
+      hasText('tests/sdk-cli.test.js', 'client.contract') &&
       hasText('tests/sdk-cli.test.js', "at.mjs', 'recipe'") &&
       hasText('tests/sdk-cli.test.js', "at.mjs', 'proposal'") &&
       hasText('tests/sdk-cli.test.js', "at.mjs', 'work'") &&
@@ -450,6 +456,9 @@ const checks = [
       hasText('README.md', 'at-group-chat init') &&
       hasText('README.md', 'at-group-chat init --all') &&
       hasText('README.md', 'at-group-chat contract --json') &&
+      hasText('README.md', 'GET /api/contract') &&
+      hasText('README.md', 'team_get_manager_contract') &&
+      hasText('README.md', 'at.contract()') &&
       hasText('README.md', 'at-group-chat serve') &&
       hasText('README.md', 'at-group-chat ask') &&
       hasText('README.md', 'JSON Lines') &&

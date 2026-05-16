@@ -168,7 +168,9 @@ try {
     ok: contract.ok === true &&
       contract.mode === 'manager-controlled' &&
       contract.rules?.some((rule) => rule.includes('Do not create autonomous discussion loops')) &&
+      contract.http?.getContract === 'GET /api/contract' &&
       contract.http?.runEvents === 'GET /api/runs/:id/events' &&
+      contract.mcpTools?.includes('team_get_manager_contract') &&
       contract.mcpTools?.includes('team_dispatch_work_item') &&
       contract.prompt?.includes('Manager decision')
   });

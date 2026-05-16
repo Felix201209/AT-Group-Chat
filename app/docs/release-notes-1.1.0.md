@@ -52,6 +52,7 @@ at-group-chat env --json
 at-group-chat paths
 at-group-chat template external-manager
 at-group-chat contract --json
+curl -s http://127.0.0.1:5174/api/contract
 at-group-chat recipe sdk
 at-group-chat recipe github-actions
 at-group-chat init --github --manager-prompt

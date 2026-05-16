@@ -41,6 +41,7 @@ test('MCP tools expose the same runtime surface', async () => {
 
     const list = await request(child, { jsonrpc: '2.0', id: 2, method: 'tools/list', params: {} });
     assert.ok(list.result.tools.some((tool) => tool.name === 'team_create_task'));
+    assert.ok(list.result.tools.some((tool) => tool.name === 'team_get_manager_contract'));
     assert.ok(list.result.tools.some((tool) => tool.name === 'team_chat_message'));
     assert.ok(list.result.tools.some((tool) => tool.name === 'team_get_room'));
     assert.ok(list.result.tools.some((tool) => tool.name === 'team_get_work_items'));
@@ -51,6 +52,21 @@ test('MCP tools expose the same runtime surface', async () => {
     assert.ok(list.result.tools.some((tool) => tool.name === 'team_dispatch_agent'));
     assert.ok(list.result.tools.some((tool) => tool.name === 'team_export_platform'));
     assert.ok(list.result.tools.some((tool) => tool.name === 'team_configure_agent'));
+
+    const contract = await request(child, {
+      jsonrpc: '2.0',
+      id: 20,
+      method: 'tools/call',
+      params: {
+        name: 'team_get_manager_contract',
+        arguments: { apiBaseUrl: 'http://127.0.0.1:5174' }
+      }
+    });
+    const contractJson = JSON.parse(contract.result.content[0].text);
+    assert.equal(contractJson.mode, 'manager-controlled');
+    assert.equal(contractJson.http.getContract, 'GET /api/contract');
+    assert.ok(contractJson.mcpTools.includes('team_get_manager_contract'));
+    assert.ok(contractJson.prompt.includes('Manager decision'));
 
     const call = await request(child, {
       jsonrpc: '2.0',

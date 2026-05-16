@@ -1,6 +1,17 @@
 import { runtime } from './singleton.js';
+import { buildManagerContract } from './managerContract.js';
 
 const tools = [
+  {
+    name: 'team_get_manager_contract',
+    description: 'Get the machine-readable AT manager contract: stop rules, CLI, HTTP, MCP tools, permissions, and external-manager prompt.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        apiBaseUrl: { type: 'string' }
+      }
+    }
+  },
   {
     name: 'team_create_task',
     description: 'Create a manager-controlled team task. The codex-manager agent replies first.',
@@ -255,6 +266,9 @@ function fail(id, error) {
 }
 
 async function callTool(name, args = {}) {
+  if (name === 'team_get_manager_contract') {
+    return { content: [{ type: 'text', text: JSON.stringify(buildManagerContract(args), null, 2) }] };
+  }
   if (name === 'team_create_task') {
     const run = await runtime.runManagerTask(args);
     return { content: [{ type: 'text', text: JSON.stringify({ run, status: await runtime.teamStatus(run.project_id) }, null, 2) }] };

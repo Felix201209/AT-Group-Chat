@@ -168,7 +168,7 @@ for await (const event of at.runEvents('<runId>')) {
 终端里也可以用 `at-group-chat env` 打印模板，或用 `at-group-chat env --json` 给外部 agent/CI 读取变量清单。
 需要定位随包发布的 docs、templates、examples、schema、SDK 时，用 `at-group-chat paths`。
 需要把 prompt、GitHub Actions、Team manifest 或 env 模板直接喂给外部 agent/CI 时，用 `at-group-chat template external-manager|github-actions|team|env`。
-需要给外部 AI/IDE 一个机器可读的 manager 协议时，用 `at-group-chat contract --json`；它会列出 stop rules、CLI/HTTP/MCP 入口、权限档位和 manager prompt。
+需要给外部 AI/IDE 一个机器可读的 manager 协议时，用 `at-group-chat contract --json`、`GET /api/contract`、SDK `at.contract()` 或 MCP `team_get_manager_contract`；它会列出 stop rules、CLI/HTTP/MCP 入口、权限档位和 manager prompt。
 需要按接入方拿一份可执行步骤时，用 `at-group-chat recipe sdk|external-manager|github-actions|generic-cli|mcp|npm-publish`。
 可复制模板见 `templates/github-actions-at-hook.yml` 和 `templates/external-manager-prompt.md`。
 也可以直接在任意 repo 里运行 `at-group-chat init`，它会生成 `at.team.json`、`.github/workflows/at-hook.yml` 和 `docs/at-external-manager.md`。

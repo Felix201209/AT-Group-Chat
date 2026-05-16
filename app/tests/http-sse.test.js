@@ -136,6 +136,7 @@ test('HTTP SSE exposes approval request events from the shared runtime', async (
     const openapi = await (await fetch(`${baseUrl}/api/openapi.json`)).json();
     assert.equal(openapi.openapi, '3.1.0');
     assert.equal(openapi.info.title, 'AT Group Chat Local API');
+    assert.ok(openapi.paths['/api/contract']);
     assert.ok(openapi.paths['/api/chat/messages']);
     assert.ok(openapi.paths['/api/work-items']);
     assert.ok(openapi.paths['/api/work-items/{id}']);
@@ -152,6 +153,11 @@ test('HTTP SSE exposes approval request events from the shared runtime', async (
     assert.equal(room.room.name, 'AT AI 合作群聊');
     assert.ok(room.participants.some((participant) => participant.id === 'codex-manager'));
     assert.ok(Array.isArray(room.workItems));
+    const contract = await (await fetch(`${baseUrl}/api/contract`)).json();
+    assert.equal(contract.mode, 'manager-controlled');
+    assert.equal(contract.http.getContract, 'GET /api/contract');
+    assert.ok(contract.mcpTools.includes('team_get_manager_contract'));
+    assert.ok(contract.rules.some((rule) => rule.includes('Do not create autonomous discussion loops')));
 
     const workCreated = await postJson(baseUrl, '/api/work-items', {
       type: 'issue',

@@ -84,7 +84,10 @@ When another AI acts as the manager, give it this contract:
 ```bash
 at-group-chat contract
 at-group-chat contract --json
+curl -s http://127.0.0.1:5174/api/contract
 ```
+
+MCP callers can use `team_get_manager_contract`; SDK callers can use `at.contract()`. All four routes return the same contract so external agents do not need to infer manager rules from prose.
 
 1. Read `/api/status`, `/api/chat`, or MCP `team_get_status` first.
 2. Post the user's task through `/api/chat/messages` or create a work item.

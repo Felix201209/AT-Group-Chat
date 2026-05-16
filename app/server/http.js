@@ -6,6 +6,7 @@ import { runtime } from './singleton.js';
 import { MAX_TEXT_FIELD_LENGTH } from './constants.js';
 import { ClientError, isClientError as isTypedClientError } from './errors.js';
 import { openApiSpec } from './openapi.js';
+import { buildManagerContract } from './managerContract.js';
 
 const PORT = Number(process.env.PORT || process.env.AT_TEAM_PORT || 5174);
 const APP_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
@@ -247,6 +248,10 @@ const apiRoutes = [
     };
   }),
   route('GET', '/api/openapi.json', () => ({ status: 200, body: openApiSpec })),
+  route('GET', '/api/contract', ({ req }) => ({
+    status: 200,
+    body: buildManagerContract({ apiBaseUrl: process.env.AT_TEAM_API_BASE_URL || `http://${req.headers.host || '127.0.0.1:5174'}` })
+  })),
   route('GET', '/api/adapters', () => ({ status: 200, body: { adapters: runtime.adapters() } })),
   route('GET', '/api/chat', ({ url }) => {
     const projectId = url.searchParams.get('projectId') || undefined;

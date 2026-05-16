@@ -189,6 +189,10 @@ export class ATClient {
   openApi() {
     return this.request('/api/openapi.json');
   }
+
+  contract() {
+    return this.request('/api/contract');
+  }
 }
 
 export function createATClient(options) {

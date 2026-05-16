@@ -140,6 +140,7 @@ test('SDK and CLI expose programmer-facing AT entry points', async () => {
       maxBuffer: 10 * 1024 * 1024
     });
     assert.equal(JSON.parse(openApiOutput).openapi, '3.1.0');
+    assert.ok(JSON.parse(openApiOutput).paths['/api/contract']);
     const helpOutput = execFileSync('node', ['scripts/at.mjs', '--help'], {
       cwd: process.cwd(),
       encoding: 'utf8',
@@ -257,9 +258,14 @@ test('SDK and CLI expose programmer-facing AT entry points', async () => {
     assert.equal(contract.mode, 'manager-controlled');
     assert.equal(contract.apiBaseUrl, baseUrl);
     assert.equal(contract.http.runEvents, 'GET /api/runs/:id/events');
+    assert.equal(contract.http.getContract, 'GET /api/contract');
     assert.ok(contract.mcpTools.includes('team_dispatch_work_item'));
+    assert.ok(contract.mcpTools.includes('team_get_manager_contract'));
     assert.ok(contract.rules.some((rule) => rule.includes('Do not create autonomous discussion loops')));
     assert.match(contract.prompt, /Manager decision/);
+    const sdkContract = await client.contract();
+    assert.equal(sdkContract.mode, 'manager-controlled');
+    assert.equal(sdkContract.http.getContract, 'GET /api/contract');
     const recipeText = execFileSync('node', ['scripts/at.mjs', 'recipe', 'sdk'], {
       cwd: process.cwd(),
       encoding: 'utf8',
