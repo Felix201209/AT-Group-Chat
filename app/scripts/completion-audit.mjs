@@ -348,6 +348,10 @@ const checks = [
       hasText('scripts/at.mjs', 'at-group-chat init --github --manager-prompt') &&
       hasText('scripts/at.mjs', 'at-group-chat serve') &&
       hasText('scripts/at.mjs', 'at-group-chat doctor --json') &&
+      hasText('scripts/at.mjs', 'at-group-chat ask "Ask manager') &&
+      hasText('scripts/at.mjs', 'watchRunEvents') &&
+      hasText('scripts/at.mjs', 'chat task was accepted but no run id was returned') &&
+      hasText('scripts/at.mjs', 'max events reached') &&
       hasText('scripts/at.mjs', 'at-group-chat --version') &&
       hasText('scripts/at.mjs', 'packageInfo') &&
       hasText('scripts/at.mjs', 'at-group-chat token --env') &&
@@ -405,6 +409,8 @@ const checks = [
       hasText('scripts/release-readiness.mjs', 'cli-init-dry-run') &&
       hasText('scripts/release-readiness.mjs', 'package/scripts/serve.mjs') &&
       hasText('tests/sdk-cli.test.js', 'packaged developer examples are present') &&
+      hasText('tests/sdk-cli.test.js', "at.mjs', 'ask'") &&
+      hasText('tests/sdk-cli.test.js', 'chat.accepted') &&
       hasText('tests/sdk-cli.test.js', "at.mjs', 'watch'") &&
       hasText('tests/sdk-cli.test.js', "at.mjs', '--version'") &&
       hasText('tests/sdk-cli.test.js', "at.mjs', 'mcp-config'") &&
@@ -419,6 +425,8 @@ const checks = [
       hasText('tests/sdk-cli.test.js', "at.mjs'), 'init', '--dry-run") &&
       hasText('README.md', 'at-group-chat init') &&
       hasText('README.md', 'at-group-chat serve') &&
+      hasText('README.md', 'at-group-chat ask') &&
+      hasText('README.md', 'JSON Lines') &&
       hasText('README.md', 'at-group-chat validate') &&
       hasText('README.md', 'doctor --json') &&
       hasText('README.md', 'at-group-chat --version') &&
@@ -452,7 +460,12 @@ const checks = [
       hasText('SECURITY.md', '/security/advisories/new') &&
       hasText('docs/release-notes-1.1.0.md', 'AT Group Chat 1.1.0 Release Notes') &&
       hasText('docs/release-notes-1.1.0.md', 'at-group-chat --version') &&
+      hasText('docs/release-notes-1.1.0.md', 'at-group-chat ask') &&
       hasText('docs/release-notes-1.1.0.md', 'npm install -g at-group-chat') &&
+      hasText('docs/integrations.md', 'at-group-chat ask') &&
+      hasText('docs/integrations.md', 'chat.accepted') &&
+      hasText('docs/developer-recipes.md', 'at-group-chat ask') &&
+      hasText('docs/developer-recipes.md', 'watch --json') &&
       hasText('docs/developer-recipes.md', 'Follow a run like CI logs') &&
       hasText('docs/developer-recipes.md', 'Connect an MCP client') &&
       hasText('docs/developer-recipes.md', 'doctor --json') &&

@@ -47,6 +47,7 @@ try {
     ok: run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat init') &&
       run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat serve') &&
       run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat doctor --json') &&
+      run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat ask') &&
       run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat --version') &&
       run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat watch RUN_ID') &&
       run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat token --env') &&
@@ -151,6 +152,7 @@ try {
   checks.push({
     id: 'bin-recipe',
     ok: sdkRecipe.includes('Use AT from a Node.js tool') &&
+      sdkRecipe.includes('at-group-chat ask') &&
       genericCliRecipe.ok === true &&
       genericCliRecipe.name === 'generic-cli' &&
       genericCliRecipe.commands?.some((command) => command.includes('apply-manifest')) &&

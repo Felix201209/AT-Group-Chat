@@ -68,8 +68,12 @@ npm publish --tag latest
 ## One-line local manager task
 
 ```bash
+at-group-chat ask "Act as manager: inspect the current repo and stream events until the run finishes."
 at-group-chat chat "Act as manager: inspect the current repo and create the next issue/review/decision."
 ```
+
+Use `ask` when you want one command that both creates the manager-controlled run and follows the event stream. Use `chat` when a script only needs the JSON response and will call `watch` later.
+`ask --json` and `watch --json` emit JSON Lines, one object per line, so shell tools can process long runs without waiting for a full JSON array.
 
 ## Create an issue and immediately hand it to manager
 

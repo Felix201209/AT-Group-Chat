@@ -145,6 +145,7 @@ test('SDK and CLI expose programmer-facing AT entry points', async () => {
       maxBuffer: 10 * 1024 * 1024
     });
     assert.match(helpOutput, /at-group-chat serve/);
+    assert.match(helpOutput, /at-group-chat ask/);
     assert.match(helpOutput, /at-group-chat token --env/);
     const versionOutput = execFileSync('node', ['scripts/at.mjs', '--version'], {
       cwd: process.cwd(),
@@ -251,6 +252,16 @@ test('SDK and CLI expose programmer-facing AT entry points', async () => {
       maxBuffer: 10 * 1024 * 1024
     }).trim();
     assert.equal(JSON.parse(watchOutput).type, 'run.created');
+
+    const askOutput = execFileSync('node', ['scripts/at.mjs', 'ask', 'CLI ask smoke: create one manager-controlled run.', '--permission', 'readonly', '--json'], {
+      cwd: process.cwd(),
+      env: { ...process.env, AT_TEAM_API_BASE_URL: baseUrl },
+      encoding: 'utf8',
+      maxBuffer: 10 * 1024 * 1024
+    }).trim().split('\n').filter(Boolean).map((line) => JSON.parse(line));
+    assert.equal(askOutput[0].type, 'chat.accepted');
+    assert.ok(askOutput.some((event) => event.type === 'run.created'));
+    assert.ok(askOutput.some((event) => event.type === 'agent.completed'));
 
     const hookOutput = execFileSync('node', ['scripts/at.mjs', 'hook', '--source', 'cli', '--event', 'lint.failed', '--title', 'CLI hook smoke'], {
       cwd: process.cwd(),

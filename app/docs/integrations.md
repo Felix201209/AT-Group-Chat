@@ -52,6 +52,15 @@ at-group-chat doctor --json
 at-group-chat status
 ```
 
+For one-shot terminal use, `ask` creates a manager-controlled chat run and follows events until completion or failure:
+
+```bash
+at-group-chat ask "Review this repository and create one AT review item." --permission readonly
+at-group-chat ask "Turn the failing release gate into one issue and one decision." --json
+```
+
+`ask --json` emits JSON Lines: the first object is a `chat.accepted` envelope with `runId`, and each following object is one SSE run event.
+
 ## External Manager Contract
 
 When another AI acts as the manager, give it this contract:

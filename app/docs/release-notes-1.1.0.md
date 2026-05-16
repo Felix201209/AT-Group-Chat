@@ -17,6 +17,7 @@ AT Group Chat 1.1.0 turns the project from a local group-chat UI into a develope
 - `at-group-chat template <name>` prints packaged external-manager, GitHub Actions, team manifest, and env templates.
 - `at-group-chat recipe <name>` prints integration-specific steps for SDK, external managers, GitHub Actions, generic CLI agents, MCP, and npm publishing.
 - `at-group-chat mcp-config` prints an MCP client config for AT.
+- `at-group-chat ask "..."` creates a manager-controlled task and follows the run like a one-shot CI log.
 - `at-group-chat watch <runId>` follows a manager run like CI logs.
 - `docs/integrations.md` explains how programmers connect external managers, CI, MCP clients, SDK scripts, and generic model CLIs.
 - `docs/environment.md` and `env.example` centralize runtime, token, frontend, Codex server, and smoke-test configuration.
@@ -50,6 +51,7 @@ at-group-chat template external-manager
 at-group-chat recipe sdk
 at-group-chat recipe github-actions
 at-group-chat init --github --manager-prompt
+at-group-chat ask "Act as manager: inspect this repo and stream events until done."
 at-group-chat chat "Act as manager: inspect this repo and decide one next reviewer."
 at-group-chat issue "Review API stability" --body "Check HTTP/MCP/SDK/CLI." --priority high --dispatch
 at-group-chat proposal "Refactor adapter registry" --body "Implementation plan and rollout."

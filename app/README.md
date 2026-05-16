@@ -87,6 +87,8 @@ AT 尽量照搬程序员已经熟悉的 GitHub/CI/API 工作方式：
 
 命令行入口：
 
+已发布包用户可先 `npm install -g at-group-chat`，或用 `npx at-group-chat ...` 调用；在源码仓库里也可以用 `node scripts/at.mjs ...`。
+
 ```bash
 at-group-chat setup
 at-group-chat serve
@@ -95,6 +97,7 @@ at-group-chat --version
 at-group-chat version --json
 at-group-chat status
 at-group-chat init --github --manager-prompt
+at-group-chat ask "请作为 manager 审查当前项目，并持续输出 run 事件直到完成。"
 at-group-chat chat "请作为 manager 审查当前项目，并决定是否需要点名 reviewer。"
 at-group-chat issue "发布前 API 稳定性审查" --body "检查 HTTP/MCP/SDK/CLI/setup wizard。" --priority high --dispatch
 at-group-chat proposal "把鉴权接入默认模板" --body "像 PR 一样交给 manager 评估。"
@@ -118,6 +121,15 @@ at-group-chat recipe generic-cli
 at-group-chat mcp-config > at-mcp.json
 at-group-chat openapi > at-openapi.json
 ```
+
+如果你只想像跑 CI 一样在终端里发起一次 AI 协作并看完结果，用 `ask`：
+
+```bash
+at-group-chat ask "把当前失败的发布检查变成一个 issue，并让 manager 给出下一步。"
+at-group-chat ask "只做只读架构审查，不要改文件。" --permission readonly --json
+```
+
+`ask --json` 输出 JSON Lines：第一行是 `{ "type": "chat.accepted", "runId": "..." }`，后续每行是一条 SSE event，方便脚本逐行读取。
 
 JS SDK：
 

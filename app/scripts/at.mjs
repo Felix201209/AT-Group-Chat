@@ -21,6 +21,7 @@ Usage:
   at-group-chat version --json
   at-group-chat status
   at-group-chat init --github --manager-prompt
+  at-group-chat ask "Ask manager to review this project" [--json] [--max N]
   at-group-chat chat "Ask manager to review this project"
   at-group-chat issue "Title" --body "Details" --dispatch
   at-group-chat proposal "Title" --body "Implementation plan" --dispatch
@@ -241,6 +242,7 @@ const recipes = {
     commands: [
       'npm install at-group-chat',
       'at-group-chat serve',
+      'at-group-chat ask "Act as manager: create one review item for this repo."',
       'node --input-type=module -e "import { createATClient } from \'at-group-chat/sdk\'; const at = createATClient(); console.log(await at.status());"'
     ],
     files: ['sdk/client.mjs', 'sdk/client.d.ts', 'examples/external-manager-sdk.mjs'],
@@ -366,6 +368,27 @@ function recipeContent(args) {
 function compact(value, max = 220) {
   const text = typeof value === 'string' ? value : JSON.stringify(value);
   return text.length > max ? `${text.slice(0, max - 1)}…` : text;
+}
+
+async function watchRunEvents(client, runId, args) {
+  if (!runId) throw new Error('runId is required to watch run events');
+  const max = Number(readFlag(args, '--max', '0'));
+  const after = Number(readFlag(args, '--after', '0'));
+  let count = 0;
+  for await (const event of client.runEvents(runId, { after })) {
+    if (hasFlag(args, '--json')) {
+      console.log(JSON.stringify(event));
+    } else {
+      const role = event.role_id ? ` ${event.role_id}` : '';
+      console.log(`[${event.id}] ${event.type}${role} ${compact(event.payload || '')}`);
+    }
+    count += 1;
+    if (event.type === 'agent.completed' || event.type === 'agent.failed' || event.type === 'run.failed') break;
+    if (max && count >= max) {
+      console.error(`max events reached (${max}); run may still be active`);
+      break;
+    }
+  }
 }
 
 const permissionProfiles = new Set(['readonly', 'write-proposed', 'workspace-write', 'danger']);
@@ -652,6 +675,23 @@ async function main() {
     }));
     return;
   }
+  if (command === 'ask' || command === 'run') {
+    const content = positionalArgs(args, ['--permission', '--project', '--after', '--max']).join(' ').trim();
+    if (!content) throw new Error(`${command} content is required`);
+    const response = await client.chat({
+      projectId: readFlag(args, '--project') || undefined,
+      content,
+      permissionProfile: readFlag(args, '--permission', 'write-proposed')
+    });
+    if (!response.run?.id) throw new Error('chat task was accepted but no run id was returned');
+    if (hasFlag(args, '--json')) {
+      console.log(JSON.stringify({ type: 'chat.accepted', runId: response.run?.id, response }));
+    } else {
+      console.log(`run ${response.run?.id}`);
+    }
+    await watchRunEvents(client, response.run?.id, args);
+    return;
+  }
   if (command === 'issue') {
     json(await createWorkItemFromCli(client, args, 'issue'));
     return;
@@ -709,19 +749,7 @@ async function main() {
   if (command === 'watch') {
     const runId = positionalArgs(args, ['--after', '--max'])[0];
     if (!runId) throw new Error('watch RUN_ID is required');
-    const max = Number(readFlag(args, '--max', '0'));
-    const after = Number(readFlag(args, '--after', '0'));
-    let count = 0;
-    for await (const event of client.runEvents(runId, { after })) {
-      if (hasFlag(args, '--json')) {
-        console.log(JSON.stringify(event));
-      } else {
-        const role = event.role_id ? ` ${event.role_id}` : '';
-        console.log(`[${event.id}] ${event.type}${role} ${compact(event.payload || '')}`);
-      }
-      count += 1;
-      if (max && count >= max) break;
-    }
+    await watchRunEvents(client, runId, args);
     return;
   }
   throw new Error(`Unknown command: ${command}\n\n${usage()}`);
