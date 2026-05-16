@@ -172,7 +172,7 @@ try {
       publishRecipe.commands?.includes('at-group-chat version --json') &&
       publishRecipe.commands?.includes('npm publish --dry-run --json')
   });
-  const sdk = JSON.parse(run(process.execPath, ['--input-type=module', '-e', "import { createATClient } from 'at-group-chat/sdk'; console.log(JSON.stringify({ ok: typeof createATClient === 'function' }));"], { cwd: tmp, env }));
+  const sdk = JSON.parse(run(process.execPath, ['--input-type=module', '-e', "import { createATClient as rootClient } from 'at-group-chat'; import { createATClient as sdkClient } from 'at-group-chat/sdk'; console.log(JSON.stringify({ ok: typeof rootClient === 'function' && typeof sdkClient === 'function' }));"], { cwd: tmp, env }));
   checks.push({ id: 'sdk-import', ok: sdk.ok === true });
   checks.push({
     id: 'templates-installed',

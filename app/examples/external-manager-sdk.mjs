@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // Run from a project that has `at-group-chat` installed, or copy this file after `npm install at-group-chat`.
-import { createATClient } from 'at-group-chat/sdk';
+import { createATClient } from 'at-group-chat';
 
 const content = process.argv.slice(2).join(' ').trim()
   || '请作为 AT manager 阅读当前 room，创建必要 work item，并决定是否需要点名一个 agent。';

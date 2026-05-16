@@ -344,6 +344,8 @@ const checks = [
       pkg.files?.includes('schemas') &&
       pkg.files?.includes('templates') &&
       pkg.files?.includes('examples') &&
+      pkg.exports?.['.']?.types === './sdk/client.d.ts' &&
+      pkg.exports?.['.']?.import === './sdk/client.mjs' &&
       pkg.exports?.['./sdk']?.types === './sdk/client.d.ts' &&
       hasText('scripts/at.mjs', 'at-group-chat init --github --manager-prompt') &&
       hasText('scripts/at.mjs', 'at-group-chat serve') &&
@@ -387,6 +389,7 @@ const checks = [
       hasText('templates/github-actions-at-hook.yml', 'AT_TEAM_HOOK_TOKEN') &&
       hasText('templates/external-manager-prompt.md', 'Manager decision') &&
       hasText('examples/external-manager-sdk.mjs', 'createATClient') &&
+      hasText('examples/external-manager-sdk.mjs', "from 'at-group-chat'") &&
       hasText('examples/external-manager-sdk.mjs', 'try {') &&
       hasText('examples/external-manager-sdk.mjs', 'runEvents') &&
       hasText('examples/external-manager-sdk.mjs', 'chat.accepted') &&
@@ -481,6 +484,8 @@ const checks = [
       hasText('docs/release-notes-1.1.0.md', 'dispatch-work') &&
       hasText('docs/release-notes-1.1.0.md', 'completion zsh') &&
       hasText('docs/release-notes-1.1.0.md', 'npm install -g at-group-chat') &&
+      hasText('docs/release-notes-1.1.0.md', "from 'at-group-chat'") &&
+      hasText('scripts/package-smoke.mjs', "from 'at-group-chat'") &&
       hasText('CHANGELOG.md', 'at-group-chat ask') &&
       hasText('CHANGELOG.md', 'exit non-zero') &&
       hasText('CHANGELOG.md', 'dispatch-work') &&

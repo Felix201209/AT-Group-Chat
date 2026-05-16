@@ -18,7 +18,7 @@ The invariant: callers may create work, post context, or ask the manager to disp
 | Codex/Qwen/Claude/Kimi acting as manager | HTTP or MCP | Read status, post a chat task, dispatch one agent, inspect memory/work. |
 | CI or GitHub Actions | `/api/hooks/events` | Convert failed jobs, logs, and artifacts into AT work items. |
 | Local scripts | `at-group-chat` CLI | No SDK setup; good for shell workflows. |
-| Node tools | `at-group-chat/sdk` | Typed API surface and SSE run streaming. |
+| Node tools | `at-group-chat` or `at-group-chat/sdk` | Typed API surface and SSE run streaming. |
 | Custom model CLI | `generic-cli` adapter | Let any command-line model become an AT role. |
 
 Discover packaged docs, templates, examples, schema, and SDK paths from any install:
@@ -140,7 +140,7 @@ Starter files:
 ## Node SDK
 
 ```js
-import { createATClient } from 'at-group-chat/sdk';
+import { createATClient } from 'at-group-chat';
 
 const at = createATClient({
   baseUrl: process.env.AT_TEAM_API_BASE_URL || 'http://127.0.0.1:5174',
@@ -156,6 +156,8 @@ for await (const event of at.runEvents(run.id)) {
   console.log(event.type, event.role_id, event.payload);
 }
 ```
+
+The root package export and `at-group-chat/sdk` both expose the same typed SDK.
 
 Runnable starter:
 

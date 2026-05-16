@@ -11,7 +11,7 @@ Full publish notes: `docs/release-notes-1.1.0.md`.
 - Made `at-group-chat ask` and `watch` exit non-zero when a streamed terminal event reports `agent.failed` or `run.failed`.
 - Added CLI work board inspection through `at-group-chat items`, `at-group-chat activity <workItemId>`, and `at-group-chat dispatch-work <workItemId>`.
 - Added `at-group-chat completion zsh|bash` for shell completion snippets.
-- Added the public JS SDK at `at-group-chat/sdk`.
+- Added the public JS SDK at package root (`at-group-chat`) and the explicit `at-group-chat/sdk` subpath.
 - Updated the SDK manager example to emit JSON Lines and stream `runEvents()` like CI logs.
 - Added `GET /api/openapi.json` so external agents and developer tools can generate clients.
 - Added webhook-style event ingestion through `POST /api/hooks/events`, with optional separate `AT_TEAM_HOOK_TOKEN`.

@@ -83,7 +83,7 @@ AT 尽量照搬程序员已经熟悉的 GitHub/CI/API 工作方式：
 - Merge decision -> AT `decision`
 - CI artifact/log -> AT `artifact`
 - GitHub webhook -> HTTP/MCP caller
-- GitHub CLI/API client -> `at-group-chat` CLI 和 `at-group-chat/sdk`
+- GitHub CLI/API client -> `at-group-chat` CLI 和 `at-group-chat` JS SDK
 
 命令行入口：
 
@@ -140,7 +140,7 @@ at-group-chat ask "只做只读架构审查，不要改文件。" --permission r
 JS SDK：
 
 ```js
-import { createATClient } from 'at-group-chat/sdk';
+import { createATClient } from 'at-group-chat';
 
 const at = createATClient({
   baseUrl: 'http://127.0.0.1:5174',
@@ -156,6 +156,8 @@ for await (const event of at.runEvents('<runId>')) {
   console.log(event.type, event.role_id, event.payload);
 }
 ```
+
+也可以显式导入子路径：`import { createATClient } from 'at-group-chat/sdk'`。
 
 更多 recipes 见 `docs/developer-recipes.md`。OpenAPI 合约见 `GET /api/openapi.json`。Team as Code schema 见 `schemas/at-team.schema.json`。
 版本号以 `package.json` 为准；终端可用 `at-group-chat --version`，自动化可用 `at-group-chat version --json` 同时读取 package 与 OpenAPI 版本。

@@ -54,6 +54,11 @@
   ],
   "type": "module",
   "exports": {
+    ".": {
+      "types": "./sdk/client.d.ts",
+      "import": "./sdk/client.mjs",
+      "default": "./sdk/client.mjs"
+    },
     "./sdk": {
       "types": "./sdk/client.d.ts",
       "import": "./sdk/client.mjs",

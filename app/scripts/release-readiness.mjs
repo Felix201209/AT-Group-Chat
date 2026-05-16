@@ -109,7 +109,7 @@ const checks = [
     forbiddenPresent: forbiddenPackEntries.filter((entry) => packEntries.has(entry))
   }),
   check('cli-init-dry-run', initResult?.dryRun === true && initResult.files?.some((file) => file.target.endsWith('at.team.json')), initResult),
-  check('sdk-export-types', pkg.exports?.['./sdk']?.types === './sdk/client.d.ts' && readFileSync('sdk/client.d.ts', 'utf8').includes('createATClient'), pkg.exports?.['./sdk']),
+  check('sdk-export-types', pkg.exports?.['.']?.types === './sdk/client.d.ts' && pkg.exports?.['.']?.import === './sdk/client.mjs' && pkg.exports?.['./sdk']?.types === './sdk/client.d.ts' && readFileSync('sdk/client.d.ts', 'utf8').includes('createATClient'), pkg.exports),
   check('package-metadata', Array.isArray(pkg.keywords) && pkg.keywords.includes('mcp') && pkg.keywords.includes('agent-team') && pkg.homepage && pkg.repository?.url, {
     keywords: pkg.keywords,
     homepage: pkg.homepage,

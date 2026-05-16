@@ -127,7 +127,7 @@ node examples/external-manager-sdk.mjs "请把当前失败的发布检查转成�
 The example emits JSON Lines: first `chat.accepted`, then streamed run events from `runEvents()`.
 
 ```js
-import { createATClient } from 'at-group-chat/sdk';
+import { createATClient } from 'at-group-chat';
 
 const at = createATClient({
   baseUrl: process.env.AT_TEAM_API_BASE_URL,
@@ -145,6 +145,8 @@ const issue = await at.createWorkItem({
 
 console.log(issue);
 ```
+
+Use `at-group-chat/sdk` when you want the explicit SDK subpath; it exports the same types and functions as the package root.
 
 ## Follow a run like CI logs
 

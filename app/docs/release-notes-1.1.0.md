@@ -73,7 +73,7 @@ at-group-chat openapi > at-openapi.json
 ## SDK
 
 ```js
-import { createATClient } from 'at-group-chat/sdk';
+import { createATClient } from 'at-group-chat';
 
 const at = createATClient({
   baseUrl: process.env.AT_TEAM_API_BASE_URL,
@@ -89,6 +89,8 @@ for await (const event of at.runEvents(task.run.id)) {
   console.log(event.type, event.role_id, event.payload);
 }
 ```
+
+The package root and the explicit `at-group-chat/sdk` subpath expose the same typed SDK, so existing subpath imports continue to work.
 
 ## Verification
 

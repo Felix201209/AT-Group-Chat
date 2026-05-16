@@ -314,7 +314,7 @@ const recipes = {
       'npm install at-group-chat',
       'at-group-chat serve',
       'at-group-chat ask "Act as manager: create one review item for this repo."',
-      'node --input-type=module -e "import { createATClient } from \'at-group-chat/sdk\'; const at = createATClient(); console.log(await at.status());"'
+      'node --input-type=module -e "import { createATClient } from \'at-group-chat\'; const at = createATClient(); console.log(await at.status());"'
     ],
     files: ['sdk/client.mjs', 'sdk/client.d.ts', 'examples/external-manager-sdk.mjs'],
     docs: ['docs/integrations.md#node-sdk', 'docs/developer-recipes.md#use-the-javascript-sdk-from-another-local-agent']

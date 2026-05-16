@@ -510,9 +510,14 @@ test('CLI watch exits non-zero when a streamed run fails', async () => {
 });
 
 test('packaged developer examples are present and executable-looking', () => {
+  const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
   const sdkExample = readFileSync('examples/external-manager-sdk.mjs', 'utf8');
   const hookExample = readFileSync('examples/ci-hook.sh', 'utf8');
+  assert.equal(pkg.exports['.'].types, './sdk/client.d.ts');
+  assert.equal(pkg.exports['.'].import, './sdk/client.mjs');
+  assert.equal(pkg.exports['./sdk'].types, './sdk/client.d.ts');
   assert.match(sdkExample, /createATClient/);
+  assert.match(sdkExample, /from 'at-group-chat'/);
   assert.match(sdkExample, /at\.chat/);
   assert.match(sdkExample, /runEvents/);
   assert.match(sdkExample, /chat\.accepted/);
