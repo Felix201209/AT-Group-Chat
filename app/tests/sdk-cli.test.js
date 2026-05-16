@@ -285,6 +285,27 @@ test('SDK and CLI expose programmer-facing AT entry points', async () => {
       maxBuffer: 10 * 1024 * 1024
     });
     assert.equal(JSON.parse(genericWorkOutput).workItem.type, 'review');
+    const itemsOutput = execFileSync('node', ['scripts/at.mjs', 'items'], {
+      cwd: process.cwd(),
+      env: { ...process.env, AT_TEAM_API_BASE_URL: baseUrl },
+      encoding: 'utf8',
+      maxBuffer: 10 * 1024 * 1024
+    });
+    assert.ok(JSON.parse(itemsOutput).workItems.some((item) => item.title === 'SDK issue smoke'));
+    const activityOutput = execFileSync('node', ['scripts/at.mjs', 'activity', issue.workItem.id], {
+      cwd: process.cwd(),
+      env: { ...process.env, AT_TEAM_API_BASE_URL: baseUrl },
+      encoding: 'utf8',
+      maxBuffer: 10 * 1024 * 1024
+    });
+    assert.equal(JSON.parse(activityOutput).item.id, issue.workItem.id);
+    const dispatchWorkOutput = execFileSync('node', ['scripts/at.mjs', 'dispatch-work', issue.workItem.id, '--permission', 'readonly'], {
+      cwd: process.cwd(),
+      env: { ...process.env, AT_TEAM_API_BASE_URL: baseUrl },
+      encoding: 'utf8',
+      maxBuffer: 10 * 1024 * 1024
+    });
+    assert.ok(JSON.parse(dispatchWorkOutput).run.id);
     assert.throws(() => execFileSync('node', ['scripts/at.mjs', 'work', '--type', 'invalid', 'Bad work type'], {
       cwd: process.cwd(),
       env: { ...process.env, AT_TEAM_API_BASE_URL: baseUrl },

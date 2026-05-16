@@ -61,6 +61,14 @@ at-group-chat ask "Turn the failing release gate into one issue and one decision
 
 `ask --json` emits JSON Lines: the first object is a `chat.accepted` envelope with `runId`, and each following object is one SSE run event.
 
+Work board shell flow:
+
+```bash
+at-group-chat items
+at-group-chat activity <workItemId>
+at-group-chat dispatch-work <workItemId> --permission readonly
+```
+
 ## External Manager Contract
 
 When another AI acts as the manager, give it this contract:

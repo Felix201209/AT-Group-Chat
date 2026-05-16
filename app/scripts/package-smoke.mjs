@@ -56,7 +56,10 @@ try {
       run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat template external-manager') &&
       run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat recipe sdk') &&
       run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat proposal "Title"') &&
-      run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat work --type review')
+      run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat work --type review') &&
+      run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat items') &&
+      run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat activity WORK_ITEM_ID') &&
+      run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat dispatch-work WORK_ITEM_ID')
   });
   checks.push({
     id: 'bin-openapi',

@@ -29,6 +29,9 @@ Usage:
   at-group-chat decision "Title" --body "Final decision"
   at-group-chat artifact "Title" --body "Artifact URL or path"
   at-group-chat work --type review "Title" --body "Details"
+  at-group-chat items
+  at-group-chat activity WORK_ITEM_ID
+  at-group-chat dispatch-work WORK_ITEM_ID --permission readonly
   at-group-chat hook --source ci --event test.failed --title "Tests failed" --body "Attach logs"
   at-group-chat validate --file at.team.json
   at-group-chat apply-manifest --file at.team.json
@@ -698,6 +701,25 @@ async function main() {
   }
   if (['work', 'proposal', 'review', 'decision', 'artifact'].includes(command)) {
     json(await createWorkItemFromCli(client, args, command === 'work' ? 'issue' : command));
+    return;
+  }
+  if (command === 'items' || command === 'work-items') {
+    json(await client.workItems(readFlag(args, '--project') || undefined));
+    return;
+  }
+  if (command === 'activity') {
+    const itemId = positionalArgs(args, ['--project'])[0];
+    if (!itemId) throw new Error('activity WORK_ITEM_ID is required');
+    json(await client.workItemActivity(itemId, readFlag(args, '--project') || undefined));
+    return;
+  }
+  if (command === 'dispatch-work') {
+    const itemId = positionalArgs(args, ['--project', '--permission'])[0];
+    if (!itemId) throw new Error('dispatch-work WORK_ITEM_ID is required');
+    json(await client.dispatchWorkItem(itemId, {
+      projectId: readFlag(args, '--project') || undefined,
+      permissionProfile: readFlag(args, '--permission', 'write-proposed')
+    }));
     return;
   }
   if (command === 'hook') {

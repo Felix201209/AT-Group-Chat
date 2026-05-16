@@ -96,6 +96,16 @@ at-group-chat work --type review "Generic work item" --body "Use --type for issu
 
 These commands map directly to the AT work board. Add `--dispatch` when the manager should turn the item into a controlled run.
 
+## Inspect and dispatch work from CLI
+
+```bash
+at-group-chat items
+at-group-chat activity <workItemId>
+at-group-chat dispatch-work <workItemId> --permission readonly
+```
+
+This is the terminal equivalent of listing issues, opening a PR/activity thread, and asking the manager to review a specific work item.
+
 ## Use the JavaScript SDK from another local agent
 
 Runnable example:

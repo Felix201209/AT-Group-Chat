@@ -105,6 +105,9 @@ at-group-chat review "SDK API surface review" --body "记录审查意见和风�
 at-group-chat decision "发布 1.1.0" --body "记录最终发布判断。"
 at-group-chat artifact "release evidence" --body "附上日志、URL、构建产物或报告路径。"
 at-group-chat work --type review "通用 work item 入口" --body "issue/proposal/review/decision/artifact 都可走这里。"
+at-group-chat items
+at-group-chat activity <workItemId>
+at-group-chat dispatch-work <workItemId> --permission readonly
 at-group-chat hook --source ci --event test.failed --title "CI failed" --body "把失败日志转成 AT issue" --dispatch
 at-group-chat validate --file at.team.example.json
 at-group-chat apply-manifest --file at.team.example.json --dry-run

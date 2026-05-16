@@ -357,6 +357,9 @@ const checks = [
       hasText('scripts/at.mjs', 'at-group-chat token --env') &&
       hasText('scripts/at.mjs', 'at-group-chat proposal "Title"') &&
       hasText('scripts/at.mjs', 'at-group-chat work --type review') &&
+      hasText('scripts/at.mjs', 'at-group-chat items') &&
+      hasText('scripts/at.mjs', 'at-group-chat activity WORK_ITEM_ID') &&
+      hasText('scripts/at.mjs', 'at-group-chat dispatch-work WORK_ITEM_ID') &&
       hasText('scripts/at.mjs', 'createWorkItemFromCli') &&
       hasText('scripts/at.mjs', 'randomBytes(32)') &&
       hasText('scripts/at.mjs', 'at-group-chat validate --file at.team.json') &&
@@ -421,6 +424,9 @@ const checks = [
       hasText('tests/sdk-cli.test.js', "at.mjs', 'recipe'") &&
       hasText('tests/sdk-cli.test.js', "at.mjs', 'proposal'") &&
       hasText('tests/sdk-cli.test.js', "at.mjs', 'work'") &&
+      hasText('tests/sdk-cli.test.js', "at.mjs', 'items'") &&
+      hasText('tests/sdk-cli.test.js', "at.mjs', 'activity'") &&
+      hasText('tests/sdk-cli.test.js', "at.mjs', 'dispatch-work'") &&
       hasText('tests/sdk-cli.test.js', "at.mjs', 'validate'") &&
       hasText('tests/sdk-cli.test.js', "at.mjs'), 'init', '--dry-run") &&
       hasText('README.md', 'at-group-chat init') &&
@@ -437,6 +443,7 @@ const checks = [
       hasText('README.md', 'at-group-chat recipe sdk') &&
       hasText('README.md', 'at-group-chat proposal') &&
       hasText('README.md', 'at-group-chat work --type review') &&
+      hasText('README.md', 'at-group-chat dispatch-work') &&
       hasText('README.md', 'docs/release-notes-1.1.0.md') &&
       hasText('README.md', 'docs/integrations.md') &&
       hasText('README.md', 'docs/environment.md') &&
@@ -461,11 +468,13 @@ const checks = [
       hasText('docs/release-notes-1.1.0.md', 'AT Group Chat 1.1.0 Release Notes') &&
       hasText('docs/release-notes-1.1.0.md', 'at-group-chat --version') &&
       hasText('docs/release-notes-1.1.0.md', 'at-group-chat ask') &&
+      hasText('docs/release-notes-1.1.0.md', 'dispatch-work') &&
       hasText('docs/release-notes-1.1.0.md', 'npm install -g at-group-chat') &&
       hasText('docs/integrations.md', 'at-group-chat ask') &&
       hasText('docs/integrations.md', 'chat.accepted') &&
       hasText('docs/developer-recipes.md', 'at-group-chat ask') &&
       hasText('docs/developer-recipes.md', 'watch --json') &&
+      hasText('docs/developer-recipes.md', 'Inspect and dispatch work from CLI') &&
       hasText('docs/developer-recipes.md', 'Follow a run like CI logs') &&
       hasText('docs/developer-recipes.md', 'Connect an MCP client') &&
       hasText('docs/developer-recipes.md', 'doctor --json') &&
