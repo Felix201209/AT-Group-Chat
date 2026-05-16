@@ -101,7 +101,7 @@ body {
   background: var(--white);
   font-feature-settings: "ss03";
   opacity: 0;
-  animation: pageEnter 500ms var(--ease-out) forwards;
+  animation: pageEnter 300ms var(--ease-out) 50ms forwards;
 }
 
 @keyframes pageEnter {
@@ -820,6 +820,9 @@ button {
   border-radius: var(--radius-md);
   transition: all var(--duration-base) var(--ease-out);
   position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
 
 .feature-card::before {
@@ -878,6 +881,7 @@ button {
   font-size: var(--text-base);
   line-height: 1.6;
   color: var(--metal);
+  flex: 1;
 }
 
 /* --- Feature detail (features page) ---------------------------- */
@@ -895,7 +899,7 @@ button {
   .feature-detail {
     flex-direction: row;
     gap: var(--space-12);
-    align-items: center;
+    align-items: flex-start;
     padding: var(--space-12) 0;
   }
   .feature-detail.reverse { flex-direction: row-reverse; }
@@ -914,7 +918,7 @@ button {
   font-weight: 300;
   color: var(--lead);
   line-height: 1;
-  margin-bottom: var(--space-3);
+  margin-bottom: var(--space-4);
 }
 
 .feature-detail-title {
@@ -947,6 +951,8 @@ button {
   gap: var(--space-3);
   font-size: var(--text-base);
   color: var(--carbon);
+  min-width: 0;
+  overflow-wrap: break-word;
 }
 
 .feature-detail-list li::before {
@@ -977,6 +983,9 @@ button {
 .step {
   flex: 1;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .step-num {
@@ -1004,6 +1013,7 @@ button {
   color: var(--metal);
   max-width: 320px;
   margin: 0 auto;
+  flex: 1;
 }
 
 .step-connector {
@@ -1198,7 +1208,7 @@ button {
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: var(--radius-md);
   max-width: 100%;
-  overflow: hidden;
+  overflow-x: auto;
 }
 
 .cta-install code {
@@ -1545,6 +1555,7 @@ button {
 
   .cta-install {
     align-items: flex-start;
+    overflow-x: auto;
   }
 
   .cta-install code {

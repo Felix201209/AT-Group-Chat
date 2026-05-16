@@ -2,6 +2,12 @@
 
 Goal: host the static showcase website publicly from the Raspberry Pi, while keeping the AT control console local unless Felix explicitly asks to expose it.
 
+Current public URL:
+
+```text
+https://at-group-chat.felixypz.me/
+```
+
 ## Safe boundary
 
 - Public: static files in this folder root.
@@ -22,6 +28,14 @@ rsync -av --delete \
 ```
 
 Then serve `/home/pi/at-group-chat-website` with nginx or the existing Cloudflare tunnel/static-site setup on the Pi.
+
+Current Pi deployment path and services:
+
+```text
+/home/pi/sites/at-group-chat-website/current
+at-group-chat.service -> http://127.0.0.1:8898
+codex-manager-cloudflared.service -> at-group-chat.felixypz.me
+```
 
 ## Verification checklist
 
