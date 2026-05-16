@@ -348,6 +348,9 @@ const checks = [
       pkg.exports?.['.']?.import === './sdk/client.mjs' &&
       pkg.exports?.['./sdk']?.types === './sdk/client.d.ts' &&
       hasText('scripts/at.mjs', 'at-group-chat init --github --manager-prompt') &&
+      hasText('scripts/at.mjs', 'at-group-chat init --all') &&
+      hasText('scripts/at.mjs', 'generated:mcp-config') &&
+      hasText('scripts/at.mjs', 'generated:openapi') &&
       hasText('scripts/at.mjs', 'at-group-chat serve') &&
       hasText('scripts/at.mjs', 'at-group-chat doctor --json') &&
       hasText('scripts/at.mjs', 'at-group-chat ask "Ask manager') &&
@@ -412,6 +415,7 @@ const checks = [
       hasText('scripts/package-smoke.mjs', 'bin-template') &&
       hasText('scripts/package-smoke.mjs', 'bin-recipe') &&
       hasText('scripts/package-smoke.mjs', 'npm run release:dry-run') &&
+      hasText('scripts/package-smoke.mjs', "init', '--all', '--dry-run") &&
       hasText('scripts/package-smoke.mjs', 'at-group-chat proposal "Title"') &&
       hasText('scripts/health.mjs', 'jsonMode') &&
       hasText('scripts/health.mjs', 'generatedAt') &&
@@ -439,7 +443,9 @@ const checks = [
       hasText('tests/sdk-cli.test.js', "at.mjs', 'completion'") &&
       hasText('tests/sdk-cli.test.js', "at.mjs', 'validate'") &&
       hasText('tests/sdk-cli.test.js', "at.mjs'), 'init', '--dry-run") &&
+      hasText('tests/sdk-cli.test.js', "'init', '--all'") &&
       hasText('README.md', 'at-group-chat init') &&
+      hasText('README.md', 'at-group-chat init --all') &&
       hasText('README.md', 'at-group-chat serve') &&
       hasText('README.md', 'at-group-chat ask') &&
       hasText('README.md', 'JSON Lines') &&

@@ -205,12 +205,13 @@ Create repeatable repo-local conventions:
 
 ```bash
 at-group-chat init
+at-group-chat init --all
 at-group-chat validate --file at.team.json
 at-group-chat apply-manifest --file at.team.json --dry-run
 at-group-chat apply-manifest --file at.team.json
 ```
 
-`at.team.json` lets a repo declare roles, defaults, command templates, and starter work items. The schema is shipped at `schemas/at-team.schema.json`.
+`at.team.json` lets a repo declare roles, defaults, command templates, and starter work items. The schema is shipped at `schemas/at-team.schema.json`. Use `init --all` when the repo should also carry `.env.at.example`, `.at/mcp.json`, and `.at/openapi.json` as a ready-to-wire integration bundle.
 
 See `at.team.example.json` for a complete starter manifest.
 

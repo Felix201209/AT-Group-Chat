@@ -28,6 +28,14 @@ It creates:
 - `.github/workflows/at-hook.yml`: CI failure webhook starter.
 - `docs/at-external-manager.md`: prompt contract for an outside manager agent.
 
+For a complete integration bundle in one command:
+
+```bash
+at-group-chat init --all
+```
+
+It also writes `.env.at.example`, `.at/mcp.json`, and `.at/openapi.json` so MCP clients, external agents, and client generators can connect without hunting through docs.
+
 Preview without writing:
 
 ```bash

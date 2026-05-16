@@ -147,6 +147,7 @@ test('SDK and CLI expose programmer-facing AT entry points', async () => {
     });
     assert.match(helpOutput, /at-group-chat serve/);
     assert.match(helpOutput, /at-group-chat ask/);
+    assert.match(helpOutput, /at-group-chat init --all/);
     assert.match(helpOutput, /at-group-chat completion zsh/);
     assert.match(helpOutput, /at-group-chat token --env/);
     const versionOutput = execFileSync('node', ['scripts/at.mjs', '--version'], {
@@ -260,6 +261,26 @@ test('SDK and CLI expose programmer-facing AT entry points', async () => {
     assert.equal(recipeJson.ok, true);
     assert.equal(recipeJson.name, 'github-actions');
     assert.ok(recipeJson.commands.some((command) => command.includes('template github-actions')));
+
+    const initDir = mkdtempSync(join(dir, 'init-all-'));
+    const initAllOutput = execFileSync('node', [join(process.cwd(), 'scripts/at.mjs'), 'init', '--all'], {
+      cwd: initDir,
+      env: { ...process.env, AT_TEAM_API_BASE_URL: baseUrl, AT_TEAM_API_TOKEN: 'init-token' },
+      encoding: 'utf8',
+      maxBuffer: 10 * 1024 * 1024
+    });
+    const initAll = JSON.parse(initAllOutput);
+    assert.equal(initAll.ok, true);
+    assert.ok(existsSync(join(initDir, 'at.team.json')));
+    assert.ok(existsSync(join(initDir, '.github/workflows/at-hook.yml')));
+    assert.ok(existsSync(join(initDir, 'docs/at-external-manager.md')));
+    assert.ok(existsSync(join(initDir, '.env.at.example')));
+    assert.ok(existsSync(join(initDir, '.at/mcp.json')));
+    assert.ok(existsSync(join(initDir, '.at/openapi.json')));
+    const initMcp = JSON.parse(readFileSync(join(initDir, '.at/mcp.json'), 'utf8'));
+    assert.equal(initMcp.mcpServers['at-group-chat'].env.AT_TEAM_API_BASE_URL, baseUrl);
+    assert.equal(initMcp.mcpServers['at-group-chat'].env.AT_TEAM_API_TOKEN, 'init-token');
+    assert.equal(JSON.parse(readFileSync(join(initDir, '.at/openapi.json'), 'utf8')).openapi, '3.1.0');
 
     const watchOutput = execFileSync('node', ['scripts/at.mjs', 'watch', chat.run.id, '--max', '1', '--json'], {
       cwd: process.cwd(),

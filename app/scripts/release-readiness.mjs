@@ -77,6 +77,10 @@ try {
     cwd: initDir,
     env: { ...process.env, AT_TEAM_API_BASE_URL: 'http://127.0.0.1:1' }
   }));
+  initResult.all = JSON.parse(run('node', [join(ROOT, 'scripts/at.mjs'), 'init', '--all', '--dry-run'], {
+    cwd: initDir,
+    env: { ...process.env, AT_TEAM_API_BASE_URL: 'http://127.0.0.1:1' }
+  }));
 } finally {
   rmSync(initDir, { recursive: true, force: true });
 }
@@ -108,14 +112,14 @@ const checks = [
   check('pack-excluded-files', forbiddenPackEntries.every((entry) => !packEntries.has(entry)), {
     forbiddenPresent: forbiddenPackEntries.filter((entry) => packEntries.has(entry))
   }),
-  check('cli-init-dry-run', initResult?.dryRun === true && initResult.files?.some((file) => file.target.endsWith('at.team.json')), initResult),
+  check('cli-init-dry-run', initResult?.dryRun === true && initResult.files?.some((file) => file.target.endsWith('at.team.json')) && initResult.all?.files?.some((file) => file.target.endsWith('.at/mcp.json')) && initResult.all?.files?.some((file) => file.target.endsWith('.at/openapi.json')) && initResult.all?.files?.some((file) => file.target.endsWith('.env.at.example')), initResult),
   check('sdk-export-types', pkg.exports?.['.']?.types === './sdk/client.d.ts' && pkg.exports?.['.']?.import === './sdk/client.mjs' && pkg.exports?.['./sdk']?.types === './sdk/client.d.ts' && readFileSync('sdk/client.d.ts', 'utf8').includes('createATClient'), pkg.exports),
   check('package-metadata', Array.isArray(pkg.keywords) && pkg.keywords.includes('mcp') && pkg.keywords.includes('agent-team') && pkg.homepage && pkg.repository?.url, {
     keywords: pkg.keywords,
     homepage: pkg.homepage,
     repository: pkg.repository?.url
   }),
-  check('developer-docs', ['at-group-chat init', 'at-group-chat serve', 'at-group-chat token --env', 'at-group-chat work --type review', 'examples/external-manager-sdk.mjs', 'templates/github-actions-at-hook.yml', 'GET /api/openapi.json', 'docs/release-notes-1.1.0.md', 'docs/integrations.md', 'docs/environment.md', 'SECURITY.md'].every((text) => readme.includes(text)) && releaseNotes.includes('npm install -g at-group-chat') && releaseNotes.includes('SECURITY.md') && releaseNotes.includes('docs/integrations.md') && releaseNotes.includes('docs/environment.md') && security.includes('AT_TEAM_API_TOKEN') && security.includes('/security/advisories/new') && environmentDoc.includes('AT_SETUP_SKIP_ON_INSTALL') && environmentDoc.includes('CODEX_APP_SERVER_URL') && readFileSync('docs/integrations.md', 'utf8').includes('generic-cli'), 'README.md + SECURITY.md + docs/release-notes-1.1.0.md + docs/integrations.md + docs/environment.md')
+  check('developer-docs', ['at-group-chat init', 'at-group-chat init --all', 'at-group-chat serve', 'at-group-chat token --env', 'at-group-chat work --type review', 'examples/external-manager-sdk.mjs', 'templates/github-actions-at-hook.yml', 'GET /api/openapi.json', 'docs/release-notes-1.1.0.md', 'docs/integrations.md', 'docs/environment.md', 'SECURITY.md'].every((text) => readme.includes(text)) && releaseNotes.includes('npm install -g at-group-chat') && releaseNotes.includes('SECURITY.md') && releaseNotes.includes('docs/integrations.md') && releaseNotes.includes('docs/environment.md') && security.includes('AT_TEAM_API_TOKEN') && security.includes('/security/advisories/new') && environmentDoc.includes('AT_SETUP_SKIP_ON_INSTALL') && environmentDoc.includes('CODEX_APP_SERVER_URL') && readFileSync('docs/integrations.md', 'utf8').includes('generic-cli'), 'README.md + SECURITY.md + docs/release-notes-1.1.0.md + docs/integrations.md + docs/environment.md')
 ];
 
 const failed = checks.filter((item) => !item.ok);

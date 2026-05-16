@@ -54,6 +54,7 @@ at-group-chat template external-manager
 at-group-chat recipe sdk
 at-group-chat recipe github-actions
 at-group-chat init --github --manager-prompt
+at-group-chat init --all
 at-group-chat ask "Act as manager: inspect this repo and stream events until done."
 at-group-chat chat "Act as manager: inspect this repo and decide one next reviewer."
 at-group-chat issue "Review API stability" --body "Check HTTP/MCP/SDK/CLI." --priority high --dispatch

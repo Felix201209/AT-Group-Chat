@@ -48,6 +48,7 @@ try {
       run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat serve') &&
       run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat doctor --json') &&
       run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat ask') &&
+      run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat init --all') &&
       run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat --version') &&
       run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat watch RUN_ID') &&
       run(bin, ['--help'], { cwd: tmp, env }).includes('at-group-chat completion zsh') &&
@@ -92,9 +93,14 @@ try {
       hasText(setupEnvPath, ['AT_TEAM_AGENT_MODE=mock', 'AT_TEAM_API_TOKEN=', 'AT_TEAM_HOOK_TOKEN='])
   });
   const init = JSON.parse(run(bin, ['init', '--dry-run'], { cwd: tmp, env }));
+  const initAll = JSON.parse(run(bin, ['init', '--all', '--dry-run'], { cwd: tmp, env }));
   checks.push({
     id: 'bin-init-dry-run',
-    ok: init.dryRun === true && init.files?.some((file) => file.target.endsWith('at.team.json'))
+    ok: init.dryRun === true &&
+      init.files?.some((file) => file.target.endsWith('at.team.json')) &&
+      initAll.files?.some((file) => file.target.endsWith('.at/mcp.json')) &&
+      initAll.files?.some((file) => file.target.endsWith('.at/openapi.json')) &&
+      initAll.files?.some((file) => file.target.endsWith('.env.at.example'))
   });
   const validate = JSON.parse(run(bin, ['validate', '--file', join(tmp, 'node_modules/at-group-chat/at.team.example.json')], { cwd: tmp, env }));
   checks.push({

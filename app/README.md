@@ -97,6 +97,7 @@ at-group-chat --version
 at-group-chat version --json
 at-group-chat status
 at-group-chat init --github --manager-prompt
+at-group-chat init --all
 at-group-chat ask "请作为 manager 审查当前项目，并持续输出 run 事件直到完成。"
 at-group-chat chat "请作为 manager 审查当前项目，并决定是否需要点名 reviewer。"
 at-group-chat issue "发布前 API 稳定性审查" --body "检查 HTTP/MCP/SDK/CLI/setup wizard。" --priority high --dispatch
@@ -169,6 +170,7 @@ for await (const event of at.runEvents('<runId>')) {
 需要按接入方拿一份可执行步骤时，用 `at-group-chat recipe sdk|external-manager|github-actions|generic-cli|mcp|npm-publish`。
 可复制模板见 `templates/github-actions-at-hook.yml` 和 `templates/external-manager-prompt.md`。
 也可以直接在任意 repo 里运行 `at-group-chat init`，它会生成 `at.team.json`、`.github/workflows/at-hook.yml` 和 `docs/at-external-manager.md`。
+如果你想一次性生成完整对接包，用 `at-group-chat init --all`，它会额外生成 `.env.at.example`、`.at/mcp.json` 和 `.at/openapi.json`，方便丢给 MCP client、外部 agent 或代码生成器。
 可运行示例见 `examples/external-manager-sdk.mjs` 和 `examples/ci-hook.sh`。
 安全边界、token、数据目录、权限模型和真实 agent 执行说明见 `SECURITY.md`。
 发布到 npm 前可运行 `at-group-chat token --env` 生成本地 admin/webhook token，再运行 `npm run release:readiness`、`npm run package:smoke` 或一键 `npm run release:dry-run`。`release:readiness` 检查本地版本、npm registry 最新版本、pack 文件清单、SDK 类型、CLI init 和开发者文档入口；`package:smoke` 会把 tarball 装进临时项目，验证安装后的 CLI、OpenAPI、init、SDK import、templates/examples 和 dist UI；`release:dry-run` 会串起 typecheck、unit/runtime tests、readiness、package smoke 和 `npm publish --dry-run --json`。真正发布命令使用 `npm publish --tag latest`。可直接复制的发布说明见 `docs/release-notes-1.1.0.md`。

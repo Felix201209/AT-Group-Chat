@@ -21,6 +21,7 @@ Usage:
   at-group-chat version --json
   at-group-chat status
   at-group-chat init --github --manager-prompt
+  at-group-chat init --all
   at-group-chat ask "Ask manager to review this project" [--json] [--max N]
   at-group-chat chat "Ask manager to review this project"
   at-group-chat issue "Title" --body "Details" --dispatch
@@ -567,12 +568,28 @@ function writeTemplate({ source, target, force = false, dryRun = false }) {
   return { target, source, action: existed ? 'overwritten' : 'created' };
 }
 
+function writeGenerated({ content, target, label, force = false, dryRun = false }) {
+  const existed = existsSync(target);
+  if (existed && !force) {
+    return { target, source: label, action: 'skipped', reason: 'exists' };
+  }
+  if (!dryRun) {
+    mkdirSync(dirname(target), { recursive: true });
+    writeFileSync(target, content);
+  }
+  return { target, source: label, action: existed ? 'overwritten' : 'created' };
+}
+
 function initRepo(args) {
   const cwd = process.cwd();
   const force = hasFlag(args, '--force');
   const dryRun = hasFlag(args, '--dry-run');
+  const includeAll = hasFlag(args, '--all');
   const includeGitHub = hasFlag(args, '--github') || !hasFlag(args, '--no-github');
   const includeManagerPrompt = hasFlag(args, '--manager-prompt') || !hasFlag(args, '--no-manager-prompt');
+  const includeEnv = includeAll || hasFlag(args, '--env');
+  const includeMcp = includeAll || hasFlag(args, '--mcp');
+  const includeOpenApi = includeAll || hasFlag(args, '--openapi');
   const files = [
     {
       source: resolve(appRoot, 'at.team.example.json'),
@@ -591,7 +608,31 @@ function initRepo(args) {
       target: resolve(cwd, readFlag(args, '--prompt-file', 'docs/at-external-manager.md'))
     });
   }
-  const results = files.map((file) => writeTemplate({ ...file, force, dryRun }));
+  if (includeEnv) {
+    files.push({
+      source: resolve(appRoot, 'env.example'),
+      target: resolve(cwd, readFlag(args, '--env-file', '.env.at.example'))
+    });
+  }
+  const generated = [];
+  if (includeMcp) {
+    generated.push({
+      label: 'generated:mcp-config',
+      target: resolve(cwd, readFlag(args, '--mcp-file', '.at/mcp.json')),
+      content: `${JSON.stringify(mcpConfig(args), null, 2)}\n`
+    });
+  }
+  if (includeOpenApi) {
+    generated.push({
+      label: 'generated:openapi',
+      target: resolve(cwd, readFlag(args, '--openapi-file', '.at/openapi.json')),
+      content: `${JSON.stringify(openApiSpec, null, 2)}\n`
+    });
+  }
+  const results = [
+    ...files.map((file) => writeTemplate({ ...file, force, dryRun })),
+    ...generated.map((file) => writeGenerated({ ...file, force, dryRun }))
+  ];
   return {
     ok: true,
     dryRun,
@@ -600,6 +641,7 @@ function initRepo(args) {
     next: [
       'Review at.team.json for your repo roles and work items.',
       'Set AT_TEAM_API_BASE_URL and AT_TEAM_HOOK_TOKEN if you use the GitHub Actions hook.',
+      includeAll ? 'Wire .at/mcp.json into MCP-capable tools and use .at/openapi.json for client generation.' : 'Use `at-group-chat init --all` when you also want MCP, OpenAPI, and env starter files.',
       'Run `at-group-chat validate --file at.team.json`.',
       'Run `at-group-chat apply-manifest --file at.team.json --dry-run`.',
       'Run `at-group-chat apply-manifest --file at.team.json` when ready.'
