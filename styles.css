@@ -1481,6 +1481,73 @@ button {
   background: var(--porcelain);
 }
 
+@media (max-width: 640px) {
+  .container {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+  }
+
+  .feature-detail,
+  .feature-detail-content,
+  .feature-detail-visual,
+  .code-window,
+  .docs-content,
+  .docs-content pre,
+  .cta-install {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+  }
+
+  .code-body,
+  .docs-content pre {
+    padding: var(--space-4);
+  }
+
+  .code-body,
+  .docs-content pre code {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+
+  .docs-layout {
+    padding-left: var(--space-4);
+    padding-right: var(--space-4);
+    overflow-x: hidden;
+  }
+
+  .docs-content {
+    overflow-wrap: anywhere;
+  }
+
+  .feature-detail-list code {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+  }
+
+  .docs-content table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+  }
+
+  .docs-content th,
+  .docs-content td {
+    padding: var(--space-2) var(--space-3);
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .cta-install {
+    align-items: flex-start;
+  }
+
+  .cta-install code {
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+}
+
 /* --- Reveal on scroll ------------------------------------------ */
 .reveal {
   opacity: 0;
