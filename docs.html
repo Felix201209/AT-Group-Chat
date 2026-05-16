@@ -62,9 +62,31 @@
       <p>The publish-ready source is bundled in this website folder under <code>app/</code>. After the GitHub repository is created, the command will be:</p>
       <pre><code>git clone https://github.com/Felix201209/AT-Group-Chat.git
 cd AT-Group-Chat/app
-npm install</code></pre>
+npm install
+npm run setup
+npm run dev</code></pre>
 
       <p>The local app uses <code>better-sqlite3</code>, which compiles native bindings on install. Ensure you have a C++ compiler available (Xcode Command Line Tools on macOS, <code>build-essential</code> on Linux). The static website itself has no build step.</p>
+
+      <h2 id="wizard">Setup Wizard</h2>
+      <p>The app includes an npm configuration wizard. It writes <code>.env</code>, chooses mock or real agent mode, creates an optional local API token, and checks whether Codex, Claude Code, and Kimi are available on your machine.</p>
+
+      <pre><code># Interactive local setup
+npm run setup
+
+# Fast demo setup
+npm run setup:mock
+
+# Real CLI setup
+npm run setup:real
+
+# Machine-readable setup
+node scripts/setup.mjs --mock --yes --token auto --json
+
+# Local npm package smoke
+npm pack --dry-run
+npm install -g .
+at-group-chat setup</code></pre>
 
       <h2 id="config">Configuration</h2>
       <p>Create a <code>.env</code> file in <code>app/</code> when you want to override defaults. No direct <code>OPENAI_API_KEY</code> is required by AT itself; Codex, Claude Code, and Kimi authenticate through their own CLIs.</p>
@@ -171,9 +193,9 @@ npm run build</code></pre>
 
       <div style="margin-top: var(--space-16); padding: var(--space-8); background: var(--porcelain); border-radius: var(--radius-md); text-align: center; border: 1px solid var(--stone);">
         <p style="font-family: var(--font-serif); font-size: var(--text-2xl); color: var(--ink); margin-bottom: var(--space-3);">Ready to try it?</p>
-        <p style="color: var(--metal); margin-bottom: var(--space-5);">The repo includes the full local app under <code>app/</code>. Clone, install, and start your first manager-controlled run.</p>
+        <p style="color: var(--metal); margin-bottom: var(--space-5);">The repo includes the full local app under <code>app/</code>. Clone, install, run the setup wizard, and start your first manager-controlled run.</p>
         <div class="cta-install" style="justify-content: center; margin-bottom: var(--space-5); max-width: 100%; display: flex; width: 100%; overflow-x: auto;">
-          <code style="white-space: pre-wrap; word-break: break-word;">git clone https://github.com/Felix201209/AT-Group-Chat.git && cd AT-Group-Chat/app && npm install && npm run dev</code>
+          <code style="white-space: pre-wrap; word-break: break-word;">git clone https://github.com/Felix201209/AT-Group-Chat.git && cd AT-Group-Chat/app && npm install && npm run setup && npm run dev</code>
           <button class="cta-copy" aria-label="Copy install command">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
           </button>

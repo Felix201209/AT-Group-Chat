@@ -24,6 +24,7 @@ Open `http://127.0.0.1:8123/`.
 ```bash
 cd /Users/felix/Desktop/styles-refero-design-clone/at-group-chat-website/app
 npm install
+npm run setup
 npm run dev
 ```
 

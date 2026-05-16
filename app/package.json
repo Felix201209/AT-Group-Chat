@@ -3,7 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
+  "bin": {
+    "at-group-chat": "scripts/setup.mjs",
+    "at-setup": "scripts/setup.mjs"
+  },
   "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "setup:mock": "node scripts/setup.mjs --mock --yes",
+    "setup:real": "node scripts/setup.mjs --real",
     "dev": "node scripts/dev.mjs",
     "dev:mock": "AT_TEAM_AGENT_MODE=mock node scripts/dev.mjs",
     "dev:server": "node server/http.js",

@@ -4,6 +4,7 @@
 
 ```bash
 npm install
+npm run setup
 npm run dev
 ```
 
@@ -35,6 +36,7 @@ AT 的定位是本地 AI 协作控制台：
 
 ```bash
 npm install
+npm run setup
 npm run dev
 ```
 
@@ -63,6 +65,53 @@ VITE_AT_TEAM_API_TOKEN=your-local-token
 
 ```bash
 npm run dev:codex-server
+```
+
+## 自动化配置向导
+
+AT 自带一个 npm setup wizard，用来生成 `.env`、选择 mock/real 模式、配置 API token、检查本机 CLI 是否可用。
+
+交互式配置：
+
+```bash
+npm run setup
+```
+
+第一次只想看 demo：
+
+```bash
+npm run setup:mock
+npm run dev
+```
+
+准备接真实 Codex / Claude / Kimi：
+
+```bash
+npm run setup:real
+npm run health
+npm run dev
+```
+
+非交互机器友好模式：
+
+```bash
+node scripts/setup.mjs --mock --yes --token auto --json
+```
+
+如果将来发布到 npm，全局安装后同一个向导可以这样运行：
+
+```bash
+at-group-chat setup
+# or
+at-setup
+```
+
+当前包已经带 `bin` 入口，也可以先本地模拟 npm 包安装：
+
+```bash
+npm pack --dry-run
+npm install -g .
+at-group-chat setup
 ```
 
 ## 两种交互方式
