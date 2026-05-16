@@ -37,4 +37,4 @@ The website links point to:
 https://github.com/Felix201209/AT-Group-Chat
 ```
 
-No public repository was created during this polish pass. When the repo is created, publish this folder as the source root so the links become live.
+The public repository has been created and this folder is pushed as its source root. Future changes can be committed from this folder and pushed to `main`.
