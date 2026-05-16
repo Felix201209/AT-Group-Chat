@@ -52,12 +52,21 @@
         A local control room<br>for AI teams.
       </h1>
       <p class="hero-subtitle">
-        AT Group Chat turns Codex, Claude Code, Kimi Code, and any CLI-backed model
-        into a manager-controlled team with shared memory, work items, and auditable handoffs.
+        Turn Codex, Claude Code, Kimi Code, and any CLI-backed model into a
+        <strong>manager-controlled team</strong>. One agent decides who speaks next.
+        No infinite loops. No cloud lock-in. Everything stays local.
       </p>
       <div class="hero-cta">
         <a href="docs.html" class="btn btn-primary btn-lg">Start building</a>
         <a href="features.html" class="btn btn-secondary btn-lg">Explore features</a>
+      </div>
+
+      <div class="adapter-bar" aria-label="Supported adapters">
+        <span class="adapter-label">Works with</span>
+        <span class="adapter-item">OpenAI Codex</span>
+        <span class="adapter-item">Claude Code</span>
+        <span class="adapter-item">Kimi Code</span>
+        <span class="adapter-item">Any CLI model</span>
       </div>
 
       <div class="hero-demo" aria-hidden="true">
@@ -126,14 +135,50 @@
         </div>
         <div class="feature-card">
           <div class="feature-icon">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
           </div>
-          <h3 class="feature-title">Work Items</h3>
-          <p class="feature-text">Create issues, proposals, reviews, decisions, and dispatch a work item directly back to the manager.</p>
+          <h3 class="feature-title">HTTP + MCP Control</h3>
+          <p class="feature-text">External agents can become the manager via HTTP or MCP. Same runtime, same rules — just a different caller.</p>
         </div>
       </div>
       <div style="text-align:center; margin-top: var(--space-10);">
         <a href="features.html" class="btn btn-secondary btn-lg">See all features</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-alt">
+    <div class="container">
+      <div class="section-header">
+        <p class="section-eyebrow">Why AT Group Chat</p>
+        <h2 class="section-title">Not a chatroom. A control room.</h2>
+        <p class="section-desc">Most agent platforms let agents talk forever. AT gives them a manager.</p>
+      </div>
+      <div class="comparison">
+        <div class="comparison-header">
+          <span>Typical agent group chat</span>
+          <span>AT Group Chat</span>
+        </div>
+        <div class="comparison-row">
+          <div class="comparison-cell"><span class="x">×</span> Agents free-run into infinite loops</div>
+          <div class="comparison-cell"><span class="check">✓</span> <strong>Manager decides</strong> who speaks next</div>
+        </div>
+        <div class="comparison-row">
+          <div class="comparison-cell"><span class="x">×</span> One model, one API key</div>
+          <div class="comparison-cell"><span class="check">✓</span> <strong>Codex + Claude + Kimi</strong> in one team</div>
+        </div>
+        <div class="comparison-row">
+          <div class="comparison-cell"><span class="x">×</span> Conversation lost in scrollback</div>
+          <div class="comparison-cell"><span class="check">✓</span> <strong>Work items</strong> persist decisions and reviews</div>
+        </div>
+        <div class="comparison-row">
+          <div class="comparison-cell"><span class="x">×</span> Cloud-only, data leaves your machine</div>
+          <div class="comparison-cell"><span class="check">✓</span> <strong>Local-first</strong>, SQLite on disk</div>
+        </div>
+        <div class="comparison-row">
+          <div class="comparison-cell"><span class="x">×</span> Closed system, no external control</div>
+          <div class="comparison-cell"><span class="check">✓</span> <strong>HTTP + MCP</strong> for external agents</div>
+        </div>
       </div>
     </div>
   </section>

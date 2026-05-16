@@ -1028,7 +1028,7 @@ button {
   align-items: stretch;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 960px) {
   .tech-block {
     flex-direction: row;
     gap: var(--space-16);
@@ -1122,9 +1122,14 @@ button {
 .code-copy {
   margin-left: auto;
   color: var(--overcast);
-  padding: 4px;
+  width: 32px;
+  height: 32px;
+  display: inline-grid;
+  place-items: center;
+  padding: 0;
   border-radius: var(--radius-sm);
   transition: all var(--duration-fast) ease;
+  flex-shrink: 0;
 }
 
 .code-copy:hover {
@@ -1572,6 +1577,160 @@ button:focus-visible {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--slate); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--lead); }
+
+/* --- Adapter bar ----------------------------------------------- */
+.adapter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-5);
+  padding: var(--space-6) 0;
+  flex-wrap: wrap;
+}
+
+.adapter-label {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--overcast);
+}
+
+.adapter-item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--carbon);
+  padding: 6px 14px;
+  background: var(--white);
+  border-radius: var(--radius-full);
+  border: 1px solid var(--stone);
+  box-shadow: var(--shadow-sm);
+  transition: all var(--duration-fast) var(--ease-out);
+}
+
+.adapter-item:hover {
+  border-color: var(--lead);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+/* --- Comparison ------------------------------------------------ */
+.comparison {
+  max-width: 720px;
+  margin: 0 auto;
+  border: 1px solid var(--stone);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  background: var(--white);
+}
+
+.comparison-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-6);
+  background: var(--ash);
+  border-bottom: 1px solid var(--stone);
+}
+
+.comparison-header span {
+  font-size: var(--text-xs);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.comparison-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-6);
+  border-bottom: 1px solid var(--stone);
+  align-items: center;
+}
+
+.comparison-row:last-child { border-bottom: none; }
+
+.comparison-cell {
+  font-size: var(--text-sm);
+  line-height: 1.6;
+  color: var(--carbon);
+}
+
+.comparison-cell strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+.comparison-cell .x {
+  color: #dc2626;
+  font-weight: 600;
+}
+
+.comparison-cell .check {
+  color: #16a34a;
+  font-weight: 600;
+}
+
+/* --- Badge ----------------------------------------------------- */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px;
+  border-radius: var(--radius-full);
+  font-size: var(--text-xs);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+
+.badge-accent {
+  background: var(--accent-muted);
+  color: var(--accent);
+}
+
+.badge-success {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.badge-warn {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+/* --- Feature tag bar ------------------------------------------- */
+.feature-tag-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-3);
+  flex-wrap: wrap;
+}
+
+/* --- Highlight box --------------------------------------------- */
+.highlight-box {
+  padding: var(--space-6);
+  background: var(--porcelain);
+  border: 1px solid var(--stone);
+  border-radius: var(--radius-md);
+  text-align: center;
+}
+
+.highlight-box-title {
+  font-family: var(--font-serif);
+  font-size: var(--text-xl);
+  font-weight: 400;
+  line-height: 1.3;
+  color: var(--ink);
+  margin-bottom: var(--space-3);
+}
 
 /* --- Reduced motion -------------------------------------------- */
 @media (prefers-reduced-motion: reduce) {

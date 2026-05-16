@@ -51,6 +51,10 @@
     </aside>
 
     <main class="docs-content">
+      <div class="feature-tag-bar" style="margin-bottom: var(--space-3);">
+        <span class="badge badge-success">Local-first</span>
+        <span class="badge badge-accent">Open source</span>
+      </div>
       <h1 id="quickstart">Documentation</h1>
       <p>Get AT Group Chat running locally in under five minutes. This guide covers the static showcase, the bundled app source, configuration, and your first manager-controlled run.</p>
 
@@ -165,10 +169,16 @@ npm run build</code></pre>
 
       <p>Tests use Node's built-in test runner for server logic and Playwright for browser automation. No Jest, no Vitest — just native tooling.</p>
 
-      <div style="margin-top: var(--space-16); padding: var(--space-8); background: var(--porcelain); border-radius: var(--radius-md); text-align: center;">
-        <p style="font-family: var(--font-serif); font-size: var(--text-2xl); color: var(--ink); margin-bottom: var(--space-3);">Still have questions?</p>
-        <p style="color: var(--metal); margin-bottom: var(--space-5);">Open an issue on GitHub or inspect the bundled local app in <code>app/</code>.</p>
-        <a href="https://github.com/Felix201209/AT-Group-Chat/issues/new" class="btn btn-primary" target="_blank" rel="noopener">Open GitHub Issue</a>
+      <div style="margin-top: var(--space-16); padding: var(--space-8); background: var(--porcelain); border-radius: var(--radius-md); text-align: center; border: 1px solid var(--stone);">
+        <p style="font-family: var(--font-serif); font-size: var(--text-2xl); color: var(--ink); margin-bottom: var(--space-3);">Ready to try it?</p>
+        <p style="color: var(--metal); margin-bottom: var(--space-5);">The repo includes the full local app under <code>app/</code>. Clone, install, and start your first manager-controlled run.</p>
+        <div class="cta-install" style="justify-content: center; margin-bottom: var(--space-5); max-width: 100%;">
+          <code>git clone https://github.com/Felix201209/AT-Group-Chat.git && cd AT-Group-Chat/app && npm install && npm run dev</code>
+          <button class="cta-copy" aria-label="Copy install command">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+        </div>
+        <a href="https://github.com/Felix201209/AT-Group-Chat/issues/new" class="btn btn-ghost" target="_blank" rel="noopener">Open GitHub Issue</a>
       </div>
     </main>
   </div>

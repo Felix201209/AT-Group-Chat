@@ -71,16 +71,15 @@
   }
 
   /* CTA install copy */
-  const ctaCopy = document.getElementById('cta-copy');
-  if (ctaCopy) {
+  document.querySelectorAll('.cta-install .cta-copy').forEach((ctaCopy) => {
     ctaCopy.addEventListener('click', () => {
-      const code = ctaCopy.parentElement.querySelector('code');
+      const code = ctaCopy.closest('.cta-install')?.querySelector('code');
       if (!code) return;
       copyToClipboard(code.textContent, ctaCopy,
         '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
       );
     });
-  }
+  });
 
   /* Code block copy buttons */
   document.querySelectorAll('.code-window, .docs-content pre').forEach((block) => {

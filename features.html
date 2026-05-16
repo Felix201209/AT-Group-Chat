@@ -50,13 +50,17 @@
       <div class="feature-detail">
         <div class="feature-detail-content">
           <div class="feature-detail-num">01</div>
+          <div class="feature-tag-bar">
+            <span class="badge badge-accent">Core differentiator</span>
+            <span class="badge badge-success">Prevents loops</span>
+          </div>
           <h2 class="feature-detail-title">Manager-Controlled Team</h2>
           <p class="feature-detail-text">Define roles with system prompts, model settings, thinking level, and permission profiles. The manager interprets the goal, chooses one next agent, then stops.</p>
           <ul class="feature-detail-list">
-            <li>No free discussion and no automatic infinite loops</li>
-            <li>Codex manager and Codex goal reviewer stay as separate sessions</li>
-            <li>Claude Code, Kimi Code, Codex, or any CLI adapter can be configured</li>
-            <li>Every dispatch carries an explicit permission profile</li>
+            <li><strong>No free discussion</strong> and no automatic infinite loops</li>
+            <li>Codex manager and Codex goal reviewer stay as <strong>separate sessions</strong></li>
+            <li>Claude Code, Kimi Code, Codex, or <strong>any CLI adapter</strong> can be configured</li>
+            <li>Every dispatch carries an <strong>explicit permission profile</strong></li>
           </ul>
         </div>
         <div class="feature-detail-visual">
@@ -82,13 +86,16 @@
       <div class="feature-detail reverse">
         <div class="feature-detail-content">
           <div class="feature-detail-num">02</div>
+          <div class="feature-tag-bar">
+            <span class="badge badge-accent">Full transparency</span>
+          </div>
           <h2 class="feature-detail-title">Shared Transcript + Events</h2>
           <p class="feature-detail-text">Server-Sent Events stream run lifecycle changes while the group chat stays focused on human-readable messages.</p>
           <ul class="feature-detail-list">
-            <li>Run timeline shows handoff, approval, output, and failures</li>
+            <li>Run timeline shows <strong>handoff, approval, output, and failures</strong></li>
             <li>Chat can hide system events when the user just wants the conversation</li>
-            <li>All agents can read the shared transcript for context</li>
-            <li>Each role still keeps project + role isolated memory</li>
+            <li>All agents can read the <strong>shared transcript</strong> for context</li>
+            <li>Each role still keeps <strong>project + role isolated memory</strong></li>
           </ul>
         </div>
         <div class="feature-detail-visual">
@@ -110,13 +117,16 @@ source.<span class="code-fn">addEventListener</span>(<span class="code-str">"mes
       <div class="feature-detail">
         <div class="feature-detail-content">
           <div class="feature-detail-num">03</div>
+          <div class="feature-tag-bar">
+            <span class="badge badge-success">Production-ready</span>
+          </div>
           <h2 class="feature-detail-title">Hardened & Secure</h2>
           <p class="feature-detail-text">Token-based auth, IP rate limiting, request body size guards, CSP headers, and sanitized error responses make the local service safer to operate.</p>
           <ul class="feature-detail-list">
-            <li>Optional API token via header, Bearer, or query param</li>
+            <li>Optional API token via <strong>header, Bearer, or query param</strong></li>
             <li>IP-based rate limiting with window-based pruning</li>
-            <li>Request body size limits prevent DoS</li>
-            <li>CSP headers and sanitized 500 errors</li>
+            <li>Request body size limits <strong>prevent DoS</strong></li>
+            <li>CSP headers and <strong>sanitized 500 errors</strong></li>
           </ul>
         </div>
         <div class="feature-detail-visual">
@@ -140,13 +150,16 @@ source.<span class="code-fn">addEventListener</span>(<span class="code-str">"mes
       <div class="feature-detail reverse">
         <div class="feature-detail-content">
           <div class="feature-detail-num">04</div>
+          <div class="feature-tag-bar">
+            <span class="badge badge-accent">Beyond chat</span>
+          </div>
           <h2 class="feature-detail-title">Work Items</h2>
           <p class="feature-detail-text">Issues, proposals, reviews, decisions, and artifacts turn the group chat into an actual collaboration platform.</p>
           <ul class="feature-detail-list">
-            <li>Create a work item from the chat</li>
-            <li>Dispatch a work item to the manager</li>
-            <li>Inspect activity threads linked to messages, runs, and events</li>
-            <li>Persist final reviews and decisions instead of losing them in chat scrollback</li>
+            <li><strong>Create a work item</strong> from the chat</li>
+            <li><strong>Dispatch a work item</strong> to the manager</li>
+            <li>Inspect <strong>activity threads</strong> linked to messages, runs, and events</li>
+            <li><strong>Persist</strong> final reviews and decisions instead of losing them in scrollback</li>
           </ul>
         </div>
         <div class="feature-detail-visual">
@@ -174,13 +187,16 @@ db.<span class="code-fn">pragma</span>(<span class="code-str">"busy_timeout = 50
       <div class="feature-detail">
         <div class="feature-detail-content">
           <div class="feature-detail-num">05</div>
+          <div class="feature-tag-bar">
+            <span class="badge badge-accent">Programmable</span>
+          </div>
           <h2 class="feature-detail-title">HTTP + MCP Control</h2>
           <p class="feature-detail-text">Humans can use the UI, while external agents can become the manager by calling the same runtime over HTTP or MCP.</p>
           <ul class="feature-detail-list">
-            <li><code>team_create_task</code> and <code>team_dispatch_agent</code> for agent-to-agent control</li>
-            <li><code>POST /api/runs</code> for external managers</li>
-            <li><code>POST /api/work-items/:id/dispatch</code> for issue-centered review</li>
-            <li>HTTP and MCP share the same runtime, not two separate schedulers</li>
+            <li><code>team_create_task</code> and <code>team_dispatch_agent</code> for <strong>agent-to-agent control</strong></li>
+            <li><code>POST /api/runs</code> for <strong>external managers</strong></li>
+            <li><code>POST /api/work-items/:id/dispatch</code> for <strong>issue-centered review</strong></li>
+            <li>HTTP and MCP share the <strong>same runtime</strong>, not two separate schedulers</li>
           </ul>
         </div>
         <div class="feature-detail-visual">
@@ -206,13 +222,16 @@ db.<span class="code-fn">pragma</span>(<span class="code-str">"busy_timeout = 50
       <div class="feature-detail reverse">
         <div class="feature-detail-content">
           <div class="feature-detail-num">06</div>
+          <div class="feature-tag-bar">
+            <span class="badge badge-success">Resilient</span>
+          </div>
           <h2 class="feature-detail-title">Codex Integration</h2>
           <p class="feature-detail-text">Native WebSocket bridge to OpenAI Codex app-server. Thread-safe resume with automatic recovery from invalid thread states.</p>
           <ul class="feature-detail-list">
-            <li>JSON-RPC over WebSocket for bidirectional comms</li>
-            <li>Thread resume with selective error handling</li>
-            <li>Only "not found" errors reset thread ID</li>
-            <li>All other errors propagate for observability</li>
+            <li><strong>JSON-RPC</strong> over WebSocket for bidirectional comms</li>
+            <li>Thread resume with <strong>selective error handling</strong></li>
+            <li>Only "not found" errors reset thread ID — <strong>others propagate</strong></li>
+            <li>All errors <strong>observable</strong>, never swallowed</li>
           </ul>
         </div>
         <div class="feature-detail-visual">

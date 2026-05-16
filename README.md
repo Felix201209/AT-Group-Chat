@@ -6,7 +6,7 @@ This folder is the publish-ready showcase package for AT Group Chat.
 
 - `index.html`, `features.html`, `technology.html`, `docs.html`: static public website.
 - `styles.css`, `script.js`: website styling and small interactions.
-- `preview-*.png`: existing page preview images.
+- `preview-*.png`, `v2-*.png`: page preview images for earlier and current showcase passes.
 - `app/`: bundled AT local platform source, copied from `/Users/felix/Desktop/AT Group Chat`.
 - `deploy/raspberry-pi.md`: notes for the later Raspberry Pi public deployment.
 
