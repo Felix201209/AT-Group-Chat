@@ -72,7 +72,33 @@ export const openApiSpec = {
       get: {
         summary: 'Get the external manager contract',
         description: 'Machine-readable manager-controlled contract for external AI agents, IDE tools, CLI wrappers, and MCP clients.',
-        responses: { 200: { description: 'Stop rules, CLI/HTTP/MCP entry points, permissions, file paths, and manager prompt.' } }
+        responses: {
+          200: {
+            description: 'Stop rules, CLI/HTTP/MCP entry points, permissions, file paths, and manager prompt.',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  required: ['ok', 'name', 'version', 'apiBaseUrl', 'mode', 'rules', 'permissions', 'cli', 'http', 'mcpTools', 'files', 'prompt'],
+                  properties: {
+                    ok: { type: 'boolean' },
+                    name: { type: 'string' },
+                    version: { type: 'string' },
+                    apiBaseUrl: { type: 'string' },
+                    mode: { type: 'string', enum: ['manager-controlled'] },
+                    rules: { type: 'array', items: { type: 'string' } },
+                    permissions: { type: 'array', items: { $ref: '#/components/schemas/PermissionProfile' } },
+                    cli: { type: 'object', additionalProperties: { type: 'string' } },
+                    http: { type: 'object', additionalProperties: { type: 'string' } },
+                    mcpTools: { type: 'array', items: { type: 'string' } },
+                    files: { type: 'object', additionalProperties: { type: 'string' } },
+                    prompt: { type: 'string' }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     },
     '/api/chat': {

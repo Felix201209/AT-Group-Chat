@@ -257,6 +257,8 @@ test('SDK and CLI expose programmer-facing AT entry points', async () => {
     const contract = JSON.parse(contractOutput);
     assert.equal(contract.mode, 'manager-controlled');
     assert.equal(contract.apiBaseUrl, baseUrl);
+    assert.equal(contract.http.createTask, 'POST /api/runs');
+    assert.equal(contract.http.postChatMessage, 'POST /api/chat/messages');
     assert.equal(contract.http.runEvents, 'GET /api/runs/:id/events');
     assert.equal(contract.http.getContract, 'GET /api/contract');
     assert.ok(contract.mcpTools.includes('team_dispatch_work_item'));

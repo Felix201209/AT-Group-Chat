@@ -142,6 +142,15 @@ at-group-chat setup</code></pre>
         <li><code>POST /api/work-items/:id/dispatch</code> — Send a work item to the manager</li>
       </ul>
 
+      <h3>MCP Tools</h3>
+      <ul>
+        <li><code>team_get_manager_contract</code> — Read the manager-controlled stop rules and HTTP/MCP/SDK entry points</li>
+        <li><code>team_create_task</code> — Create a manager task without opening the UI</li>
+        <li><code>team_dispatch_agent</code> — Dispatch exactly one selected role from a run</li>
+        <li><code>team_get_work_item_activity</code> — Inspect issue/proposal/review/decision context</li>
+        <li><code>team_dispatch_work_item</code> — Send a work item to the manager for review or decision</li>
+      </ul>
+
       <h3>Authentication</h3>
       <p>When <code>AT_TEAM_API_TOKEN</code> is set, include the token via one of:</p>
       <pre><code># Header

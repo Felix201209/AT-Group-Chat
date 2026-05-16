@@ -199,6 +199,8 @@ try {
       contract.mode === 'manager-controlled' &&
       contract.rules?.some((rule) => rule.includes('Do not create autonomous discussion loops')) &&
       contract.http?.getContract === 'GET /api/contract' &&
+      contract.http?.createTask === 'POST /api/runs' &&
+      contract.http?.postChatMessage === 'POST /api/chat/messages' &&
       contract.http?.runEvents === 'GET /api/runs/:id/events' &&
       contract.mcpTools?.includes('team_get_manager_contract') &&
       contract.mcpTools?.includes('team_dispatch_work_item') &&

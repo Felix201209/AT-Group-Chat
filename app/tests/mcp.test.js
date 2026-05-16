@@ -65,6 +65,8 @@ test('MCP tools expose the same runtime surface', async () => {
     const contractJson = JSON.parse(contract.result.content[0].text);
     assert.equal(contractJson.mode, 'manager-controlled');
     assert.equal(contractJson.http.getContract, 'GET /api/contract');
+    assert.equal(contractJson.http.createTask, 'POST /api/runs');
+    assert.equal(contractJson.http.postChatMessage, 'POST /api/chat/messages');
     assert.ok(contractJson.mcpTools.includes('team_get_manager_contract'));
     assert.ok(contractJson.prompt.includes('Manager decision'));
 

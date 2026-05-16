@@ -87,10 +87,10 @@ at-group-chat contract --json
 curl -s http://127.0.0.1:5174/api/contract
 ```
 
-MCP callers can use `team_get_manager_contract`; SDK callers can use `at.contract()`. All four routes return the same contract so external agents do not need to infer manager rules from prose.
+MCP callers can use `team_get_manager_contract`; SDK callers can use `at.contract()`. All four routes return the same contract so external agents do not need to infer manager rules from prose. In that contract, `http.createTask` means `POST /api/runs`; `http.postChatMessage` means `POST /api/chat/messages` when you want the task to appear as a visible group-chat message.
 
 1. Read `/api/status`, `/api/chat`, or MCP `team_get_status` first.
-2. Post the user's task through `/api/chat/messages` or create a work item.
+2. Create the user's manager task through `/api/runs`, post a visible group-chat message through `/api/chat/messages`, or create a work item.
 3. Decide exactly one next role when dispatching.
 4. Use `permissionProfile` deliberately: `readonly`, `write-proposed`, `workspace-write`, or `danger`.
 5. Watch the run events until `agent.completed` or `agent.failed`.

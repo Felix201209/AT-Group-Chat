@@ -204,6 +204,7 @@ GET  /api/status
 GET  /api/platform
 GET  /api/platform/export
 GET  /api/openapi.json
+GET  /api/contract
 GET  /api/adapters
 GET  /api/agents?includeDisabled=true
 GET  /api/chat
@@ -232,6 +233,7 @@ GET  /api/agents/:roleId/memory
 平台接口：
 
 - `/api/platform`: readiness gates、adapter registry、runtime counters、Codex app-server 状态。
+- `/api/contract`: 给外部 AI/IDE/CLI 的 manager-controlled 机器合同；其中 `http.createTask` 是 `POST /api/runs`，`http.postChatMessage` 是 `POST /api/chat/messages`。
 - `/api/hooks/events`: webhook/CI 入口。若设置 `AT_TEAM_HOOK_TOKEN`，请用 `x-at-hook-token` 或 `Authorization: Bearer ...`，它会和主 API token 分开。
 - `/api/platform/export`: 可移植本地状态快照，包含 project、agents、sessions、runs、events、adapters。Platform 页有 `Export portable state` 下载入口；HTTP 响应会带 `content-disposition: attachment; filename="at-platform-export.json"`。
 - `/api/adapters`: 当前支持的 adapter registry。
@@ -241,7 +243,7 @@ GET  /api/agents/:roleId/memory
 - `/api/work-items` `POST`: 创建协作对象；可传 `dispatchToManager: true`，创建后立即进入 manager-controlled run。
 - `/api/work-items/:id` `POST`: 更新协作对象状态、owner、优先级、linked run 等。
 - `/api/work-items/:id/dispatch` `POST`: 把指定 work item 交给 manager，并把 run 重新 linked 回 item。
-- `/api/chat/messages`: 推荐主入口。发消息到 AT 群聊，runtime 会创建 manager-controlled run，并让 `codex-manager` 先处理。
+- `/api/chat/messages`: 群聊入口。发消息到 AT 群聊，runtime 会创建 manager-controlled run，并让 `codex-manager` 先处理；纯程序化 manager 可以直接用 `/api/runs`。
 - `/api/team/config`: Settings 里的 Team Defaults 批量配置入口，只更新传入的字段，可统一模型、thinking level、默认权限、adapter、命令和模板。
 
 `/api/agents/:roleId/config` 和 Settings 页是统一 customize 面板，可改显示名、职责、模型名、thinking level、默认权限、adapter、命令和命令模板。模型名会原样传给对应 adapter；adapter 优先于内置岗位的 CLI 类型，所以内置 Codex/Kimi/Claude 岗位也可以被重新接到 `generic-cli`。Codex 岗位走 app-server，不走 `codex exec`。

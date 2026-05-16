@@ -33,8 +33,8 @@ export function buildManagerContract({
     },
     http: {
       getContract: 'GET /api/contract',
-      createTask: 'POST /api/chat/messages',
-      createRun: 'POST /api/runs',
+      createTask: 'POST /api/runs',
+      postChatMessage: 'POST /api/chat/messages',
       dispatchRun: 'POST /api/runs/:id/dispatch',
       runEvents: 'GET /api/runs/:id/events',
       workItems: 'GET /api/work-items',

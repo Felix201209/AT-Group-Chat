@@ -21,7 +21,7 @@ at-group-chat contract --json
 curl -s http://127.0.0.1:5174/api/contract
 ```
 
-The same contract is also available through the SDK as `at.contract()` and through MCP as `team_get_manager_contract`. It includes manager-controlled stop rules, CLI commands, HTTP endpoints, MCP tools, permission profiles, and the external-manager prompt.
+The same contract is also available through the SDK as `at.contract()` and through MCP as `team_get_manager_contract`. It includes manager-controlled stop rules, CLI commands, HTTP endpoints, MCP tools, permission profiles, and the external-manager prompt. Use `http.createTask` (`POST /api/runs`) for direct manager runs, or `http.postChatMessage` (`POST /api/chat/messages`) when the request should also appear in the AT group chat.
 
 ## Initialize a repository
 
