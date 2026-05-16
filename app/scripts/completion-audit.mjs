@@ -477,6 +477,9 @@ const checks = [
       hasText('docs/release-notes-1.1.0.md', 'dispatch-work') &&
       hasText('docs/release-notes-1.1.0.md', 'completion zsh') &&
       hasText('docs/release-notes-1.1.0.md', 'npm install -g at-group-chat') &&
+      hasText('CHANGELOG.md', 'at-group-chat ask') &&
+      hasText('CHANGELOG.md', 'dispatch-work') &&
+      hasText('CHANGELOG.md', 'completion zsh|bash') &&
       hasText('docs/integrations.md', 'at-group-chat ask') &&
       hasText('docs/integrations.md', 'chat.accepted') &&
       hasText('docs/integrations.md', 'AT_EXAMPLE_MAX_EVENTS') &&

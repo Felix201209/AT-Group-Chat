@@ -7,7 +7,11 @@ AT becomes a developer-facing local AI collaboration platform, not only a chat U
 Full publish notes: `docs/release-notes-1.1.0.md`.
 
 - Added the `at-group-chat` CLI entrypoint for setup, serve, `doctor --json`, status, chat, issue/proposal/review/decision/artifact/work item creation, webhook ingestion, Team as Code manifest apply, run watching, MCP config generation, token generation, and OpenAPI export.
+- Added `at-group-chat ask` for one-shot terminal manager runs that create a chat task and stream run events until completion or failure.
+- Added CLI work board inspection through `at-group-chat items`, `at-group-chat activity <workItemId>`, and `at-group-chat dispatch-work <workItemId>`.
+- Added `at-group-chat completion zsh|bash` for shell completion snippets.
 - Added the public JS SDK at `at-group-chat/sdk`.
+- Updated the SDK manager example to emit JSON Lines and stream `runEvents()` like CI logs.
 - Added `GET /api/openapi.json` so external agents and developer tools can generate clients.
 - Added webhook-style event ingestion through `POST /api/hooks/events`, with optional separate `AT_TEAM_HOOK_TOKEN`.
 - Added Team as Code via `POST /api/team/manifest` and `at-group-chat apply-manifest --file at.team.json`.
