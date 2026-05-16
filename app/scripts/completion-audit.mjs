@@ -385,6 +385,8 @@ const checks = [
       hasText('templates/external-manager-prompt.md', 'Manager decision') &&
       hasText('examples/external-manager-sdk.mjs', 'createATClient') &&
       hasText('examples/external-manager-sdk.mjs', 'try {') &&
+      hasText('examples/external-manager-sdk.mjs', 'runEvents') &&
+      hasText('examples/external-manager-sdk.mjs', 'chat.accepted') &&
       hasText('examples/ci-hook.sh', 'AT_TEAM_HOOK_TOKEN') &&
       hasText('examples/ci-hook.sh', 'GITHUB_RUN_ID') &&
       hasText('scripts/release-readiness.mjs', 'npmLatest') &&
@@ -472,6 +474,7 @@ const checks = [
       hasText('docs/release-notes-1.1.0.md', 'npm install -g at-group-chat') &&
       hasText('docs/integrations.md', 'at-group-chat ask') &&
       hasText('docs/integrations.md', 'chat.accepted') &&
+      hasText('docs/integrations.md', 'AT_EXAMPLE_MAX_EVENTS') &&
       hasText('docs/developer-recipes.md', 'at-group-chat ask') &&
       hasText('docs/developer-recipes.md', 'watch --json') &&
       hasText('docs/developer-recipes.md', 'Inspect and dispatch work from CLI') &&

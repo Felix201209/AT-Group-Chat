@@ -172,7 +172,7 @@ try {
     id: 'templates-installed',
     ok: hasText(join(tmp, 'node_modules/at-group-chat/templates/github-actions-at-hook.yml'), ['AT_TEAM_API_BASE_URL', 'AT_TEAM_HOOK_TOKEN']) &&
       hasText(join(tmp, 'node_modules/at-group-chat/templates/external-manager-prompt.md'), ['team manager', 'manager-controlled']) &&
-      hasText(join(tmp, 'node_modules/at-group-chat/examples/external-manager-sdk.mjs'), ['createATClient', 'AT_TEAM_API_BASE_URL'])
+      hasText(join(tmp, 'node_modules/at-group-chat/examples/external-manager-sdk.mjs'), ['createATClient', 'AT_TEAM_API_BASE_URL', 'runEvents'])
   });
   checks.push({
     id: 'dist-installed',

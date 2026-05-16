@@ -453,6 +453,8 @@ test('packaged developer examples are present and executable-looking', () => {
   const hookExample = readFileSync('examples/ci-hook.sh', 'utf8');
   assert.match(sdkExample, /createATClient/);
   assert.match(sdkExample, /at\.chat/);
+  assert.match(sdkExample, /runEvents/);
+  assert.match(sdkExample, /chat\.accepted/);
   assert.match(hookExample, /AT_TEAM_HOOK_TOKEN/);
   assert.match(hookExample, /api\/hooks\/events/);
 });

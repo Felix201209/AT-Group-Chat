@@ -114,6 +114,8 @@ Runnable example:
 node examples/external-manager-sdk.mjs "请把当前失败的发布检查转成一个 AT work item，并决定下一位 reviewer。"
 ```
 
+The example emits JSON Lines: first `chat.accepted`, then streamed run events from `runEvents()`.
+
 ```js
 import { createATClient } from 'at-group-chat/sdk';
 

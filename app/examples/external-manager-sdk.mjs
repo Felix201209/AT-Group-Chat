@@ -4,6 +4,7 @@ import { createATClient } from 'at-group-chat/sdk';
 
 const content = process.argv.slice(2).join(' ').trim()
   || '请作为 AT manager 阅读当前 room，创建必要 work item，并决定是否需要点名一个 agent。';
+const maxEvents = Number(process.env.AT_EXAMPLE_MAX_EVENTS || '100');
 
 const at = createATClient({
   baseUrl: process.env.AT_TEAM_API_BASE_URL || 'http://127.0.0.1:5174',
@@ -25,7 +26,19 @@ try {
     permissionProfile: 'write-proposed'
   });
 
-  console.log(JSON.stringify(result, null, 2));
+  console.log(JSON.stringify({ type: 'chat.accepted', runId: result.run?.id, response: result }));
+  if (!result.run?.id) throw new Error('AT accepted the task but did not return a run id.');
+
+  let count = 0;
+  for await (const event of at.runEvents(result.run.id)) {
+    console.log(JSON.stringify(event));
+    count += 1;
+    if (event.type === 'agent.completed' || event.type === 'agent.failed' || event.type === 'run.failed') break;
+    if (maxEvents && count >= maxEvents) {
+      console.error(`AT SDK example reached AT_EXAMPLE_MAX_EVENTS=${maxEvents}; run may still be active.`);
+      break;
+    }
+  }
 } catch (error) {
   console.error(`AT SDK example failed: ${error.message}`);
   console.error('Check that the AT runtime is running and AT_TEAM_API_BASE_URL / AT_TEAM_API_TOKEN are set.');

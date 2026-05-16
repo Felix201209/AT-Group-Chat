@@ -155,6 +155,8 @@ Runnable starter:
 node examples/external-manager-sdk.mjs "Turn this release failure into one AT review item."
 ```
 
+The starter prints JSON Lines and streams `runEvents()` until the manager run completes, fails, or reaches `AT_EXAMPLE_MAX_EVENTS`.
+
 ## Generic CLI Agent
 
 Use `generic-cli` when a model provider exposes any local command that can read a prompt file and print a final response.
