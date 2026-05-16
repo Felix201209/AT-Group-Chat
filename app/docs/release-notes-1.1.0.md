@@ -18,6 +18,7 @@ AT Group Chat 1.1.0 turns the project from a local group-chat UI into a develope
 - `at-group-chat recipe <name>` prints integration-specific steps for SDK, external managers, GitHub Actions, generic CLI agents, MCP, and npm publishing.
 - `at-group-chat mcp-config` prints an MCP client config for AT.
 - `at-group-chat ask "..."` creates a manager-controlled task and follows the run like a one-shot CI log.
+- `at-group-chat ask` and `watch` now exit non-zero on streamed `agent.failed` or `run.failed` terminal events.
 - `at-group-chat items`, `activity`, and `dispatch-work` expose the GitHub-like work board from shell scripts.
 - `at-group-chat completion zsh|bash` prints shell completion snippets for daily CLI use.
 - `at-group-chat watch <runId>` follows a manager run like CI logs.

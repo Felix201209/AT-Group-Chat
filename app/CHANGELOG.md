@@ -8,6 +8,7 @@ Full publish notes: `docs/release-notes-1.1.0.md`.
 
 - Added the `at-group-chat` CLI entrypoint for setup, serve, `doctor --json`, status, chat, issue/proposal/review/decision/artifact/work item creation, webhook ingestion, Team as Code manifest apply, run watching, MCP config generation, token generation, and OpenAPI export.
 - Added `at-group-chat ask` for one-shot terminal manager runs that create a chat task and stream run events until completion or failure.
+- Made `at-group-chat ask` and `watch` exit non-zero when a streamed terminal event reports `agent.failed` or `run.failed`.
 - Added CLI work board inspection through `at-group-chat items`, `at-group-chat activity <workItemId>`, and `at-group-chat dispatch-work <workItemId>`.
 - Added `at-group-chat completion zsh|bash` for shell completion snippets.
 - Added the public JS SDK at `at-group-chat/sdk`.

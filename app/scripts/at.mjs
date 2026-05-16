@@ -446,6 +446,8 @@ async function watchRunEvents(client, runId, args) {
   const max = Number(readFlag(args, '--max', '0'));
   const after = Number(readFlag(args, '--after', '0'));
   let count = 0;
+  let terminalEvent = null;
+  let reachedMax = false;
   for await (const event of client.runEvents(runId, { after })) {
     if (hasFlag(args, '--json')) {
       console.log(JSON.stringify(event));
@@ -454,12 +456,22 @@ async function watchRunEvents(client, runId, args) {
       console.log(`[${event.id}] ${event.type}${role} ${compact(event.payload || '')}`);
     }
     count += 1;
-    if (event.type === 'agent.completed' || event.type === 'agent.failed' || event.type === 'run.failed') break;
+    if (event.type === 'agent.completed' || event.type === 'agent.failed' || event.type === 'run.failed') {
+      terminalEvent = event;
+      break;
+    }
     if (max && count >= max) {
+      reachedMax = true;
       console.error(`max events reached (${max}); run may still be active`);
       break;
     }
   }
+  return {
+    count,
+    reachedMax,
+    terminalEvent,
+    failed: terminalEvent?.type === 'agent.failed' || terminalEvent?.type === 'run.failed'
+  };
 }
 
 const permissionProfiles = new Set(['readonly', 'write-proposed', 'workspace-write', 'danger']);
@@ -764,7 +776,8 @@ async function main() {
     } else {
       console.log(`run ${response.run?.id}`);
     }
-    await watchRunEvents(client, response.run?.id, args);
+    const watched = await watchRunEvents(client, response.run?.id, args);
+    if (watched.failed) process.exitCode = 1;
     return;
   }
   if (command === 'issue') {
@@ -843,7 +856,8 @@ async function main() {
   if (command === 'watch') {
     const runId = positionalArgs(args, ['--after', '--max'])[0];
     if (!runId) throw new Error('watch RUN_ID is required');
-    await watchRunEvents(client, runId, args);
+    const watched = await watchRunEvents(client, runId, args);
+    if (watched.failed) process.exitCode = 1;
     return;
   }
   throw new Error(`Unknown command: ${command}\n\n${usage()}`);

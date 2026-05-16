@@ -350,6 +350,7 @@ const checks = [
       hasText('scripts/at.mjs', 'at-group-chat doctor --json') &&
       hasText('scripts/at.mjs', 'at-group-chat ask "Ask manager') &&
       hasText('scripts/at.mjs', 'watchRunEvents') &&
+      hasText('scripts/at.mjs', 'watched.failed') &&
       hasText('scripts/at.mjs', 'chat task was accepted but no run id was returned') &&
       hasText('scripts/at.mjs', 'max events reached') &&
       hasText('scripts/at.mjs', 'at-group-chat --version') &&
@@ -419,6 +420,7 @@ const checks = [
       hasText('tests/sdk-cli.test.js', "at.mjs', 'ask'") &&
       hasText('tests/sdk-cli.test.js', 'chat.accepted') &&
       hasText('tests/sdk-cli.test.js', "at.mjs', 'watch'") &&
+      hasText('tests/sdk-cli.test.js', 'CLI watch exits non-zero when a streamed run fails') &&
       hasText('tests/sdk-cli.test.js', "at.mjs', '--version'") &&
       hasText('tests/sdk-cli.test.js', "at.mjs', 'mcp-config'") &&
       hasText('tests/sdk-cli.test.js', "at.mjs', 'token'") &&
@@ -438,6 +440,7 @@ const checks = [
       hasText('README.md', 'at-group-chat serve') &&
       hasText('README.md', 'at-group-chat ask') &&
       hasText('README.md', 'JSON Lines') &&
+      hasText('README.md', '非 0 退出') &&
       hasText('README.md', 'at-group-chat validate') &&
       hasText('README.md', 'doctor --json') &&
       hasText('README.md', 'at-group-chat --version') &&
@@ -474,14 +477,17 @@ const checks = [
       hasText('docs/release-notes-1.1.0.md', 'AT Group Chat 1.1.0 Release Notes') &&
       hasText('docs/release-notes-1.1.0.md', 'at-group-chat --version') &&
       hasText('docs/release-notes-1.1.0.md', 'at-group-chat ask') &&
+      hasText('docs/release-notes-1.1.0.md', 'exit non-zero') &&
       hasText('docs/release-notes-1.1.0.md', 'dispatch-work') &&
       hasText('docs/release-notes-1.1.0.md', 'completion zsh') &&
       hasText('docs/release-notes-1.1.0.md', 'npm install -g at-group-chat') &&
       hasText('CHANGELOG.md', 'at-group-chat ask') &&
+      hasText('CHANGELOG.md', 'exit non-zero') &&
       hasText('CHANGELOG.md', 'dispatch-work') &&
       hasText('CHANGELOG.md', 'completion zsh|bash') &&
       hasText('docs/integrations.md', 'at-group-chat ask') &&
       hasText('docs/integrations.md', 'chat.accepted') &&
+      hasText('docs/integrations.md', 'non-zero exit code') &&
       hasText('docs/integrations.md', 'AT_EXAMPLE_MAX_EVENTS') &&
       hasText('docs/developer-recipes.md', 'at-group-chat ask') &&
       hasText('docs/developer-recipes.md', 'watch --json') &&

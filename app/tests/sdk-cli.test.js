@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn, execFileSync } from 'node:child_process';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { createServer } from 'node:http';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { ATClient } from '../sdk/client.mjs';
@@ -460,6 +461,51 @@ test('SDK preserves HTTP status when an upstream returns non-JSON text', async (
     );
   } finally {
     globalThis.fetch = originalFetch;
+  }
+});
+
+test('CLI watch exits non-zero when a streamed run fails', async () => {
+  const server = createServer((req, res) => {
+    if (req.url === '/api/runs/failing-run/events') {
+      const body = [
+        'id: 1',
+        'event: message',
+        'data: {"id":1,"type":"agent.failed","role_id":"ci-review","payload":{"output":"failed"}}',
+        '',
+        ''
+      ].join('\n');
+      res.writeHead(200, {
+        'content-type': 'text/event-stream',
+        'cache-control': 'no-cache',
+        'content-length': Buffer.byteLength(body),
+        connection: 'close'
+      });
+      res.end(body);
+      return;
+    }
+    res.writeHead(404, { 'content-type': 'application/json' });
+    res.end(JSON.stringify({ error: 'not found' }));
+  });
+  await new Promise((resolve) => server.listen(0, '127.0.0.1', resolve));
+  const baseUrl = `http://127.0.0.1:${server.address().port}`;
+  try {
+    const result = await new Promise((resolve, reject) => {
+      const child = spawn('node', ['scripts/at.mjs', 'watch', 'failing-run', '--json'], {
+        cwd: process.cwd(),
+        env: { ...process.env, AT_TEAM_API_BASE_URL: baseUrl },
+        stdio: ['ignore', 'pipe', 'pipe']
+      });
+      let stdout = '';
+      let stderr = '';
+      child.stdout.on('data', (chunk) => { stdout += chunk.toString(); });
+      child.stderr.on('data', (chunk) => { stderr += chunk.toString(); });
+      child.on('error', reject);
+      child.on('close', (status) => resolve({ status, stdout, stderr }));
+    });
+    assert.equal(result.status, 1);
+    assert.match(result.stdout, /"type":"agent.failed"/);
+  } finally {
+    await new Promise((resolve) => server.close(resolve));
   }
 });
 

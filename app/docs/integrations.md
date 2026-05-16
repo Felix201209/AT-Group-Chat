@@ -60,6 +60,7 @@ at-group-chat ask "Turn the failing release gate into one issue and one decision
 ```
 
 `ask --json` emits JSON Lines: the first object is a `chat.accepted` envelope with `runId`, and each following object is one SSE run event.
+`ask` and `watch` return a non-zero exit code when the terminal event is `agent.failed` or `run.failed`, so CI scripts can fail the job instead of only printing a failed event.
 
 Work board shell flow:
 

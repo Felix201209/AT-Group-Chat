@@ -135,6 +135,7 @@ at-group-chat ask "只做只读架构审查，不要改文件。" --permission r
 ```
 
 `ask --json` 输出 JSON Lines：第一行是 `{ "type": "chat.accepted", "runId": "..." }`，后续每行是一条 SSE event，方便脚本逐行读取。
+如果最终事件是 `agent.failed` 或 `run.failed`，`ask` / `watch` 会以非 0 退出，适合放进 CI gate。
 
 JS SDK：
 

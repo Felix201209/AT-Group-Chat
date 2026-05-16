@@ -98,7 +98,7 @@ export class ATClient {
         if (parsed.data) yield JSON.parse(parsed.data);
       }
     } finally {
-      await reader.cancel?.().catch?.(() => {});
+      reader.cancel?.().catch?.(() => {});
       reader.releaseLock?.();
       controller?.abort();
     }
