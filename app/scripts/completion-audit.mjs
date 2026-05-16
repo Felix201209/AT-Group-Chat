@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { execFileSync } from 'node:child_process';
 
 const ROOT = process.cwd();
-const CUTOFF = Date.parse('2026-05-13T07:30:00+08:00');
+const CUTOFF = Date.parse('2026-05-17T07:30:00+08:00');
 const requireCutoff = process.argv.includes('--require-cutoff');
 
 function readJson(path) {
@@ -59,8 +59,12 @@ const checks = [
       existsSync('docs/agent-manager-skill.md') &&
       hasText('/Users/felix/.codex/skills/at-agent-team-manager/SKILL.md', 'team_export_platform') &&
       hasText('/Users/felix/.codex/skills/at-agent-team-manager/SKILL.md', 'AT_AGENT_NAME') &&
+      hasText('/Users/felix/.codex/skills/at-agent-team-manager/SKILL.md', 'at-group-chat token --env') &&
+      hasText('/Users/felix/.codex/skills/at-agent-team-manager/SKILL.md', 'at-group-chat work --type review') &&
       hasText('docs/agent-manager-skill.md', 'team_export_platform') &&
-      hasText('docs/agent-manager-skill.md', 'AT_AGENT_NAME'),
+      hasText('docs/agent-manager-skill.md', 'AT_AGENT_NAME') &&
+      hasText('docs/agent-manager-skill.md', 'at-group-chat token --env') &&
+      hasText('docs/agent-manager-skill.md', 'at-group-chat work --type review'),
     '/Users/felix/.codex/skills/at-agent-team-manager/SKILL.md + docs/agent-manager-skill.md'
   ),
   item(
@@ -70,7 +74,7 @@ const checks = [
       hasText('README.md', 'npm run verify') &&
       hasText('README.md', 'npm run verify:complete') &&
       hasText('README.md', 'file://.../index.html') &&
-      hasText('docs/completion-audit.md', '2026-05-13 07:30:00 CST') &&
+      hasText('docs/completion-audit.md', '2026-05-17 07:30:00 CST') &&
       hasText('docs/agent-manager-skill.md', 'manager-controlled 模式'),
     'README.md + docs/agent-manager-skill.md + docs/completion-audit.md'
   ),
@@ -89,6 +93,13 @@ const checks = [
     ['health', 'preflight', 'test', 'test:ui', 'test:browser', 'build', 'typecheck', 'audit', 'audit:complete', 'smoke:manager', 'verify', 'verify:complete'].every((name) => pkg.scripts?.[name]) &&
       pkg.scripts?.['verify:complete']?.startsWith('npm run audit:complete') &&
       pkg.scripts?.verify?.includes('npm run typecheck') &&
+      pkg.scripts?.['release:readiness']?.includes('scripts/release-readiness.mjs') &&
+      pkg.scripts?.['release:dry-run']?.includes('npm run typecheck') &&
+      pkg.scripts?.['release:dry-run']?.includes('npm test') &&
+      pkg.scripts?.['release:dry-run']?.includes('npm run release:readiness') &&
+      pkg.scripts?.['release:dry-run']?.includes('npm run package:smoke') &&
+      pkg.scripts?.['release:dry-run']?.includes('npm publish --dry-run --json') &&
+      pkg.scripts?.['package:smoke']?.includes('scripts/package-smoke.mjs') &&
       pkg.scripts?.['test:browser']?.includes('tests/ui-customize.spec.js') &&
       existsSync('docs/completion-audit.md'),
     Object.keys(pkg.scripts || {}).filter((name) => ['health', 'preflight', 'test', 'test:ui', 'test:browser', 'build', 'typecheck', 'audit', 'audit:complete', 'smoke:manager', 'verify', 'verify:complete'].includes(name))
@@ -100,11 +111,11 @@ const checks = [
       hasText('src/main.jsx', 'Manager 控制') &&
       hasText('src/main.jsx', '不自动循环') &&
       hasText('src/main.jsx', 'completion gate') &&
-      hasText('src/main.jsx', '2026-05-13 07:30 CST') &&
-      hasText('src/main.jsx', "timeZone: 'Asia/Shanghai'") &&
+      hasText('src/main.jsx', '2026-05-17 07:30 CST') &&
+      hasText('src/uiFormatters.js', "timeZone: 'Asia/Shanghai'") &&
       hasText('src/main.jsx', 'Asia/Shanghai') &&
       hasText('src/main.jsx', 'setInterval(() => setNow(new Date()), 1000)'),
-    'src/main.jsx'
+    'src/main.jsx + src/uiFormatters.js'
   ),
   item(
     'customize-ui',
@@ -281,7 +292,7 @@ const checks = [
       hasText('src/main.jsx', 'selectedSessionUpdated') &&
       hasText('src/main.jsx', 'connectionState') &&
       hasText('src/main.jsx', 'reconnecting') &&
-      hasText('src/main.jsx', '极高') &&
+      hasText('src/uiLabels.js', '极高') &&
       hasText('src/ErrorBoundary.jsx', 'getDerivedStateFromError') &&
       hasText('server/http.js', 'AT_TEAM_API_TOKEN') &&
       hasText('server/http.js', 'AT_TEAM_MAX_BODY_BYTES') &&
@@ -325,6 +336,131 @@ const checks = [
       !hasText('server/storage.js', "execFileSync('sqlite3'") &&
       !hasText('server/storage.js', 'quoteSql'),
     'package.json + server/storage.js'
+  ),
+  item(
+    'developer-surface',
+    'developer onboarding surface covers CLI init, SDK types, OpenAPI, webhook token, Team as Code, templates, examples, and package inclusion',
+    pkg.files?.includes('sdk') &&
+      pkg.files?.includes('schemas') &&
+      pkg.files?.includes('templates') &&
+      pkg.files?.includes('examples') &&
+      pkg.exports?.['./sdk']?.types === './sdk/client.d.ts' &&
+      hasText('scripts/at.mjs', 'at-group-chat init --github --manager-prompt') &&
+      hasText('scripts/at.mjs', 'at-group-chat serve') &&
+      hasText('scripts/at.mjs', 'at-group-chat doctor --json') &&
+      hasText('scripts/at.mjs', 'at-group-chat --version') &&
+      hasText('scripts/at.mjs', 'packageInfo') &&
+      hasText('scripts/at.mjs', 'at-group-chat token --env') &&
+      hasText('scripts/at.mjs', 'at-group-chat proposal "Title"') &&
+      hasText('scripts/at.mjs', 'at-group-chat work --type review') &&
+      hasText('scripts/at.mjs', 'createWorkItemFromCli') &&
+      hasText('scripts/at.mjs', 'randomBytes(32)') &&
+      hasText('scripts/at.mjs', 'at-group-chat validate --file at.team.json') &&
+      hasText('scripts/at.mjs', 'at-group-chat mcp-config') &&
+      hasText('scripts/at.mjs', 'at-group-chat recipe sdk') &&
+      hasText('scripts/at.mjs', 'recipeContent') &&
+      hasText('scripts/at.mjs', 'mcpServers') &&
+      hasText('scripts/at.mjs', 'validateManifest') &&
+      hasText('scripts/at.mjs', 'templates/github-actions-at-hook.yml') &&
+      hasText('scripts/at.mjs', 'templates/external-manager-prompt.md') &&
+      hasText('scripts/at.mjs', 'at-group-chat watch RUN_ID') &&
+      hasText('scripts/at.mjs', 'readFlag(argv, name, fallback') &&
+      hasText('sdk/client.d.ts', 'export class ATClient') &&
+      hasText('sdk/client.d.ts', 'runEvents') &&
+      hasText('sdk/client.mjs', 'parseSseRecord') &&
+      hasText('sdk/client.d.ts', 'hookToken') &&
+      hasText('server/openapi.js', '/api/openapi.json') &&
+      hasText('server/openapi.js', '/api/hooks/events') &&
+      hasText('server/openapi.js', '/api/team/manifest') &&
+      hasText('server/openapi.js', '/api/agents/{roleId}/memory') &&
+      hasText('templates/github-actions-at-hook.yml', 'vars.AT_TEAM_API_BASE_URL') &&
+      hasText('templates/github-actions-at-hook.yml', 'AT_TEAM_HOOK_TOKEN') &&
+      hasText('templates/external-manager-prompt.md', 'Manager decision') &&
+      hasText('examples/external-manager-sdk.mjs', 'createATClient') &&
+      hasText('examples/external-manager-sdk.mjs', 'try {') &&
+      hasText('examples/ci-hook.sh', 'AT_TEAM_HOOK_TOKEN') &&
+      hasText('examples/ci-hook.sh', 'GITHUB_RUN_ID') &&
+      hasText('scripts/release-readiness.mjs', 'npmLatest') &&
+      hasText('scripts/package-smoke.mjs', 'sdk-import') &&
+      hasText('scripts/package-smoke.mjs', 'at-group-chat serve') &&
+      hasText('scripts/package-smoke.mjs', 'bin-version') &&
+      hasText('scripts/package-smoke.mjs', 'bin-doctor-installed') &&
+      hasText('scripts/package-smoke.mjs', 'bin-setup-installed') &&
+      hasText('scripts/package-smoke.mjs', 'templates-installed') &&
+      hasText('scripts/package-smoke.mjs', 'dist-installed') &&
+      hasText('scripts/package-smoke.mjs', 'schema-installed') &&
+      hasText('scripts/package-smoke.mjs', 'bin-validate') &&
+      hasText('scripts/package-smoke.mjs', 'bin-mcp-config') &&
+      hasText('scripts/package-smoke.mjs', 'bin-token') &&
+      hasText('scripts/package-smoke.mjs', 'bin-env') &&
+      hasText('scripts/package-smoke.mjs', 'bin-paths') &&
+      hasText('scripts/package-smoke.mjs', 'bin-template') &&
+      hasText('scripts/package-smoke.mjs', 'bin-recipe') &&
+      hasText('scripts/package-smoke.mjs', 'npm run release:dry-run') &&
+      hasText('scripts/package-smoke.mjs', 'at-group-chat proposal "Title"') &&
+      hasText('scripts/health.mjs', 'jsonMode') &&
+      hasText('scripts/health.mjs', 'generatedAt') &&
+      hasText('scripts/release-readiness.mjs', 'pack-required-files') &&
+      hasText('scripts/release-readiness.mjs', 'pack-excluded-files') &&
+      hasText('scripts/release-readiness.mjs', 'cli-init-dry-run') &&
+      hasText('scripts/release-readiness.mjs', 'package/scripts/serve.mjs') &&
+      hasText('tests/sdk-cli.test.js', 'packaged developer examples are present') &&
+      hasText('tests/sdk-cli.test.js', "at.mjs', 'watch'") &&
+      hasText('tests/sdk-cli.test.js', "at.mjs', '--version'") &&
+      hasText('tests/sdk-cli.test.js', "at.mjs', 'mcp-config'") &&
+      hasText('tests/sdk-cli.test.js', "at.mjs', 'token'") &&
+      hasText('tests/sdk-cli.test.js', "at.mjs', 'env'") &&
+      hasText('tests/sdk-cli.test.js', "at.mjs', 'paths'") &&
+      hasText('tests/sdk-cli.test.js', "at.mjs', 'template'") &&
+      hasText('tests/sdk-cli.test.js', "at.mjs', 'recipe'") &&
+      hasText('tests/sdk-cli.test.js', "at.mjs', 'proposal'") &&
+      hasText('tests/sdk-cli.test.js', "at.mjs', 'work'") &&
+      hasText('tests/sdk-cli.test.js', "at.mjs', 'validate'") &&
+      hasText('tests/sdk-cli.test.js', "at.mjs'), 'init', '--dry-run") &&
+      hasText('README.md', 'at-group-chat init') &&
+      hasText('README.md', 'at-group-chat serve') &&
+      hasText('README.md', 'at-group-chat validate') &&
+      hasText('README.md', 'doctor --json') &&
+      hasText('README.md', 'at-group-chat --version') &&
+      hasText('README.md', 'at-group-chat token --env') &&
+      hasText('README.md', 'at-group-chat env') &&
+      hasText('README.md', 'at-group-chat paths') &&
+      hasText('README.md', 'at-group-chat template external-manager') &&
+      hasText('README.md', 'at-group-chat recipe sdk') &&
+      hasText('README.md', 'at-group-chat proposal') &&
+      hasText('README.md', 'at-group-chat work --type review') &&
+      hasText('README.md', 'docs/release-notes-1.1.0.md') &&
+      hasText('README.md', 'docs/integrations.md') &&
+      hasText('README.md', 'docs/environment.md') &&
+      hasText('README.md', 'SECURITY.md') &&
+      hasText('docs/release-notes-1.1.0.md', 'SECURITY.md') &&
+      hasText('docs/release-notes-1.1.0.md', 'docs/integrations.md') &&
+      hasText('docs/release-notes-1.1.0.md', 'docs/environment.md') &&
+      hasText('docs/integrations.md', 'External Manager Contract') &&
+      hasText('docs/integrations.md', 'generic-cli') &&
+      hasText('docs/integrations.md', 'at-group-chat recipe') &&
+      hasText('docs/integrations.md', 'AT_TEAM_HOOK_TOKEN') &&
+      hasText('docs/environment.md', 'AT_TEAM_AGENT_MODE') &&
+      hasText('docs/environment.md', 'AT_SETUP_SKIP_ON_INSTALL') &&
+      hasText('docs/environment.md', 'CODEX_APP_SERVER_URL') &&
+      hasText('env.example', 'AT_TEAM_API_TOKEN=') &&
+      hasText('env.example', 'VITE_AT_TEAM_API_BASE_URL') &&
+      hasText('docs/completion-audit.md', 'security-release-docs') &&
+      hasText('SECURITY.md', 'AT_TEAM_API_TOKEN') &&
+      hasText('SECURITY.md', 'permissionProfile') &&
+      hasText('SECURITY.md', 'AT_TEAM_DB_PATH') &&
+      hasText('SECURITY.md', '/security/advisories/new') &&
+      hasText('docs/release-notes-1.1.0.md', 'AT Group Chat 1.1.0 Release Notes') &&
+      hasText('docs/release-notes-1.1.0.md', 'at-group-chat --version') &&
+      hasText('docs/release-notes-1.1.0.md', 'npm install -g at-group-chat') &&
+      hasText('docs/developer-recipes.md', 'Follow a run like CI logs') &&
+      hasText('docs/developer-recipes.md', 'Connect an MCP client') &&
+      hasText('docs/developer-recipes.md', 'doctor --json') &&
+      hasText('docs/developer-recipes.md', 'at-group-chat recipe') &&
+      hasText('docs/developer-recipes.md', 'at-group-chat token --env') &&
+      hasText('docs/developer-recipes.md', 'Create GitHub-like work items from CLI') &&
+      hasText('docs/developer-recipes.md', 'Initialize a repository'),
+    'package.json + scripts/at.mjs + sdk + server/openapi.js + templates + examples + tests/sdk-cli.test.js + docs'
   )
 ];
 
@@ -367,7 +503,7 @@ const report = {
   objective: 'AT AI cooperation group chat platform polish and date-time skill',
   root: ROOT,
   localTime: localTime(),
-  cutoff: '2026-05-13 07:30:00 CST (+0800)',
+  cutoff: '2026-05-17 07:30:00 CST (+0800)',
   cutoffReached: now >= CUTOFF,
   eligibleToComplete,
   checks

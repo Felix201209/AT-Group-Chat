@@ -110,6 +110,27 @@ const tools = [
     }
   },
   {
+    name: 'team_ingest_developer_event',
+    description: 'Ingest a GitHub/CI/lint/external-agent style event and convert it into an AT work item, optionally dispatching manager.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        projectId: { type: 'string' },
+        source: { type: 'string' },
+        event: { type: 'string' },
+        type: { type: 'string' },
+        title: { type: 'string' },
+        body: { type: 'string' },
+        priority: { type: 'string' },
+        assignedRoleId: { type: 'string' },
+        metadata: { type: 'object' },
+        dispatchToManager: { type: 'boolean' },
+        permissionProfile: { type: 'string' }
+      },
+      required: ['title']
+    }
+  },
+  {
     name: 'team_dispatch_agent',
     description: 'Dispatch one specific agent inside an existing manager-created run.',
     inputSchema: {
@@ -201,6 +222,18 @@ const tools = [
     }
   },
   {
+    name: 'team_apply_manifest',
+    description: 'Apply a repo-style AT team manifest with defaults, agents, and seed work items.',
+    inputSchema: {
+      type: 'object',
+      properties: {
+        projectId: { type: 'string' },
+        manifest: { type: 'object' }
+      },
+      required: ['manifest']
+    }
+  },
+  {
     name: 'team_disable_agent',
     description: 'Disable an agent role without deleting its memory. codex-manager cannot be disabled.',
     inputSchema: {
@@ -247,6 +280,9 @@ async function callTool(name, args = {}) {
   if (name === 'team_dispatch_work_item') {
     return { content: [{ type: 'text', text: JSON.stringify(runtime.dispatchWorkItem(args), null, 2) }] };
   }
+  if (name === 'team_ingest_developer_event') {
+    return { content: [{ type: 'text', text: JSON.stringify(runtime.ingestDeveloperEvent(args), null, 2) }] };
+  }
   if (name === 'team_dispatch_agent') {
     const result = await runtime.dispatchAgent(args);
     return { content: [{ type: 'text', text: JSON.stringify(result, null, 2) }] };
@@ -270,6 +306,9 @@ async function callTool(name, args = {}) {
     const { roleIds, ...config } = args;
     return { content: [{ type: 'text', text: JSON.stringify(runtime.updateTeamConfig({ roleIds, config }), null, 2) }] };
   }
+  if (name === 'team_apply_manifest') {
+    return { content: [{ type: 'text', text: JSON.stringify(runtime.applyTeamManifest(args), null, 2) }] };
+  }
   if (name === 'team_disable_agent') {
     return { content: [{ type: 'text', text: JSON.stringify(runtime.disableAgent(args), null, 2) }] };
   }
@@ -290,7 +329,7 @@ process.stdin.on('data', async (chunk) => {
         respond(request.id, {
           protocolVersion: '2024-11-05',
           capabilities: { tools: {} },
-          serverInfo: { name: 'at-agent-team', version: '1.0.3' }
+          serverInfo: { name: 'at-agent-team', version: '1.1.0' }
         });
       } else if (request.method === 'tools/list') {
         respond(request.id, { tools });

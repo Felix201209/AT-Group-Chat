@@ -1,0 +1,34 @@
+name: Notify AT
+
+on:
+  workflow_run:
+    workflows: ["CI"]
+    types: [completed]
+
+jobs:
+  notify-at:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion != 'success' }}
+    steps:
+      - name: Create an AT work item from CI failure
+        env:
+          AT_TEAM_API_BASE_URL: ${{ vars.AT_TEAM_API_BASE_URL }}
+          AT_TEAM_HOOK_TOKEN: ${{ secrets.AT_TEAM_HOOK_TOKEN }}
+          RUN_URL: ${{ github.event.workflow_run.html_url }}
+        run: |
+          curl -fsS -X POST "$AT_TEAM_API_BASE_URL/api/hooks/events" \
+            -H "content-type: application/json" \
+            -H "x-at-hook-token: $AT_TEAM_HOOK_TOKEN" \
+            -d @- <<JSON
+          {
+            "source": "github-actions",
+            "event": "workflow.failed",
+            "type": "issue",
+            "title": "CI failed: ${{ github.event.workflow_run.name }}",
+            "body": "Run URL: $RUN_URL",
+            "priority": "urgent",
+            "dedupeKey": "github-actions:${{ github.event.workflow_run.id }}",
+            "dispatchToManager": true,
+            "permissionProfile": "readonly"
+          }
+          JSON

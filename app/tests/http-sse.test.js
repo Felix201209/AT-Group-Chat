@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
-import { mkdtempSync, rmSync } from 'node:fs';
+import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from 'node:fs';
 import { request } from 'node:http';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
@@ -10,10 +10,30 @@ function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
+function createTestPublicDir(dir) {
+  const publicDir = join(dir, 'dist');
+  mkdirSync(publicDir, { recursive: true });
+  writeFileSync(join(publicDir, 'index.html'), '<!doctype html><title>AT Agent Team test shell</title>');
+  return publicDir;
+}
+
 async function waitForServer(baseUrl) {
   for (let i = 0; i < 50; i += 1) {
     try {
       const response = await fetch(`${baseUrl}/api/status`);
+      if (response.ok) return;
+    } catch {
+      // Server is still booting.
+    }
+    await wait(100);
+  }
+  throw new Error(`Timed out waiting for ${baseUrl}`);
+}
+
+async function waitForServerWithHeaders(baseUrl, headers = {}) {
+  for (let i = 0; i < 50; i += 1) {
+    try {
+      const response = await fetch(`${baseUrl}/api/status`, { headers });
       if (response.ok) return;
     } catch {
       // Server is still booting.
@@ -69,7 +89,10 @@ function collectSseEvents(url, wantedTypes) {
       });
     });
     req.on('error', (error) => {
-      if (events.length && error.code === 'ECONNRESET') return;
+      if (events.length && error.code === 'ECONNRESET') {
+        reject(new Error(`SSE connection reset before receiving all wanted events: ${wantedTypes.join(', ')}`));
+        return;
+      }
       reject(error);
     });
     req.setTimeout(5000, () => {
@@ -82,6 +105,7 @@ function collectSseEvents(url, wantedTypes) {
 
 test('HTTP SSE exposes approval request events from the shared runtime', async () => {
   const dir = mkdtempSync(join(tmpdir(), 'at-team-http-'));
+  const publicDir = createTestPublicDir(dir);
   const port = 6174 + Math.floor(Math.random() * 200);
   const baseUrl = `http://127.0.0.1:${port}`;
   const child = spawn('node', ['server/http.js'], {
@@ -89,6 +113,7 @@ test('HTTP SSE exposes approval request events from the shared runtime', async (
     env: {
       ...process.env,
       AT_TEAM_DB_PATH: join(dir, 'http.sqlite'),
+      AT_TEAM_PUBLIC_DIR: publicDir,
       AT_TEAM_AGENT_MODE: 'mock',
       PORT: String(port),
       AT_TEAM_PORT: String(port)
@@ -104,10 +129,20 @@ test('HTTP SSE exposes approval request events from the shared runtime', async (
   });
 
   try {
-    await waitForServer(baseUrl);
+    await waitForServerWithHeaders(baseUrl, { 'x-at-token': 'admin-token' });
     const platform = await (await fetch(`${baseUrl}/api/platform`)).json();
     assert.ok(platform.adapters.some((adapter) => adapter.id === 'generic-cli'));
     assert.ok(platform.checks.some((check) => check.id === 'codex-app-server'));
+    const openapi = await (await fetch(`${baseUrl}/api/openapi.json`)).json();
+    assert.equal(openapi.openapi, '3.1.0');
+    assert.equal(openapi.info.title, 'AT Group Chat Local API');
+    assert.ok(openapi.paths['/api/chat/messages']);
+    assert.ok(openapi.paths['/api/work-items']);
+    assert.ok(openapi.paths['/api/work-items/{id}']);
+    assert.ok(openapi.paths['/api/agents/{roleId}/permissions']);
+    assert.ok(openapi.paths['/api/agents/{roleId}/memory']);
+    assert.ok(openapi.paths['/api/agents/{roleId}/message']);
+    assert.ok(openapi.paths['/api/team/config']);
     const traversal = await fetch(`${baseUrl}/../../package.json`);
     const traversalText = await traversal.text();
     assert.equal(traversal.status, 200);
@@ -127,6 +162,18 @@ test('HTTP SSE exposes approval request events from the shared runtime', async (
     });
     assert.equal(workCreated.workItem.type, 'issue');
     assert.equal(workCreated.workItem.status, 'open');
+    const hookCreated = await postJson(baseUrl, '/api/hooks/events', {
+      source: 'github-actions',
+      event: 'test.failed',
+      type: 'issue',
+      title: 'CI failed through hook',
+      body: 'Webhook-style event ingestion.',
+      priority: 'urgent',
+      metadata: { runUrl: 'https://example.invalid/run/1' }
+    });
+    assert.equal(hookCreated.type, 'issue');
+    assert.equal(hookCreated.priority, 'urgent');
+    assert.equal(hookCreated.metadata.source, 'github-actions');
     const workUpdated = await postJson(baseUrl, `/api/work-items/${workCreated.workItem.id}`, {
       status: 'review',
       assignedRoleId: 'kimi-ux-review'
@@ -149,6 +196,58 @@ test('HTTP SSE exposes approval request events from the shared runtime', async (
     assert.equal(platformAfterWork.setup.agentMode, 'mock');
     assert.equal(platformAfterWork.security.corsOrigin, 'http://127.0.0.1:5173');
     assert.ok(platformAfterWork.maintenance.cleanupPreviewOnly);
+
+    const manifestApplied = await postJson(baseUrl, '/api/team/manifest', {
+      manifest: {
+        name: 'HTTP manifest smoke',
+        workItems: [{
+          type: 'artifact',
+          title: 'HTTP manifest artifact',
+          body: 'Seeded by manifest endpoint.'
+        }]
+      }
+    });
+    assert.equal(manifestApplied.manifest.name, 'HTTP manifest smoke');
+    assert.ok(manifestApplied.applied.workItems.some((item) => item.type === 'artifact'));
+    const manifestAppliedAgain = await postJson(baseUrl, '/api/team/manifest', {
+      manifest: {
+        name: 'HTTP manifest smoke',
+        workItems: [{
+          type: 'artifact',
+          title: 'HTTP manifest artifact',
+          body: 'Updated by repeated manifest apply.'
+        }]
+      }
+    });
+    assert.equal(manifestAppliedAgain.applied.workItems[0].manifestExisting, true);
+
+    const invalidManifest = await fetch(`${baseUrl}/api/team/manifest`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ manifest: { defaults: { roleIds: ['codex-manager'], responsibility: 'invalid here' } } })
+    });
+    const invalidManifestBody = await invalidManifest.json();
+    assert.equal(invalidManifest.status, 400);
+    assert.match(invalidManifestBody.error, /manifest\.defaults has unknown field/);
+
+    const dangerousManifest = await fetch(`${baseUrl}/api/team/manifest`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        manifest: {
+          agents: [{
+            roleId: 'dangerous-manifest-agent',
+            adapter: 'generic-cli',
+            command: 'zsh',
+            commandTemplate: 'cat "$AT_AGENT_PROMPT_FILE"; rm -rf /tmp/not-real',
+            model: 'local'
+          }]
+        }
+      })
+    });
+    const dangerousManifestBody = await dangerousManifest.json();
+    assert.equal(dangerousManifest.status, 400);
+    assert.match(dangerousManifestBody.error, /dangerousCommandTemplate/);
 
     const invalidAgent = await fetch(`${baseUrl}/api/agents`, {
       method: 'POST',
@@ -203,6 +302,7 @@ test('HTTP SSE exposes approval request events from the shared runtime', async (
 
 test('HTTP API supports optional token auth, body limits, and sanitized server errors', { timeout: 70000 }, async () => {
   const dir = mkdtempSync(join(tmpdir(), 'at-team-http-auth-'));
+  const publicDir = createTestPublicDir(dir);
   const port = 20000 + Math.floor(Math.random() * 10000);
   const baseUrl = `http://127.0.0.1:${port}`;
   const child = spawn('node', ['server/http.js'], {
@@ -210,6 +310,7 @@ test('HTTP API supports optional token auth, body limits, and sanitized server e
     env: {
       ...process.env,
       AT_TEAM_DB_PATH: join(dir, 'http.sqlite'),
+      AT_TEAM_PUBLIC_DIR: publicDir,
       AT_TEAM_AGENT_MODE: 'mock',
       PORT: String(port),
       AT_TEAM_PORT: String(port),
@@ -263,6 +364,43 @@ test('HTTP API supports optional token auth, body limits, and sanitized server e
 
     const html = await fetch(`${baseUrl}/`, { headers: { 'x-at-token': 'test-token' } });
     assert.match(html.headers.get('content-security-policy'), /default-src 'self'/);
+  } finally {
+    child.kill('SIGTERM');
+    rmSync(dir, { recursive: true, force: true });
+  }
+});
+
+test('HTTP hook endpoint can use a separate hook token', async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'at-team-http-hook-token-'));
+  const port = 30000 + Math.floor(Math.random() * 10000);
+  const baseUrl = `http://127.0.0.1:${port}`;
+  const child = spawn('node', ['server/http.js'], {
+    cwd: process.cwd(),
+    env: {
+      ...process.env,
+      AT_TEAM_DB_PATH: join(dir, 'hook-token.sqlite'),
+      AT_TEAM_AGENT_MODE: 'mock',
+      PORT: String(port),
+      AT_TEAM_PORT: String(port),
+      AT_TEAM_API_TOKEN: 'admin-token',
+      AT_TEAM_HOOK_TOKEN: 'hook-token'
+    },
+    stdio: ['ignore', 'pipe', 'pipe']
+  });
+
+  try {
+    await waitForServerWithHeaders(baseUrl, { 'x-at-token': 'admin-token' });
+    const rejected = await postJsonWithHeaders(baseUrl, '/api/hooks/events', {
+      title: 'Unauthorized hook'
+    }, { 'x-at-token': 'admin-token' });
+    assert.equal(rejected.response.status, 401);
+
+    const accepted = await postJsonWithHeaders(baseUrl, '/api/hooks/events', {
+      title: 'Authorized hook',
+      metadata: { deliveryId: 'delivery-1' }
+    }, { 'x-at-hook-token': 'hook-token' });
+    assert.equal(accepted.response.status, 202);
+    assert.equal(accepted.json.metadata.deliveryId, 'delivery-1');
   } finally {
     child.kill('SIGTERM');
     rmSync(dir, { recursive: true, force: true });

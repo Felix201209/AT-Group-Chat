@@ -16,9 +16,10 @@ function parseArgs(argv) {
     json: false,
     agentMode: null,
     token: undefined,
+    hookToken: undefined,
     cors: undefined,
     dbPath: undefined,
-    envFile: resolve(appRoot, '.env')
+    envFile: resolve(process.cwd(), '.env')
   };
 
   for (let i = 0; i < argv.length; i += 1) {
@@ -31,6 +32,8 @@ function parseArgs(argv) {
     else if (arg === '--real') parsed.agentMode = 'real';
     else if (arg === '--no-token') parsed.token = '';
     else if (arg === '--token') parsed.token = argv[++i] || '';
+    else if (arg === '--hook-token') parsed.hookToken = argv[++i] || '';
+    else if (arg === '--no-hook-token') parsed.hookToken = '';
     else if (arg === '--cors') parsed.cors = argv[++i] || '';
     else if (arg === '--db') parsed.dbPath = argv[++i] || '';
     else if (arg === '--env-path') parsed.envFile = resolve(process.cwd(), argv[++i] || '.env');
@@ -45,16 +48,19 @@ function usage() {
   return `AT Group Chat terminal setup wizard
 
 Usage:
+  npx at-group-chat setup
+  at-group-chat setup --real --token auto
   npm run setup
   npm run setup -- --mock --yes
-  node scripts/setup.mjs --real --token auto
 
 Options:
   -y, --yes          Use safe defaults and do not prompt
   --mock            Configure demo/mock agent mode
   --real            Configure real CLI agent mode
   --token VALUE     Set AT_TEAM_API_TOKEN. Use "auto" to generate one
+  --hook-token VAL  Set AT_TEAM_HOOK_TOKEN for webhook/CI ingestion. Use "auto" to generate one
   --no-token        Leave token auth disabled
+  --no-hook-token   Leave webhook token auth disabled
   --cors ORIGIN     Set AT_TEAM_CORS_ORIGIN
   --db PATH         Set AT_TEAM_DB_PATH
   --env-path PATH   Write a specific env file
@@ -192,6 +198,7 @@ async function runInteractiveWizard({ rl, args, existing, cli }) {
 
   let agentMode = args.agentMode || existing.AT_TEAM_AGENT_MODE;
   let token = args.token;
+  let hookToken = args.hookToken;
   let cors = args.cors ?? existing.AT_TEAM_CORS_ORIGIN;
   let dbPath = args.dbPath ?? existing.AT_TEAM_DB_PATH;
 
@@ -252,6 +259,36 @@ async function runInteractiveWizard({ rl, args, existing, cli }) {
   }
   if (token === 'auto') token = makeToken();
 
+  if (hookToken === undefined) {
+    if (profile.value === 'secure') {
+      hookToken = 'auto';
+    } else {
+      const hookChoices = [];
+      if (existing.AT_TEAM_HOOK_TOKEN) {
+        hookChoices.push({
+          value: existing.AT_TEAM_HOOK_TOKEN,
+          label: 'Keep existing hook token',
+          description: 'Use the webhook/CI token already present in .env.'
+        });
+      }
+      hookChoices.push(
+        {
+          value: 'auto',
+          label: 'Generate webhook token',
+          description: 'Recommended if GitHub Actions, CI, or external agents will call /api/hooks/events.'
+        },
+        {
+          value: '',
+          label: 'No webhook token',
+          description: 'Webhook endpoint falls back to the main local API token.'
+        }
+      );
+      const hookChoice = await select(rl, 'Webhook/CI token', hookChoices, existing.AT_TEAM_HOOK_TOKEN ? 0 : 1);
+      hookToken = hookChoice.value;
+    }
+  }
+  if (hookToken === 'auto') hookToken = makeToken();
+
   if (!cors) {
     cors = profile.value === 'secure'
       ? 'http://127.0.0.1:5173'
@@ -270,6 +307,7 @@ async function runInteractiveWizard({ rl, args, existing, cli }) {
     profile: profile.value,
     agentMode,
     authEnabled: Boolean(token),
+    hookAuthEnabled: Boolean(hookToken),
     cors,
     dbPath,
     envFile: args.envFile
@@ -279,6 +317,7 @@ async function runInteractiveWizard({ rl, args, existing, cli }) {
   console.log(`  Profile: ${summary.profile}`);
   console.log(`  Agent mode: ${summary.agentMode}`);
   console.log(`  API token: ${summary.authEnabled ? 'enabled' : 'disabled'}`);
+  console.log(`  Webhook token: ${summary.hookAuthEnabled ? 'enabled' : 'disabled'}`);
   console.log(`  CORS origin: ${summary.cors}`);
   console.log(`  DB path: ${summary.dbPath}`);
   console.log(`  Env file: ${summary.envFile}\n`);
@@ -291,7 +330,7 @@ async function runInteractiveWizard({ rl, args, existing, cli }) {
     if (!ok) throw new Error('Setup cancelled');
   }
 
-  return { agentMode, token, cors, dbPath };
+  return { agentMode, token, hookToken, cors, dbPath };
 }
 
 function makeToken() {
@@ -318,19 +357,23 @@ async function main() {
     const existing = readEnv(args.envFile).values;
     let agentMode = args.agentMode || existing.AT_TEAM_AGENT_MODE;
     let token = args.token;
+    let hookToken = args.hookToken;
     let cors = args.cors ?? existing.AT_TEAM_CORS_ORIGIN;
     let dbPath = args.dbPath ?? existing.AT_TEAM_DB_PATH;
 
     if (args.yes) {
       if (!agentMode) agentMode = 'mock';
       if (token === undefined) token = existing.AT_TEAM_API_TOKEN && !args.force ? existing.AT_TEAM_API_TOKEN : 'auto';
+      if (hookToken === undefined) hookToken = existing.AT_TEAM_HOOK_TOKEN && !args.force ? existing.AT_TEAM_HOOK_TOKEN : 'auto';
       if (!cors) cors = 'http://127.0.0.1:5173';
       if (!dbPath) dbPath = './data/at-team.sqlite';
       if (token === 'auto') token = makeToken();
+      if (hookToken === 'auto') hookToken = makeToken();
     } else {
       const selected = await runInteractiveWizard({ rl, args, existing, cli });
       agentMode = selected.agentMode;
       token = selected.token;
+      hookToken = selected.hookToken;
       cors = selected.cors;
       dbPath = selected.dbPath;
     }
@@ -344,7 +387,8 @@ async function main() {
       AT_TEAM_RATE_LIMIT_MAX: existing.AT_TEAM_RATE_LIMIT_MAX || '600',
       AT_TEAM_MAX_BODY_BYTES: existing.AT_TEAM_MAX_BODY_BYTES || '1048576',
       AT_TEAM_MAX_TEXT_FIELD_LENGTH: existing.AT_TEAM_MAX_TEXT_FIELD_LENGTH || '32000',
-      AT_TEAM_API_TOKEN: token
+      AT_TEAM_API_TOKEN: token,
+      AT_TEAM_HOOK_TOKEN: hookToken
     };
     writeEnv(args.envFile, updates);
 
@@ -353,11 +397,14 @@ async function main() {
       envFile: args.envFile,
       agentMode,
       authEnabled: Boolean(token),
+      hookAuthEnabled: Boolean(hookToken),
       cli,
       nextSteps: [
-        'npm install',
-        'npm run dev',
-        'open http://127.0.0.1:5173/'
+        'at-group-chat serve',
+        'open http://127.0.0.1:5174/',
+        'inside the source repo, npm run dev still gives the Vite dev UI at http://127.0.0.1:5173/',
+        'at-group-chat chat "请作为 team manager 审查这个项目"',
+        'at-group-chat apply-manifest --file at.team.example.json --dry-run'
       ],
       notes: [
         agentMode === 'real'
@@ -373,14 +420,19 @@ async function main() {
       console.log('\nAT setup complete.');
       console.log(`Env file: ${result.envFile}`);
       console.log(`Agent mode: ${agentMode}`);
-      console.log(`API token: ${token ? 'enabled' : 'disabled'}`);
+      console.log(`API token: ${token || 'disabled'}`);
+      console.log(`Webhook token: ${hookToken || 'disabled'}`);
+      if (token || hookToken) {
+        console.log('Save these tokens for CLI, SDK, webhook, or external-agent access.');
+      }
       console.log('\nCLI availability:');
       for (const [name, check] of Object.entries(cli)) {
         console.log(`  ${check.ok ? 'OK ' : 'MISS'} ${name}${check.ok ? ` - ${check.value}` : ''}`);
       }
       console.log('\nNext:');
       for (const step of result.nextSteps) console.log(`  ${step}`);
-      console.log('\nTip: run npm run health after install.');
+      console.log('\nTip: run at-group-chat doctor --json after install.');
+      console.log('Tip: external tools can start with `at-group-chat hook --source ci --event test.failed --title "CI failed"`.');
     }
   } finally {
     rl?.close();

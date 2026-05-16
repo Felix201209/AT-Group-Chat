@@ -122,7 +122,7 @@ test('dashboard renders the manager-controlled team and exercises the primary fl
   await expect(page.locator('.setup-item strong', { hasText: /^API token$/ })).toBeVisible();
   await expect(page.locator('.setup-item strong', { hasText: /^Agent mode$/ })).toBeVisible();
   await expect(page.getByText('completion gate')).toBeVisible();
-  await expect(page.getByText(/now .*Asia\/Shanghai.*final audit after 2026-05-13 07:30 CST/)).toBeVisible();
+  await expect(page.getByText(/now .*Asia\/Shanghai.*final audit after 2026-05-17 07:30 CST/)).toBeVisible();
   const exportLink = page.getByRole('link', { name: 'Export portable state' });
   await expect(exportLink).toBeVisible();
   await expect(exportLink).toHaveAttribute('href', '/api/platform/export');

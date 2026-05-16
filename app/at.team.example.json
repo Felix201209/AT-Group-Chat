@@ -1,0 +1,32 @@
+{
+  "$schema": "./schemas/at-team.schema.json",
+  "name": "AT release review team",
+  "version": "1",
+  "defaults": {
+    "roleIds": ["claude-deep-review", "kimi-ux-review", "codex-goal-review"],
+    "thinkingLevel": "high",
+    "defaultPermission": "readonly"
+  },
+  "agents": [
+    {
+      "roleId": "security-review",
+      "name": "Security Review",
+      "adapter": "generic-cli",
+      "command": "zsh",
+      "commandTemplate": "my-security-agent < \"$AT_AGENT_PROMPT_FILE\"",
+      "model": "local-security-model",
+      "thinkingLevel": "high",
+      "defaultPermission": "readonly",
+      "responsibility": "Review security, secrets, auth, local execution risk, and release blockers."
+    }
+  ],
+  "workItems": [
+    {
+      "type": "issue",
+      "title": "Pre-release AT platform review",
+      "body": "Manager should decide whether code, UI, setup wizard, SDK, CLI, and OpenAPI are ready.",
+      "priority": "high",
+      "assignedRoleId": "codex-manager"
+    }
+  ]
+}

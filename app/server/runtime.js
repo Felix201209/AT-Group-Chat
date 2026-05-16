@@ -5,6 +5,7 @@ import { invokeAgent } from './adapters.js';
 import { getCodexCliServerStatus } from './codexCliServer.js';
 import { listAdapters, validateAgentDefinition } from './adapterRegistry.js';
 import { GOAL_REVIEW_ROLE_ID, MANAGER_ROLE_ID } from './constants.js';
+import { ClientError } from './errors.js';
 
 const emitter = new EventEmitter();
 emitter.setMaxListeners(50);
@@ -25,6 +26,66 @@ function byteSize(value) {
   } catch {
     return 0;
   }
+}
+
+const MANIFEST_DEFAULT_KEYS = new Set([
+  'roleIds',
+  'model',
+  'thinkingLevel',
+  'defaultPermission',
+  'adapter',
+  'command',
+  'commandTemplate',
+  'dangerousCommandTemplate'
+]);
+
+const MANIFEST_AGENT_KEYS = new Set([
+  'roleId',
+  'name',
+  'cli',
+  'adapter',
+  'command',
+  'commandTemplate',
+  'model',
+  'thinkingLevel',
+  'responsibility',
+  'defaultPermission',
+  'dangerousCommandTemplate'
+]);
+
+function assertPlainObject(value, path) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    throw new ClientError(`${path} must be an object`);
+  }
+}
+
+function assertOptionalArray(value, path) {
+  if (value !== undefined && !Array.isArray(value)) {
+    throw new ClientError(`${path} must be an array`);
+  }
+}
+
+function rejectUnknownKeys(value, allowedKeys, path) {
+  const unknown = Object.keys(value || {}).filter((key) => !allowedKeys.has(key));
+  if (unknown.length) {
+    throw new ClientError(`${path} has unknown field(s): ${unknown.join(', ')}`);
+  }
+}
+
+function assertManifestCommandTemplate(agent, path) {
+  if (!agent.commandTemplate) return;
+  const template = String(agent.commandTemplate);
+  const hasShellControl = /(?:;|&&|\||`|\$\(|\n|\r)/.test(template);
+  if (hasShellControl && agent.dangerousCommandTemplate !== true) {
+    throw new ClientError(`${path}.commandTemplate contains shell control syntax; set dangerousCommandTemplate: true to opt in explicitly`);
+  }
+}
+
+function manifestWorkItemKey(manifest, item, index) {
+  return item.metadata?.manifestKey
+    || item.metadata?.idempotencyKey
+    || item.metadata?.dedupeKey
+    || `${manifest.name || 'AT team manifest'}:${manifest.version || '1'}:${item.type || 'issue'}:${item.title || index}`;
 }
 
 export function createRuntime({ storage = createStorage(), agentMode } = {}) {
@@ -738,15 +799,17 @@ export function createRuntime({ storage = createStorage(), agentMode } = {}) {
     };
   }
 
-  function createWorkItem({ projectId, type = 'issue', title, body = '', priority = 'medium', assignedRoleId = null, parentId = null, metadata = null, dispatchToManager = false, permissionProfile = 'write-proposed' }) {
+  function createWorkItem({ projectId, type = 'issue', title, body = '', status = 'open', priority = 'medium', assignedRoleId = null, linkedRunId = null, parentId = null, metadata = null, dispatchToManager = false, permissionProfile = 'write-proposed' }) {
     const { project } = ensureTeam(projectId || storage.ensureDefaultProject().id);
     const item = storage.createWorkItem({
       projectId: project.id,
       type,
       title,
       body,
+      status,
       priority,
       assignedRoleId,
+      linkedRunId,
       parentId,
       metadata
     });
@@ -778,9 +841,179 @@ export function createRuntime({ storage = createStorage(), agentMode } = {}) {
     return formatWorkItem(linked);
   }
 
+  function ingestDeveloperEvent({
+    projectId,
+    source = 'external',
+    event = 'developer.event',
+    type = 'issue',
+    title,
+    body = '',
+    priority = 'medium',
+    assignedRoleId = MANAGER_ROLE_ID,
+    metadata = {},
+    dedupeKey: inputDedupeKey = null,
+    deliveryId = null,
+    idempotencyKey = null,
+    dispatchToManager = false,
+    permissionProfile = 'write-proposed'
+  }) {
+    const { project } = ensureTeam(projectId || storage.ensureDefaultProject().id);
+    const dedupeKey = inputDedupeKey || idempotencyKey || deliveryId || metadata?.dedupeKey || metadata?.deliveryId || metadata?.id || null;
+    if (dedupeKey) {
+      const existing = storage.listWorkItems({ projectId: project.id, limit: 500 }).find((item) => {
+        const itemMetadata = safeJsonParse(item.metadata, {});
+        return itemMetadata?.dedupeKey === dedupeKey || itemMetadata?.deliveryId === dedupeKey || itemMetadata?.id === dedupeKey;
+      });
+      if (existing) {
+        return {
+          ...formatWorkItem(existing),
+          duplicate: true
+        };
+      }
+    }
+    const workItem = createWorkItem({
+      projectId: project.id,
+      type,
+      title: title || `[${source}] ${event}`,
+      body,
+      priority,
+      assignedRoleId,
+      metadata: {
+        source,
+        event,
+        dedupeKey,
+        deliveryId: deliveryId || metadata?.deliveryId,
+        idempotencyKey: idempotencyKey || metadata?.idempotencyKey,
+        receivedAt: new Date().toISOString(),
+        ...metadata
+      },
+      dispatchToManager,
+      permissionProfile
+    });
+    emitStored(storage.addEvent({
+      projectId: project.id,
+      type: 'developer.event.received',
+      payload: {
+        source,
+        event,
+        itemId: workItem.id,
+        dispatchToManager,
+        metadata
+      }
+    }));
+    return workItem;
+  }
+
+  function applyTeamManifest({ projectId, manifest = {} }) {
+    assertPlainObject(manifest, 'manifest');
+    if (manifest.defaults !== undefined) {
+      assertPlainObject(manifest.defaults, 'manifest.defaults');
+      rejectUnknownKeys(manifest.defaults, MANIFEST_DEFAULT_KEYS, 'manifest.defaults');
+      assertManifestCommandTemplate(manifest.defaults, 'manifest.defaults');
+    }
+    assertOptionalArray(manifest.agents, 'manifest.agents');
+    assertOptionalArray(manifest.workItems, 'manifest.workItems');
+    (manifest.agents || []).forEach((agent, index) => {
+      assertPlainObject(agent, `manifest.agents[${index}]`);
+      rejectUnknownKeys(agent, MANIFEST_AGENT_KEYS, `manifest.agents[${index}]`);
+      if (!agent.roleId) throw new ClientError(`manifest.agents[${index}].roleId is required`);
+      assertManifestCommandTemplate(agent, `manifest.agents[${index}]`);
+    });
+    (manifest.workItems || []).forEach((item, index) => {
+      assertPlainObject(item, `manifest.workItems[${index}]`);
+      if (!item.title) throw new ClientError(`manifest.workItems[${index}].title is required`);
+    });
+
+    return storage.transaction(() => {
+      const { project } = ensureTeam(projectId || manifest.projectId || storage.ensureDefaultProject().id);
+      const applied = {
+        defaults: null,
+        agents: [],
+        workItems: [],
+        existingWorkItems: []
+      };
+
+      if (manifest.defaults && Object.keys(manifest.defaults).length) {
+        applied.defaults = updateTeamConfig({
+          roleIds: manifest.defaults.roleIds,
+          config: manifest.defaults
+        });
+      }
+
+      if (Array.isArray(manifest.agents)) {
+        applied.agents = manifest.agents.map(({ dangerousCommandTemplate, ...agent }) => createAgent(agent));
+      }
+
+      if (Array.isArray(manifest.workItems)) {
+        const existingItems = storage.listWorkItems({ projectId: project.id, limit: 1000 });
+        const existingByManifestKey = new Map(existingItems.map((item) => {
+          const metadata = safeJsonParse(item.metadata, {});
+          return metadata?.manifestKey ? [metadata.manifestKey, item] : null;
+        }).filter(Boolean));
+        applied.workItems = manifest.workItems.map((item, index) => {
+          const manifestKey = manifestWorkItemKey(manifest, item, index);
+          const metadata = {
+            ...(item.metadata || {}),
+            manifestName: manifest.name || 'AT team manifest',
+            manifestVersion: manifest.version || '1',
+            manifestKey
+          };
+          const existing = existingByManifestKey.get(manifestKey);
+          if (existing) {
+            const updated = updateWorkItem({
+              projectId: project.id,
+              id: existing.id,
+              type: item.type,
+              title: item.title,
+              body: item.body,
+              status: item.status,
+              priority: item.priority,
+              assignedRoleId: item.assignedRoleId,
+              linkedRunId: item.linkedRunId,
+              parentId: item.parentId,
+              metadata
+            });
+            applied.existingWorkItems.push(updated.id);
+            return { ...updated, manifestExisting: true };
+          }
+          return createWorkItem({
+            projectId: project.id,
+            ...item,
+            metadata
+          });
+        });
+      }
+
+      emitStored(storage.addEvent({
+        projectId: project.id,
+        type: 'team.manifest.applied',
+        payload: {
+          name: manifest.name || 'AT team manifest',
+          defaults: Boolean(applied.defaults),
+          agents: applied.agents.map((agent) => agent.role_id),
+          workItems: applied.workItems.map((item) => item.id),
+          existingWorkItems: applied.existingWorkItems
+        }
+      }));
+
+      return {
+        project,
+        manifest: {
+          name: manifest.name || 'AT team manifest',
+          version: manifest.version || '1'
+        },
+        applied,
+        status: teamStatusSync(project.id)
+      };
+    });
+  }
+
   function updateWorkItem({ projectId, id, ...updates }) {
     const project = storage.getProject(projectId) || storage.ensureDefaultProject();
     ensureTeam(project.id);
+    const current = storage.getWorkItem(id);
+    if (!current) throw new Error(`Unknown work item: ${id}`);
+    if (current.project_id !== project.id) throw new ClientError('Work item does not belong to project');
     const item = storage.updateWorkItem({ id, ...updates });
     emitStored(storage.addEvent({
       projectId: project.id,
@@ -869,6 +1102,7 @@ export function createRuntime({ storage = createStorage(), agentMode } = {}) {
       },
       security: {
         authEnabled: Boolean(process.env.AT_TEAM_API_TOKEN),
+        hookAuthEnabled: Boolean(process.env.AT_TEAM_HOOK_TOKEN),
         corsOrigin: process.env.AT_TEAM_CORS_ORIGIN || 'http://127.0.0.1:5173',
         maxBodyBytes: Number(process.env.AT_TEAM_MAX_BODY_BYTES || 1024 * 1024),
         maxTextFieldLength: Number(process.env.AT_TEAM_MAX_TEXT_FIELD_LENGTH || 32000),
@@ -921,6 +1155,8 @@ export function createRuntime({ storage = createStorage(), agentMode } = {}) {
     platformExport,
     listWorkItems,
     createWorkItem,
+    ingestDeveloperEvent,
+    applyTeamManifest,
     updateWorkItem,
     getWorkItemActivity,
     dispatchWorkItem,

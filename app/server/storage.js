@@ -43,6 +43,10 @@ export function createStorage({ dbPath = process.env.AT_TEAM_DB_PATH || DEFAULT_
     return new Date().toISOString();
   }
 
+  function transaction(fn) {
+    return db.transaction(fn)();
+  }
+
   function init() {
     db.exec(`
       CREATE TABLE IF NOT EXISTS projects (
@@ -389,14 +393,15 @@ export function createStorage({ dbPath = process.env.AT_TEAM_DB_PATH || DEFAULT_
     return getWorkItem(id);
   }
 
-  function updateWorkItem({ id, title, body, status, priority, assignedRoleId, linkedRunId, parentId, metadata }) {
+  function updateWorkItem({ id, type, title, body, status, priority, assignedRoleId, linkedRunId, parentId, metadata }) {
     const current = getWorkItem(id);
     if (!current) throw new Error(`Unknown work item: ${id}`);
     prepare(`
       UPDATE work_items
-      SET title = ?, body = ?, status = ?, priority = ?, assigned_role_id = ?, linked_run_id = ?, parent_id = ?, metadata = ?, updated_at = ?
+      SET type = ?, title = ?, body = ?, status = ?, priority = ?, assigned_role_id = ?, linked_run_id = ?, parent_id = ?, metadata = ?, updated_at = ?
       WHERE id = ?;
     `).run(
+      type === undefined ? current.type : normalizeWorkItemType(type),
       title ?? current.title,
       body ?? current.body,
       status === undefined ? current.status : normalizeWorkItemStatus(status),
@@ -479,6 +484,7 @@ export function createStorage({ dbPath = process.env.AT_TEAM_DB_PATH || DEFAULT_
   return {
     dbPath,
     eventLogPath,
+    transaction,
     createProject,
     ensureDefaultProject,
     getProject,

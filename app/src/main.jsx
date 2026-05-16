@@ -3,10 +3,8 @@ import { createRoot } from 'react-dom/client';
 import {
   Activity,
   Bot,
-  Brain,
   CheckCircle2,
   ChevronRight,
-  Code2,
   GitPullRequest,
   KeyRound,
   ListChecks,
@@ -23,151 +21,16 @@ import { Sidebar } from './components/AppShell.jsx';
 import { DEFAULT_CHAT_PROMPT, MANAGER_ROLE_ID } from './constants.js';
 import { ErrorBoundary } from './ErrorBoundary.jsx';
 import { useHashRoute } from './hooks/useHashRoute.js';
+import { compactText, eventChatText, formatDateTime, formatTime, parsePayload, readStoredValue, writeStoredValue } from './uiFormatters.js';
+import { permissionLabels, roleIcons, storageKeys, thinkingLabels, workPriorityLabels, workStatusLabels, workTypeLabels } from './uiLabels.js';
 import './styles/index.css';
-
-const permissionLabels = {
-  readonly: '只读',
-  'write-proposed': '建议写入',
-  'workspace-write': '可写',
-  danger: '危险'
-};
-
-const thinkingLabels = {
-  default: '默认',
-  minimal: '极简',
-  low: '低',
-  medium: '中',
-  high: '高',
-  xhigh: '极高'
-};
-
-const roleIcons = {
-  [MANAGER_ROLE_ID]: Brain,
-  'claude-deep-review': Code2,
-  'kimi-ux-review': MessageSquare,
-  'codex-goal-review': CheckCircle2
-};
-
-const workTypeLabels = {
-  issue: 'Issue',
-  proposal: 'Proposal / PR',
-  review: 'Review',
-  decision: 'Decision',
-  artifact: 'Artifact'
-};
-
-const workStatusLabels = {
-  open: 'Open',
-  'in-progress': 'In Progress',
-  review: 'Review',
-  accepted: 'Accepted',
-  closed: 'Closed'
-};
-
-const workPriorityLabels = {
-  low: 'Low',
-  medium: 'Medium',
-  high: 'High',
-  urgent: 'Urgent'
-};
-
-const storageKeys = {
-  activeRunId: 'at.activeRunId',
-  chatShowSystemEvents: 'at.chat.showSystemEvents',
-  theme: 'at.theme'
-};
-
-function readStoredValue(key, fallback = null) {
-  try {
-    return window.localStorage.getItem(key) || fallback;
-  } catch {
-    return fallback;
-  }
-}
-
-function writeStoredValue(key, value) {
-  try {
-    if (value) window.localStorage.setItem(key, value);
-    else window.localStorage.removeItem(key);
-  } catch {
-    // Local storage is a convenience only; runtime state still works without it.
-  }
-}
-
-function formatTime(value) {
-  if (!value) return '刚刚';
-  try {
-    const d = new Date(value);
-    if (Number.isNaN(d.getTime())) return '刚刚';
-    return new Intl.DateTimeFormat('zh-CN', {
-      hour: '2-digit',
-      minute: '2-digit',
-      second: '2-digit'
-    }).format(d);
-  } catch {
-    return '刚刚';
-  }
-}
-
-function formatDateTime(value) {
-  return new Intl.DateTimeFormat('zh-CN', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: false,
-    timeZone: 'Asia/Shanghai',
-    timeZoneName: 'short'
-  }).format(value);
-}
-
-function compactText(value, limit = 140) {
-  if (!value) return '';
-  const text = String(value).trim();
-  if (text.length <= limit) return text;
-  const hasStructuredLines = text.includes('\n') || text.includes('```');
-  if (hasStructuredLines) {
-    const lines = text.split(/\r?\n/).filter((l) => l.trim());
-    const preview = lines.slice(0, 4).join('\n');
-    return preview.length > limit ? `${preview.slice(0, limit - 1)}...` : preview;
-  }
-  const normalized = text.replace(/\s+/g, ' ').trim();
-  return normalized.length > limit ? `${normalized.slice(0, limit - 1)}...` : normalized;
-}
-
-function eventChatText(event, payload) {
-  if (event.type === 'run.created') return payload.prompt || payload.run?.title || '创建了一个 manager task';
-  if (event.type === 'agent.queued') return `Manager 点名 ${payload.roleId || event.role_id || 'agent'}`;
-  if (event.type === 'agent.started') return '开始处理';
-  if (event.type === 'agent.permission.requested') {
-    return `权限请求: ${payload.method || 'request'}，自动处理: ${payload.autoResponse || '已记录'}`;
-  }
-  if (event.type === 'agent.approval.requested') {
-    return `Approval 请求: ${payload.method || 'request'}，自动处理: ${payload.autoResponse || '已记录'}`;
-  }
-  if (event.type === 'permission.updated') return `权限闸门更新为 ${payload.permissionProfile}`;
-  if (event.type === 'agent.failed') return payload.error || payload.output || '执行失败';
-  return payload.output || payload.task || payload.message || payload.prompt || event.payload;
-}
-
-function parsePayload(payload) {
-  if (!payload) return {};
-  if (typeof payload === 'object') return payload;
-  try {
-    return JSON.parse(payload);
-  } catch {
-    return { output: String(payload) };
-  }
-}
 
 function PlatformView({ status, platform }) {
   const checks = platform?.checks || [];
   const adapters = status.adapters || platform?.adapters || [];
   const setup = platform?.setup || {};
   const [now, setNow] = useState(() => new Date());
-  const completionCutoff = new Date('2026-05-13T07:30:00+08:00');
+  const completionCutoff = new Date('2026-05-17T07:30:00+08:00');
   const completionEligible = now.getTime() >= completionCutoff.getTime();
   const counts = platform?.counts || {
     activeAgents: status.agents.length,
@@ -234,7 +97,7 @@ function PlatformView({ status, platform }) {
         <article>
           <span>completion gate</span>
           <strong>{completionEligible ? 'eligible' : 'locked'}</strong>
-          <p>now {formatDateTime(now)} Asia/Shanghai · final audit after 2026-05-13 07:30 CST</p>
+          <p>now {formatDateTime(now)} Asia/Shanghai · final audit after 2026-05-17 07:30 CST</p>
         </article>
       </div>
 
@@ -775,17 +638,33 @@ function ApiPanel({ activeRunId, project }) {
     projectId: project?.id || ':projectId',
     content: '让 manager 审查当前实现，并决定是否点名其他 AI 成员。'
   })}'`;
+  const hookExample = `curl -X POST http://127.0.0.1:5174/api/hooks/events -H 'content-type: application/json' -d '${JSON.stringify({
+    source: 'ci',
+    event: 'test.failed',
+    type: 'issue',
+    title: 'CI failed',
+    dispatchToManager: true
+  })}'`;
   return (
     <section className="api-panel">
       <div>
         <Terminal size={17} />
-        <strong>主动调用 API</strong>
-        <span>HTTP + MCP 共用同一套 runtime</span>
+        <strong>Developer Control Plane</strong>
+        <span>CLI / SDK / OpenAPI / Webhook / MCP 共用同一套 runtime</span>
       </div>
+      <code>at-group-chat chat "让 manager 审查当前项目"</code>
+      <code>at-group-chat issue "发布前审查" --body "检查 API/SDK/CLI" --dispatch</code>
+      <code>at-group-chat hook --source ci --event test.failed --title "CI failed" --dispatch</code>
+      <code>at-group-chat apply-manifest --file at.team.json</code>
+      <code>import {'{ createATClient }'} from 'at-group-chat/sdk'</code>
+      <code>GET /api/openapi.json  # OpenAPI contract，可生成客户端或 agent tool schema</code>
       <code>POST /api/chat/messages  # AT AI 合作群聊入口</code>
       <code>POST /api/work-items  # issue / proposal / review / decision / artifact</code>
+      <code>POST /api/hooks/events  # GitHub Actions / CI / lint / external-agent webhook</code>
+      <code>POST /api/team/manifest  # Team as Code: defaults / agents / seed work items</code>
       <code>GET /api/chat  # room, participants, transcript</code>
       <code>{curlExample}</code>
+      <code>{hookExample}</code>
       <code>npm run mcp  # tools: team_chat_message, team_get_room, team_create_work_item, team_get_work_items, team_dispatch_agent</code>
       <code>EventSource: /api/runs/{activeRunId || ':runId'}/events</code>
     </section>

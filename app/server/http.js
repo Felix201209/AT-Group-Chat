@@ -1,14 +1,19 @@
 import { createReadStream, existsSync, statSync } from 'node:fs';
 import { createServer } from 'node:http';
-import { extname, join, resolve, sep } from 'node:path';
+import { dirname, extname, join, resolve, sep } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { runtime } from './singleton.js';
 import { MAX_TEXT_FIELD_LENGTH } from './constants.js';
 import { ClientError, isClientError as isTypedClientError } from './errors.js';
+import { openApiSpec } from './openapi.js';
 
 const PORT = Number(process.env.PORT || process.env.AT_TEAM_PORT || 5174);
-const PUBLIC_DIR = join(process.cwd(), 'dist');
+const APP_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+const cwdDist = join(process.cwd(), 'dist');
+const PUBLIC_DIR = process.env.AT_TEAM_PUBLIC_DIR || (existsSync(cwdDist) ? cwdDist : join(APP_ROOT, 'dist'));
 const PUBLIC_ROOT = resolve(PUBLIC_DIR);
 const API_TOKEN = process.env.AT_TEAM_API_TOKEN || '';
+const HOOK_TOKEN = process.env.AT_TEAM_HOOK_TOKEN || '';
 const CORS_ORIGIN = process.env.AT_TEAM_CORS_ORIGIN || 'http://127.0.0.1:5173';
 const MAX_BODY_BYTES = Number(process.env.AT_TEAM_MAX_BODY_BYTES || 1024 * 1024);
 const RATE_LIMIT_MAX = Number(process.env.AT_TEAM_RATE_LIMIT_MAX || 600);
@@ -167,6 +172,13 @@ function requireAuth(req) {
   return req.headers['x-at-token'] === API_TOKEN || bearer === API_TOKEN || url.searchParams.get('token') === API_TOKEN;
 }
 
+function requireHookAuth(req) {
+  if (!HOOK_TOKEN) return requireAuth(req);
+  const url = new URL(req.url, `http://${req.headers.host}`);
+  const bearer = req.headers.authorization?.replace(/^Bearer\s+/i, '');
+  return req.headers['x-at-hook-token'] === HOOK_TOKEN || bearer === HOOK_TOKEN || url.searchParams.get('hookToken') === HOOK_TOKEN;
+}
+
 function route(method, pattern, handler) {
   return { method, pattern, handler };
 }
@@ -234,6 +246,7 @@ const apiRoutes = [
       headers: { 'content-disposition': 'attachment; filename="at-platform-export.json"' }
     };
   }),
+  route('GET', '/api/openapi.json', () => ({ status: 200, body: openApiSpec })),
   route('GET', '/api/adapters', () => ({ status: 200, body: { adapters: runtime.adapters() } })),
   route('GET', '/api/chat', ({ url }) => {
     const projectId = url.searchParams.get('projectId') || undefined;
@@ -264,6 +277,10 @@ const apiRoutes = [
         work: runtime.listWorkItems(body.projectId)
       }
     };
+  }),
+  route('POST', '/api/hooks/events', async ({ req }) => {
+    const body = await readBody(req);
+    return { status: 202, body: runtime.ingestDeveloperEvent(body) };
   }),
   route('GET', /^\/api\/work-items\/(?<id>[^/]+)\/activity$/, ({ url, params }) => {
     return { status: 200, body: runtime.getWorkItemActivity({ projectId: url.searchParams.get('projectId'), id: params.id }) };
@@ -355,6 +372,10 @@ const apiRoutes = [
     const result = runtime.updateTeamConfig({ roleIds: body.roleIds, config: body.config || body });
     return { status: 200, body: { result, status: await runtime.teamStatus(body.projectId) } };
   }),
+  route('POST', '/api/team/manifest', async ({ req }) => {
+    const body = await readBody(req);
+    return { status: 200, body: runtime.applyTeamManifest({ projectId: body.projectId, manifest: body.manifest || body }) };
+  }),
   route('POST', '/api/runs', async ({ req }) => {
     const body = await readBody(req);
     const run = runtime.startManagerTask(body);
@@ -395,7 +416,7 @@ async function handleApi(req, res) {
     return true;
   }
 
-  if (!requireAuth(req)) {
+  if (path === '/api/hooks/events' ? !requireHookAuth(req) : !requireAuth(req)) {
     sendJson(res, 401, { error: 'Unauthorized' });
     return true;
   }

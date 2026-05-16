@@ -1,10 +1,11 @@
 # AT AI 合作群聊
 
+Current npm package version: `1.1.0`.
+
 ## 5 分钟跑通
 
 ```bash
 npm install
-npm run setup
 npm run dev
 ```
 
@@ -36,7 +37,6 @@ AT 的定位是本地 AI 协作控制台：
 
 ```bash
 npm install
-npm run setup
 npm run dev
 ```
 
@@ -67,58 +67,91 @@ VITE_AT_TEAM_API_TOKEN=your-local-token
 npm run dev:codex-server
 ```
 
-## 自动化配置向导
-
-AT 自带一个终端里的 npm setup wizard。它不是文档页，而是会在命令行里显示 CLI 检查结果，并用编号菜单带你选择 Demo、Real local、Secure local 或 Custom 配置，然后生成 `.env`。
-
-交互式配置：
-
-```bash
-npm run setup
-```
-
-第一次只想看 demo：
-
-```bash
-npm run setup:mock
-npm run dev
-```
-
-准备接真实 Codex / Claude / Kimi：
-
-```bash
-npm run setup:real
-npm run health
-npm run dev
-```
-
-非交互机器友好模式：
-
-```bash
-node scripts/setup.mjs --mock --yes --token auto --json
-```
-
-如果将来发布到 npm，全局安装后同一个向导可以这样运行：
-
-```bash
-at-group-chat setup
-# or
-at-setup
-```
-
-当前包已经带 `bin` 入口，也可以先本地模拟 npm 包安装：
-
-```bash
-npm pack --dry-run
-npm install -g .
-at-group-chat setup
-```
-
 ## 两种交互方式
 
 1. AT 群聊入口：人在 UI 里发消息，消息进入 `AT AI 合作群聊`，runtime 创建 manager-controlled run 并点名 `codex-manager` 先回复。
 2. Work Board：像 GitHub issue/PR 一样创建 `issue`、`proposal`、`review`、`decision`、`artifact`，再交给 manager 转成可执行调度。
 3. 外部 agent 调 API：Qwen、Codex、Claude、Kimi 等任意被授权 agent 可以调用 HTTP/MCP，当 manager 来发群聊消息、创建 run、点名岗位、读取 transcript 或操作 work items。
+
+## 程序员接入方式
+
+AT 尽量照搬程序员已经熟悉的 GitHub/CI/API 工作方式：
+
+- GitHub issue -> AT `issue`
+- Pull request -> AT `proposal`
+- Code review -> AT `review`
+- Merge decision -> AT `decision`
+- CI artifact/log -> AT `artifact`
+- GitHub webhook -> HTTP/MCP caller
+- GitHub CLI/API client -> `at-group-chat` CLI 和 `at-group-chat/sdk`
+
+命令行入口：
+
+```bash
+at-group-chat setup
+at-group-chat serve
+at-group-chat doctor --json
+at-group-chat --version
+at-group-chat version --json
+at-group-chat status
+at-group-chat init --github --manager-prompt
+at-group-chat chat "请作为 manager 审查当前项目，并决定是否需要点名 reviewer。"
+at-group-chat issue "发布前 API 稳定性审查" --body "检查 HTTP/MCP/SDK/CLI/setup wizard。" --priority high --dispatch
+at-group-chat proposal "把鉴权接入默认模板" --body "像 PR 一样交给 manager 评估。"
+at-group-chat review "SDK API surface review" --body "记录审查意见和风险。"
+at-group-chat decision "发布 1.1.0" --body "记录最终发布判断。"
+at-group-chat artifact "release evidence" --body "附上日志、URL、构建产物或报告路径。"
+at-group-chat work --type review "通用 work item 入口" --body "issue/proposal/review/decision/artifact 都可走这里。"
+at-group-chat hook --source ci --event test.failed --title "CI failed" --body "把失败日志转成 AT issue" --dispatch
+at-group-chat validate --file at.team.example.json
+at-group-chat apply-manifest --file at.team.example.json --dry-run
+at-group-chat apply-manifest --file at.team.example.json
+at-group-chat watch <runId> --max 20
+at-group-chat token --env
+at-group-chat env --json
+at-group-chat paths
+at-group-chat template external-manager
+at-group-chat template github-actions
+at-group-chat recipe sdk
+at-group-chat recipe github-actions
+at-group-chat recipe generic-cli
+at-group-chat mcp-config > at-mcp.json
+at-group-chat openapi > at-openapi.json
+```
+
+JS SDK：
+
+```js
+import { createATClient } from 'at-group-chat/sdk';
+
+const at = createATClient({
+  baseUrl: 'http://127.0.0.1:5174',
+  token: process.env.AT_TEAM_API_TOKEN
+});
+
+await at.chat({
+  content: '你现在作为 manager，把这个任务拆成 issue/review/decision。',
+  permissionProfile: 'write-proposed'
+});
+
+for await (const event of at.runEvents('<runId>')) {
+  console.log(event.type, event.role_id, event.payload);
+}
+```
+
+更多 recipes 见 `docs/developer-recipes.md`。OpenAPI 合约见 `GET /api/openapi.json`。Team as Code schema 见 `schemas/at-team.schema.json`。
+版本号以 `package.json` 为准；终端可用 `at-group-chat --version`，自动化可用 `at-group-chat version --json` 同时读取 package 与 OpenAPI 版本。
+外部 agent、CI、MCP client 和 Generic CLI adapter 的接入手册见 `docs/integrations.md`。
+所有环境变量和 `env.example` 模板说明见 `docs/environment.md`。
+终端里也可以用 `at-group-chat env` 打印模板，或用 `at-group-chat env --json` 给外部 agent/CI 读取变量清单。
+需要定位随包发布的 docs、templates、examples、schema、SDK 时，用 `at-group-chat paths`。
+需要把 prompt、GitHub Actions、Team manifest 或 env 模板直接喂给外部 agent/CI 时，用 `at-group-chat template external-manager|github-actions|team|env`。
+需要按接入方拿一份可执行步骤时，用 `at-group-chat recipe sdk|external-manager|github-actions|generic-cli|mcp|npm-publish`。
+可复制模板见 `templates/github-actions-at-hook.yml` 和 `templates/external-manager-prompt.md`。
+也可以直接在任意 repo 里运行 `at-group-chat init`，它会生成 `at.team.json`、`.github/workflows/at-hook.yml` 和 `docs/at-external-manager.md`。
+可运行示例见 `examples/external-manager-sdk.mjs` 和 `examples/ci-hook.sh`。
+安全边界、token、数据目录、权限模型和真实 agent 执行说明见 `SECURITY.md`。
+发布到 npm 前可运行 `at-group-chat token --env` 生成本地 admin/webhook token，再运行 `npm run release:readiness`、`npm run package:smoke` 或一键 `npm run release:dry-run`。`release:readiness` 检查本地版本、npm registry 最新版本、pack 文件清单、SDK 类型、CLI init 和开发者文档入口；`package:smoke` 会把 tarball 装进临时项目，验证安装后的 CLI、OpenAPI、init、SDK import、templates/examples 和 dist UI；`release:dry-run` 会串起 typecheck、unit/runtime tests、readiness、package smoke 和 `npm publish --dry-run --json`。真正发布命令使用 `npm publish --tag latest`。可直接复制的发布说明见 `docs/release-notes-1.1.0.md`。
 
 ## Agent Roles
 
@@ -146,16 +179,19 @@ HTTP API:
 GET  /api/status
 GET  /api/platform
 GET  /api/platform/export
+GET  /api/openapi.json
 GET  /api/adapters
 GET  /api/agents?includeDisabled=true
 GET  /api/chat
 GET  /api/work-items
 GET  /api/work-items/:id/activity
+POST /api/hooks/events
 POST /api/chat/messages
 POST /api/work-items
 POST /api/work-items/:id
 POST /api/work-items/:id/dispatch
 POST /api/team/config
+POST /api/team/manifest
 POST /api/projects
 POST /api/agents
 DELETE /api/agents/:roleId
@@ -172,6 +208,7 @@ GET  /api/agents/:roleId/memory
 平台接口：
 
 - `/api/platform`: readiness gates、adapter registry、runtime counters、Codex app-server 状态。
+- `/api/hooks/events`: webhook/CI 入口。若设置 `AT_TEAM_HOOK_TOKEN`，请用 `x-at-hook-token` 或 `Authorization: Bearer ...`，它会和主 API token 分开。
 - `/api/platform/export`: 可移植本地状态快照，包含 project、agents、sessions、runs、events、adapters。Platform 页有 `Export portable state` 下载入口；HTTP 响应会带 `content-disposition: attachment; filename="at-platform-export.json"`。
 - `/api/adapters`: 当前支持的 adapter registry。
 - `/api/chat`: AT 群聊 room、participants、持久化 messages、recentEvents。
@@ -315,9 +352,9 @@ npm run smoke:manager
 npm run verify
 ```
 
-`npm test` 覆盖 runtime、MCP、HTTP SSE、动态 agent、平台 health/export、权限事件可见性、session 分离、adapter 覆盖，以及 work items 的 issue/proposal/review/linked run。`npm run preflight` 是硬 gate，会自检 CLI、Codex app-server、核心岗位和 session 分离。`npm run health` 会检查 CLI、测试、构建、session 分离、API、completion audit 和生产页面。`npm run test:ui` 是稳定的 Node UI smoke，不依赖本机 Chrome 状态；`npm run test:browser` 会先构建，再用 Chromium 检查真实 Platform/Chat/API/Work/Team/移动窄屏页面，并启动隔离临时数据库验证 Settings 里的新增 agent、Team Defaults、保存配置和 Team lane 展示。
+`npm test` 覆盖 runtime、MCP、HTTP SSE、动态 agent、平台 health/export、权限事件可见性、session 分离、adapter 覆盖，以及 work items 的 issue/proposal/review/linked run。`npm run preflight` 是硬 gate，会自检 CLI、Codex app-server、核心岗位和 session 分离。`npm run health` 会检查 CLI、测试、构建、session 分离、API、completion audit 和生产页面；外部 agent/CI 可以用 `at-group-chat doctor --json` 获取机器可读结果。`npm run test:ui` 是稳定的 Node UI smoke，不依赖本机 Chrome 状态；`npm run test:browser` 会先构建，再用 Chromium 检查真实 Platform/Chat/API/Work/Team/移动窄屏页面，并启动隔离临时数据库验证 Settings 里的新增 agent、Team Defaults、保存配置和 Team lane 展示。
 
-`npm run audit` 会把目标要求映射到具体文件、skill、runtime API、群聊 room 和测试覆盖。最终完成前可运行 `npm run audit:complete`，它会额外要求当前时间已经过 `2026-05-13 07:30:00 CST (+0800)`。
+`npm run audit` 会把目标要求映射到具体文件、skill、runtime API、群聊 room 和测试覆盖。最终完成前可运行 `npm run audit:complete`，它会额外要求当前时间已经过 `2026-05-17 07:30:00 CST (+0800)`。
 
 `npm run smoke:manager` 会通过 `/api/chat/messages` 发一条只读 smoke，并等待 `codex-manager` 经 `codex app-server` 返回固定短句。它会真实写入一条 run/message，用于最终上线前链路复测。
 

@@ -1,0 +1,46 @@
+name: AT App CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  app:
+    name: App verification
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: app
+    env:
+      AT_SETUP_SKIP_ON_INSTALL: "1"
+      AT_TEAM_AGENT_MODE: mock
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Setup Node
+        uses: actions/setup-node@v6
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: app/package-lock.json
+
+      - name: Install
+        run: npm ci
+
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Unit and runtime tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
+
+      - name: Package smoke
+        run: npm run package:smoke
+
+      - name: Release readiness
+        run: npm run release:readiness

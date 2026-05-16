@@ -1,4 +1,6 @@
 import { GitBranch, GitPullRequest, KeyRound, MessageSquare, Network, ShieldCheck, Split, Users } from 'lucide-react';
+import appIcon from '../assets/at-group-chat-icon-64.png';
+import { AT_VERSION } from '../constants.js';
 
 export function Sidebar({ project, activeView, onViewChange }) {
   const items = [
@@ -14,10 +16,12 @@ export function Sidebar({ project, activeView, onViewChange }) {
   return (
     <aside className="sidebar">
       <div className="brand">
-        <div className="brand-mark">AT</div>
+        <div className="brand-mark" aria-hidden="true">
+          <img src={appIcon} alt="" />
+        </div>
         <div>
           <strong>AT 群聊</strong>
-          <span>AI 合作群聊</span>
+          <span>AI 合作群聊 · v{AT_VERSION}</span>
         </div>
       </div>
       <nav>

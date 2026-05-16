@@ -513,6 +513,91 @@ test('work items model issues, proposals, reviews, decisions, and manager-linked
     assert.ok(events.some((event) => event.type === 'work.item.created'));
     assert.ok(events.some((event) => event.type === 'work.item.linked_run'));
     assert.ok(events.some((event) => event.type === 'work.item.updated'));
+
+    const otherProject = runtime.createProject({ name: 'Other Project', path: '/tmp/at-other' });
+    assert.throws(
+      () => runtime.updateWorkItem({ projectId: otherProject.id, id: proposal.id, status: 'closed' }),
+      /Work item does not belong to project/
+    );
+  } finally {
+    cleanup();
+  }
+});
+
+test('team manifest applies idempotently and rejects unsafe partial changes', () => {
+  const { runtime, cleanup } = withRuntime();
+  try {
+    const projectId = runtime.teamStatusSync().project.id;
+    const first = runtime.applyTeamManifest({
+      projectId,
+      manifest: {
+        name: 'Runtime manifest test',
+        workItems: [{
+          type: 'issue',
+          title: 'Runtime manifest issue',
+          body: 'First apply.'
+        }]
+      }
+    });
+    assert.equal(first.applied.workItems[0].manifestExisting, undefined);
+    const second = runtime.applyTeamManifest({
+      projectId,
+      manifest: {
+        name: 'Runtime manifest test',
+        workItems: [{
+          type: 'issue',
+          title: 'Runtime manifest issue',
+          body: 'Second apply updates instead of duplicating.'
+        }]
+      }
+    });
+    assert.equal(second.applied.workItems[0].manifestExisting, true);
+    assert.equal(
+      runtime.listWorkItems(projectId).workItems.filter((item) => item.metadata?.manifestKey === 'Runtime manifest test:1:issue:Runtime manifest issue').length,
+      1
+    );
+
+    assert.throws(() => runtime.applyTeamManifest({
+      projectId,
+      manifest: {
+        agents: [{
+          roleId: 'unsafe-manifest-agent',
+          adapter: 'generic-cli',
+          command: 'zsh',
+          commandTemplate: 'cat "$AT_AGENT_PROMPT_FILE"; echo unsafe',
+          model: 'local'
+        }]
+      }
+    }), /dangerousCommandTemplate/);
+    assert.ok(!runtime.storage.listAgents({ includeDisabled: true }).some((agent) => agent.role_id === 'unsafe-manifest-agent'));
+
+    assert.throws(() => runtime.applyTeamManifest({
+      projectId,
+      manifest: {
+        defaults: {
+          roleIds: ['kimi-ux-review'],
+          commandTemplate: 'cat "$AT_AGENT_PROMPT_FILE" | tee /tmp/at-output'
+        }
+      }
+    }), /dangerousCommandTemplate/);
+
+    assert.throws(() => runtime.applyTeamManifest({
+      projectId,
+      manifest: {
+        agents: [{
+          roleId: 'rollback-manifest-agent',
+          adapter: 'generic-cli',
+          command: 'zsh',
+          commandTemplate: 'cat "$AT_AGENT_PROMPT_FILE"',
+          model: 'local'
+        }],
+        workItems: [{
+          type: 'not-a-real-type',
+          title: 'Rollback invalid item'
+        }]
+      }
+    }), /Unsupported work item type/);
+    assert.ok(!runtime.storage.listAgents({ includeDisabled: true }).some((agent) => agent.role_id === 'rollback-manifest-agent'));
   } finally {
     cleanup();
   }

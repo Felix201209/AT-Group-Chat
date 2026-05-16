@@ -2,7 +2,7 @@
 
 This checklist explains what `npm run audit` proves before the AT goal can be considered complete.
 
-Final completion is intentionally blocked until after `2026-05-13 07:30:00 CST (+0800)`. Use:
+Final completion is intentionally blocked until after `2026-05-17 07:30:00 CST (+0800)`. Use:
 
 ```bash
 npm run audit:complete
@@ -31,6 +31,7 @@ Before that cutoff, a passing audit still reports `eligibleToComplete: false`.
 - `runtime-readiness`: `/api/platform` reports all readiness gates green.
 - `codex-app-server`: `/api/platform` confirms the long-running Codex app-server is connected and Codex sessions are split.
 - `shared-room`: `/api/chat` exposes AT room participants and persisted shared transcript.
+- `security-release-docs`: `SECURITY.md` is included in the npm package, linked from `README.md` and release notes, and documents tokens, permission profiles, local data paths, real agent execution, CORS/body limits, and private security reporting.
 
 ## Final Pass
 

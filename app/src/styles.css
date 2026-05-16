@@ -85,10 +85,16 @@ button:disabled {
   display: grid;
   place-items: center;
   border-radius: 8px;
+  overflow: hidden;
   background: #172033;
-  color: white;
-  font-weight: 760;
-  letter-spacing: 0;
+  box-shadow: 0 8px 18px rgba(23, 32, 51, 0.16);
+}
+
+.brand-mark img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: cover;
 }
 
 .brand strong,
@@ -2169,8 +2175,8 @@ dd {
 }
 
 [data-theme="dark"] .brand-mark {
-  background: #e6edf3;
-  color: #0d1117;
+  background: #172033;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.3);
 }
 
 [data-theme="dark"] .nav-item.active,

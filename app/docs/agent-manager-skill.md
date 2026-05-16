@@ -17,6 +17,24 @@
 
 ## HTTP 快速用法
 
+如果本机安装了 npm 包，优先用 CLI 做健康检查、token、work item 和 MCP 配置：
+
+```bash
+at-group-chat doctor --json
+at-group-chat token --env
+at-group-chat chat "Act as manager: inspect this repo and decide one next reviewer."
+at-group-chat issue "Review API stability" --body "Check HTTP/MCP/SDK/CLI." --priority high --dispatch
+at-group-chat proposal "Refactor adapter registry" --body "Implementation plan and rollout."
+at-group-chat review "CLI package API review" --body "Review notes and required changes."
+at-group-chat decision "Ship v1.1.0" --body "Final release decision and evidence."
+at-group-chat artifact "release evidence" --body "Build URL, logs, or exported report."
+at-group-chat work --type review "Generic review item" --body "Use --type for issue/proposal/review/decision/artifact."
+at-group-chat watch <runId> --max 20
+at-group-chat mcp-config > at-mcp.json
+```
+
+`at-group-chat token --env` 会生成分离的 `AT_TEAM_API_TOKEN` 和 `AT_TEAM_HOOK_TOKEN`；不要把真实 token 提交到仓库。
+
 ```bash
 curl -s http://127.0.0.1:5174/api/status
 ```

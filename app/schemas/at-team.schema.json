@@ -1,0 +1,178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://at-group-chat.felixypz.me/schemas/at-team.schema.json",
+  "title": "AT Group Chat Team Manifest",
+  "description": "Repo-local Team as Code manifest for configuring AT agents, defaults, and seed work items.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "projectId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "defaults": {
+      "$ref": "#/$defs/agentDefaults"
+    },
+    "agents": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/agent"
+      }
+    },
+    "workItems": {
+      "type": "array",
+      "items": {
+        "$ref": "#/$defs/workItem"
+      }
+    }
+  },
+  "$defs": {
+    "permissionProfile": {
+      "type": "string",
+      "enum": ["readonly", "write-proposed", "workspace-write", "danger"]
+    },
+    "thinkingLevel": {
+      "type": "string",
+      "enum": ["default", "minimal", "low", "medium", "high", "xhigh"]
+    },
+    "workItemType": {
+      "type": "string",
+      "enum": ["issue", "proposal", "review", "decision", "artifact"]
+    },
+    "workItemStatus": {
+      "type": "string",
+      "enum": ["open", "in-progress", "review", "accepted", "closed"]
+    },
+    "priority": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "urgent"]
+    },
+    "agentDefaults": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "roleIds": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "model": {
+          "type": "string"
+        },
+        "thinkingLevel": {
+          "$ref": "#/$defs/thinkingLevel"
+        },
+        "defaultPermission": {
+          "$ref": "#/$defs/permissionProfile"
+        },
+        "adapter": {
+          "type": "string"
+        },
+        "command": {
+          "type": "string"
+        },
+        "commandTemplate": {
+          "type": "string"
+        },
+        "dangerousCommandTemplate": {
+          "type": "boolean"
+        }
+      }
+    },
+    "agent": {
+      "type": "object",
+      "required": ["roleId"],
+      "additionalProperties": false,
+      "properties": {
+        "roleId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "name": {
+          "type": "string"
+        },
+        "cli": {
+          "type": "string"
+        },
+        "adapter": {
+          "type": "string"
+        },
+        "command": {
+          "type": "string"
+        },
+        "commandTemplate": {
+          "type": "string"
+        },
+        "model": {
+          "type": "string"
+        },
+        "thinkingLevel": {
+          "$ref": "#/$defs/thinkingLevel"
+        },
+        "responsibility": {
+          "type": "string"
+        },
+        "defaultPermission": {
+          "$ref": "#/$defs/permissionProfile"
+        },
+        "dangerousCommandTemplate": {
+          "type": "boolean"
+        }
+      }
+    },
+    "workItem": {
+      "type": "object",
+      "required": ["title"],
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "$ref": "#/$defs/workItemType"
+        },
+        "title": {
+          "type": "string",
+          "minLength": 1
+        },
+        "body": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/workItemStatus"
+        },
+        "priority": {
+          "$ref": "#/$defs/priority"
+        },
+        "assignedRoleId": {
+          "type": "string"
+        },
+        "linkedRunId": {
+          "type": "string"
+        },
+        "parentId": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": "object"
+        },
+        "dispatchToManager": {
+          "type": "boolean"
+        },
+        "permissionProfile": {
+          "$ref": "#/$defs/permissionProfile"
+        }
+      }
+    }
+  }
+}

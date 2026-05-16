@@ -1,13 +1,22 @@
 {
   "name": "at-group-chat",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "Local manager-controlled AI collaboration platform with chat, work items, HTTP/MCP APIs, and a terminal setup wizard.",
+  "keywords": [
+    "ai-agents",
+    "agent-team",
+    "codex",
+    "mcp",
+    "local-first",
+    "developer-tools",
+    "multi-agent",
+    "work-items"
+  ],
   "license": "MIT",
   "homepage": "https://at-group-chat.felixypz.me/",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Felix201209/AT-Group-Chat.git",
-    "directory": "app"
+    "url": "git+https://github.com/Felix201209/AT-Group-Chat.git"
   },
   "bugs": {
     "url": "https://github.com/Felix201209/AT-Group-Chat/issues"
@@ -19,27 +28,49 @@
     "node": ">=20"
   },
   "files": [
+    "CHANGELOG.md",
     "README.md",
+    "SECURITY.md",
+    "at.team.example.json",
+    "env.example",
     "index.html",
     "package.json",
+    "dist",
     "playwright.config.js",
+    "public",
     "tsconfig.json",
     "vite.config.js",
     "docs",
+    "examples",
+    "sdk",
+    "schemas",
+    "templates",
     "scripts",
+    "!scripts/completion-audit.mjs",
+    "!scripts/package-smoke.mjs",
+    "!scripts/release-readiness.mjs",
     "server",
     "src"
   ],
   "type": "module",
+  "exports": {
+    "./sdk": {
+      "types": "./sdk/client.d.ts",
+      "import": "./sdk/client.mjs",
+      "default": "./sdk/client.mjs"
+    }
+  },
   "bin": {
-    "at-group-chat": "scripts/setup.mjs",
+    "at-group-chat": "scripts/at.mjs",
     "at-setup": "scripts/setup.mjs"
   },
   "scripts": {
+    "prepack": "npm run build",
     "postinstall": "node scripts/postinstall.mjs",
     "setup": "node scripts/setup.mjs",
     "setup:mock": "node scripts/setup.mjs --mock --yes",
     "setup:real": "node scripts/setup.mjs --real",
+    "serve": "node scripts/serve.mjs",
     "dev": "node scripts/dev.mjs",
     "dev:mock": "AT_TEAM_AGENT_MODE=mock node scripts/dev.mjs",
     "dev:server": "node server/http.js",
@@ -57,6 +88,9 @@
     "smoke:manager": "node scripts/manager-smoke.mjs",
     "verify": "npm run typecheck && npm run health && npm run test:browser && npm run audit",
     "verify:complete": "npm run audit:complete && npm run health && npm run test:browser && npm run smoke:manager && npm run audit:complete",
+    "package:smoke": "node scripts/package-smoke.mjs",
+    "release:readiness": "node scripts/release-readiness.mjs",
+    "release:dry-run": "npm run typecheck && npm test && npm run release:readiness && npm run package:smoke && npm publish --dry-run --json",
     "audit": "node scripts/completion-audit.mjs",
     "audit:complete": "node scripts/completion-audit.mjs --require-cutoff"
   },

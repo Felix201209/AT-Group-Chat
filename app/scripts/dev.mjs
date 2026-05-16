@@ -8,8 +8,10 @@ const children = [
     env: { ...process.env, FORCE_COLOR: '1' }
   })
 ];
+let shuttingDown = false;
 
 function shutdown(signal) {
+  shuttingDown = true;
   for (const child of children) child.kill(signal);
 }
 
@@ -18,7 +20,11 @@ process.on('SIGTERM', () => shutdown('SIGTERM'));
 
 for (const child of children) {
   child.on('exit', (code, signal) => {
-    if (signal) return;
+    if (shuttingDown) return;
+    if (signal) {
+      shutdown('SIGTERM');
+      process.exit(1);
+    }
     if (code && code !== 0) {
       shutdown('SIGTERM');
       process.exit(code);
