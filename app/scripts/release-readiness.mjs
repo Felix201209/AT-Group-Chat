@@ -59,6 +59,16 @@ function npmViewLatest(name) {
   }
 }
 
+function compareSemver(a, b) {
+  const left = String(a || '').split('.').map((part) => Number.parseInt(part, 10) || 0);
+  const right = String(b || '').split('.').map((part) => Number.parseInt(part, 10) || 0);
+  for (let index = 0; index < Math.max(left.length, right.length); index += 1) {
+    if ((left[index] || 0) > (right[index] || 0)) return 1;
+    if ((left[index] || 0) < (right[index] || 0)) return -1;
+  }
+  return 0;
+}
+
 const pkg = readJson('package.json');
 const localVersion = pkg.version;
 const latest = npmViewLatest(pkg.name);
@@ -96,12 +106,14 @@ const checks = [
     openapi: openApiSpec.info.version,
     uiConstant: localVersion
   }),
-  check('npm-registry-status', typeof latest === 'string' ? latest !== localVersion : true, {
+  check('npm-registry-status', typeof latest === 'string' ? compareSemver(localVersion, latest) >= 0 : true, {
     latest,
     localVersion,
     note: typeof latest === 'string' && latest === localVersion
-      ? 'Registry already has this version; publishing would fail without a version bump.'
-      : 'Registry is not already at this local version, or registry was unavailable.'
+      ? 'Registry already has this version; this checkout matches the published package, so skip npm publish unless you bump the version.'
+      : typeof latest === 'string' && compareSemver(localVersion, latest) < 0
+        ? 'Registry is ahead of this checkout; bump or sync before publishing.'
+        : 'Registry is behind this local version, or registry was unavailable.'
   }),
   check('pack-required-files', requiredPackEntries.every((entry) => packEntries.has(entry)), {
     missing: requiredPackEntries.filter((entry) => !packEntries.has(entry)),
