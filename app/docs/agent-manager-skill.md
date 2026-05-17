@@ -26,7 +26,7 @@ at-group-chat chat "Act as manager: inspect this repo and decide one next review
 at-group-chat issue "Review API stability" --body "Check HTTP/MCP/SDK/CLI." --priority high --dispatch
 at-group-chat proposal "Refactor adapter registry" --body "Implementation plan and rollout."
 at-group-chat review "CLI package API review" --body "Review notes and required changes."
-at-group-chat decision "Ship v1.1.0" --body "Final release decision and evidence."
+at-group-chat decision "Ship v1.1.1" --body "Final release decision and evidence."
 at-group-chat artifact "release evidence" --body "Build URL, logs, or exported report."
 at-group-chat work --type review "Generic review item" --body "Use --type for issue/proposal/review/decision/artifact."
 at-group-chat watch <runId> --max 20

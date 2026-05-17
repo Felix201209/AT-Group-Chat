@@ -6,6 +6,9 @@ import { createServer } from 'node:http';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { ATClient } from '../sdk/client.mjs';
+import { openApiSpec } from '../server/openapi.js';
+
+const packageInfo = JSON.parse(readFileSync('package.json', 'utf8'));
 
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
@@ -44,7 +47,7 @@ test('SDK and CLI expose programmer-facing AT entry points', async () => {
     await waitForServer(baseUrl);
     const client = new ATClient({ baseUrl });
     const openapi = await client.openApi();
-    assert.equal(openapi.info.version, '1.1.0');
+    assert.equal(openapi.info.version, packageInfo.version);
 
     const chat = await client.chat({
       content: 'SDK smoke: manager should receive this.',
@@ -156,14 +159,14 @@ test('SDK and CLI expose programmer-facing AT entry points', async () => {
       encoding: 'utf8',
       maxBuffer: 10 * 1024 * 1024
     }).trim();
-    assert.equal(versionOutput, 'at-group-chat@1.1.0');
+    assert.equal(versionOutput, `at-group-chat@${packageInfo.version}`);
     const versionJson = JSON.parse(execFileSync('node', ['scripts/at.mjs', 'version', '--json'], {
       cwd: process.cwd(),
       encoding: 'utf8',
       maxBuffer: 10 * 1024 * 1024
     }));
-    assert.equal(versionJson.version, '1.1.0');
-    assert.equal(versionJson.openapiVersion, '1.1.0');
+    assert.equal(versionJson.version, packageInfo.version);
+    assert.equal(versionJson.openapiVersion, openApiSpec.info.version);
     const mcpConfigOutput = execFileSync('node', ['scripts/at.mjs', 'mcp-config'], {
       cwd: process.cwd(),
       env: { ...process.env, AT_TEAM_API_BASE_URL: baseUrl, AT_TEAM_API_TOKEN: 'test-admin-token' },

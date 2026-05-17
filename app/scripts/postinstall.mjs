@@ -32,8 +32,13 @@ const installCwd = process.env.INIT_CWD || process.cwd();
 const envPath = resolve(installCwd, '.env');
 const setupScript = resolve(appRoot, 'scripts/setup.mjs');
 
-spawnSync(process.execPath, [setupScript, '--env-path', envPath], {
+const result = spawnSync(process.execPath, [setupScript, '--env-path', envPath], {
   cwd: installCwd,
   stdio: [tty, tty, tty],
   env: process.env
 });
+
+if (result.error) {
+  console.error(`AT Group Chat setup wizard could not start: ${result.error.message}`);
+  console.error('Run it manually with: npx at-group-chat setup');
+}

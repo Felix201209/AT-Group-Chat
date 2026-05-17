@@ -99,9 +99,13 @@ function json(value) {
   console.log(JSON.stringify(value, null, 2));
 }
 
+function readPackageInfo() {
+  return JSON.parse(readFileSync(resolve(appRoot, 'package.json'), 'utf8'));
+}
+
 function packageInfo(args) {
   const packagePath = resolve(appRoot, 'package.json');
-  const pkg = JSON.parse(readFileSync(packagePath, 'utf8'));
+  const pkg = readPackageInfo();
   const info = {
     ok: true,
     name: pkg.name,
@@ -254,6 +258,7 @@ function envReference(args) {
 }
 
 function resourcePaths() {
+  const pkg = readPackageInfo();
   return {
     ok: true,
     appRoot,
@@ -272,7 +277,7 @@ function resourcePaths() {
       environment: resolve(appRoot, 'docs/environment.md'),
       developerRecipes: resolve(appRoot, 'docs/developer-recipes.md'),
       managerSkill: resolve(appRoot, 'docs/agent-manager-skill.md'),
-      releaseNotes: resolve(appRoot, 'docs/release-notes-1.1.0.md')
+      releaseNotes: resolve(appRoot, `docs/release-notes-${pkg.version}.md`)
     },
     templates: {
       githubActionsHook: resolve(appRoot, 'templates/github-actions-at-hook.yml'),
@@ -413,7 +418,7 @@ const recipes = {
       'npm publish --dry-run --json',
       'npm publish --tag latest'
     ],
-    files: ['docs/release-notes-1.1.0.md', 'scripts/package-smoke.mjs', 'scripts/release-readiness.mjs'],
+    files: [`docs/release-notes-${readPackageInfo().version}.md`, 'scripts/package-smoke.mjs', 'scripts/release-readiness.mjs'],
     docs: ['docs/developer-recipes.md#check-release-readiness']
   }
 };

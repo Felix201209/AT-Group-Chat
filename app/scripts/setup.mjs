@@ -153,6 +153,9 @@ async function confirm(rl, question, fallback = true) {
 }
 
 async function select(rl, title, choices, fallbackIndex = 0) {
+  if (!Array.isArray(choices) || choices.length === 0) {
+    throw new Error(`No choices available for ${title}`);
+  }
   if (input.isTTY && output.isTTY) {
     return selectWithArrows(title, choices, fallbackIndex);
   }
@@ -195,6 +198,7 @@ function selectWithArrows(title, choices, fallbackIndex = 0) {
     const lineCount = choices.reduce((count, choice) => count + 1 + (choice.description ? 1 : 0), 3);
     const cleanup = () => {
       input.off('keypress', onKeypress);
+      process.off('SIGINT', cancel);
       if (input.isTTY) input.setRawMode(false);
       output.write('\x1b[?25h');
     };
@@ -210,7 +214,9 @@ function selectWithArrows(title, choices, fallbackIndex = 0) {
     const cancel = () => {
       cleanup();
       output.write('Setup cancelled.\n');
-      reject(new Error('Setup cancelled'));
+      const error = new Error('Setup cancelled');
+      error.exitCode = 130;
+      reject(error);
     };
     const onKeypress = (_str, key = {}) => {
       if (key.name === 'up' || (key.ctrl && key.name === 'p')) {
@@ -221,6 +227,13 @@ function selectWithArrows(title, choices, fallbackIndex = 0) {
         redraw();
       } else if (key.name === 'return' || key.name === 'enter') {
         finish();
+      } else if (/^[1-9]$/.test(key.sequence || '')) {
+        const numericIndex = Number.parseInt(key.sequence, 10) - 1;
+        if (choices[numericIndex]) {
+          selectedIndex = numericIndex;
+          redraw();
+          finish();
+        }
       } else if (key.name === 'escape' || key.name === 'q' || (key.ctrl && key.name === 'c')) {
         cancel();
       }
@@ -229,6 +242,7 @@ function selectWithArrows(title, choices, fallbackIndex = 0) {
     emitKeypressEvents(input);
     if (input.isTTY) input.setRawMode(true);
     input.on('keypress', onKeypress);
+    process.once('SIGINT', cancel);
     redraw(true);
   });
 }
@@ -505,5 +519,5 @@ async function main() {
 
 main().catch((error) => {
   console.error(`Setup failed: ${error.message}`);
-  process.exit(1);
+  process.exit(error.exitCode || 1);
 });

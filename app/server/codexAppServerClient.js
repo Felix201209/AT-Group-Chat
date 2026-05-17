@@ -1,4 +1,5 @@
 import { CODEX_APP_SERVER_URL, ensureCodexCliServer } from './codexCliServer.js';
+import { AT_PACKAGE_VERSION } from './packageInfo.js';
 
 const DEFAULT_TIMEOUT_MS = 180000;
 
@@ -226,7 +227,7 @@ export async function invokeCodexViaAppServer({
 
   try {
     await client.request('initialize', {
-      clientInfo: { name: 'at-group-chat', version: '1.1.0' },
+      clientInfo: { name: 'at-group-chat', version: AT_PACKAGE_VERSION },
       capabilities: { experimentalApiMethods: true }
     });
 

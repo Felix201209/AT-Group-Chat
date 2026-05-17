@@ -96,7 +96,8 @@ try {
 }
 
 const readme = readFileSync('README.md', 'utf8');
-const releaseNotes = readFileSync('docs/release-notes-1.1.0.md', 'utf8');
+const releaseNotesPath = `docs/release-notes-${localVersion}.md`;
+const releaseNotes = readFileSync(releaseNotesPath, 'utf8');
 const security = readFileSync('SECURITY.md', 'utf8');
 const environmentDoc = readFileSync('docs/environment.md', 'utf8');
 
@@ -131,7 +132,7 @@ const checks = [
     homepage: pkg.homepage,
     repository: pkg.repository?.url
   }),
-  check('developer-docs', ['at-group-chat init', 'at-group-chat init --all', 'at-group-chat contract --json', 'GET /api/contract', 'team_get_manager_contract', 'at.contract()', 'at-group-chat serve', 'at-group-chat token --env', 'at-group-chat work --type review', 'examples/external-manager-sdk.mjs', 'templates/github-actions-at-hook.yml', 'GET /api/openapi.json', 'docs/release-notes-1.1.0.md', 'docs/integrations.md', 'docs/environment.md', 'SECURITY.md'].every((text) => readme.includes(text)) && releaseNotes.includes('npm install -g at-group-chat') && releaseNotes.includes('SECURITY.md') && releaseNotes.includes('docs/integrations.md') && releaseNotes.includes('docs/environment.md') && security.includes('AT_TEAM_API_TOKEN') && security.includes('/security/advisories/new') && environmentDoc.includes('AT_SETUP_SKIP_ON_INSTALL') && environmentDoc.includes('CODEX_APP_SERVER_URL') && readFileSync('docs/integrations.md', 'utf8').includes('generic-cli'), 'README.md + SECURITY.md + docs/release-notes-1.1.0.md + docs/integrations.md + docs/environment.md')
+  check('developer-docs', ['at-group-chat init', 'at-group-chat init --all', 'at-group-chat contract --json', 'GET /api/contract', 'team_get_manager_contract', 'at.contract()', 'at-group-chat serve', 'at-group-chat token --env', 'at-group-chat work --type review', 'examples/external-manager-sdk.mjs', 'templates/github-actions-at-hook.yml', 'GET /api/openapi.json', releaseNotesPath, 'docs/integrations.md', 'docs/environment.md', 'SECURITY.md'].every((text) => readme.includes(text)) && releaseNotes.includes('npm publish --tag latest') && releaseNotes.includes('Node engine') && releaseNotes.includes('terminal setup') && security.includes('AT_TEAM_API_TOKEN') && security.includes('/security/advisories/new') && environmentDoc.includes('AT_SETUP_SKIP_ON_INSTALL') && environmentDoc.includes('CODEX_APP_SERVER_URL') && readFileSync('docs/integrations.md', 'utf8').includes('generic-cli'), `README.md + SECURITY.md + ${releaseNotesPath} + docs/integrations.md + docs/environment.md`)
 ];
 
 const failed = checks.filter((item) => !item.ok);

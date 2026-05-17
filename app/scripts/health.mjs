@@ -42,6 +42,12 @@ function commandCheck(name, command, args = ['--version'], { required = true } =
   }
 }
 
+function nodeSatisfiesEngine(version, range = '>=20') {
+  const major = Number.parseInt(String(version || '').replace(/^v/, '').split('.')[0], 10);
+  const requiredMajor = Number.parseInt(String(range).match(/>=\s*(\d+)/)?.[1] || '0', 10);
+  return Number.isFinite(major) && major >= requiredMajor;
+}
+
 function parseJsonOutput(output) {
   const text = String(output || '').trim();
   for (let index = 0; index < text.length; index += 1) {
@@ -105,6 +111,7 @@ try {
   const pkg = JSON.parse(readFileSync(resolve(appRoot, 'package.json'), 'utf8'));
   record('package version', pkg.version === openApiSpec.info.version, `${pkg.name}@${pkg.version}`);
   record('runtime mode', true, sourceMode ? 'source checkout' : 'installed package');
+  record('node engine', nodeSatisfiesEngine(process.version, pkg.engines?.node), `${process.version} satisfies ${pkg.engines?.node || 'unspecified'}`);
   commandCheck('node', 'node');
   commandCheck('npm', 'npm');
   const hasCodex = commandCheck('codex cli', 'codex', ['--version'], { required: sourceMode });

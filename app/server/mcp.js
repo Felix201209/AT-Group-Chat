@@ -1,5 +1,6 @@
 import { runtime } from './singleton.js';
 import { buildManagerContract } from './managerContract.js';
+import { AT_PACKAGE_VERSION } from './packageInfo.js';
 
 const tools = [
   {
@@ -343,7 +344,7 @@ process.stdin.on('data', async (chunk) => {
         respond(request.id, {
           protocolVersion: '2024-11-05',
           capabilities: { tools: {} },
-          serverInfo: { name: 'at-agent-team', version: '1.1.0' }
+          serverInfo: { name: 'at-agent-team', version: AT_PACKAGE_VERSION }
         });
       } else if (request.method === 'tools/list') {
         respond(request.id, { tools });

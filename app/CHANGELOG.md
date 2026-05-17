@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.1.1 - 2026-05-17
+
+Patch release for setup wizard reliability and post-publish release gates.
+
+Full publish notes: `docs/release-notes-1.1.1.md`.
+
+- Added number-key shortcuts to the terminal setup wizard while keeping arrow-key navigation.
+- Restored terminal raw mode on cancel/SIGINT and made user cancellation exit with code 130.
+- Added a Node engine readiness check to `at-group-chat doctor --json`.
+- Moved server-side OpenAPI/MCP/Codex client versions to a shared package version source.
+- Updated release readiness so CI passes after the current version is already published.
+
 ## 1.1.0 - 2026-05-17
 
 AT becomes a developer-facing local AI collaboration platform, not only a chat UI.

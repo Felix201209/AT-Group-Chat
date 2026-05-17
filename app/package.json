@@ -1,6 +1,6 @@
 {
   "name": "at-group-chat",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Local manager-controlled AI collaboration platform with chat, work items, HTTP/MCP APIs, and a terminal setup wizard.",
   "keywords": [
     "ai-agents",

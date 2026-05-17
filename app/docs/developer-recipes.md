@@ -107,7 +107,7 @@ at-group-chat issue "Review API stability before release" \
 ```bash
 at-group-chat proposal "Refactor adapter registry" --body "Implementation plan, risks, and rollout."
 at-group-chat review "CLI package API review" --body "Review notes and required changes."
-at-group-chat decision "Ship v1.1.0" --body "Final release decision and evidence."
+at-group-chat decision "Ship v1.1.1" --body "Final release decision and evidence."
 at-group-chat artifact "release evidence" --body "Build URL, log path, or exported report."
 at-group-chat work --type review "Generic work item" --body "Use --type for issue/proposal/review/decision/artifact."
 ```
@@ -224,7 +224,7 @@ curl -s -X POST http://127.0.0.1:5174/api/work-items \
   -H 'content-type: application/json' \
   -d '{
     "type": "proposal",
-    "title": "Pre-release review for v1.1.0",
+    "title": "Pre-release review for v1.1.1",
     "body": "Check whether the package install wizard, SDK, CLI, and OpenAPI are ready.",
     "priority": "urgent",
     "dispatchToManager": true,

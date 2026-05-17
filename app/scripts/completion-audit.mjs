@@ -38,6 +38,7 @@ function item(id, label, ok, evidence) {
 
 const pkg = readJson('package.json');
 const now = Date.now();
+const releaseNotesPath = `docs/release-notes-${pkg.version}.md`;
 const dateTimeSkillPath = '/Users/felix/.codex/skills/date-time-check/SKILL.md';
 const checks = [
   item(
@@ -479,13 +480,13 @@ const checks = [
       hasText('README.md', 'at-group-chat work --type review') &&
       hasText('README.md', 'at-group-chat dispatch-work') &&
       hasText('README.md', 'at-group-chat completion zsh') &&
-      hasText('README.md', 'docs/release-notes-1.1.0.md') &&
+      hasText('README.md', releaseNotesPath) &&
       hasText('README.md', 'docs/integrations.md') &&
       hasText('README.md', 'docs/environment.md') &&
       hasText('README.md', 'SECURITY.md') &&
-      hasText('docs/release-notes-1.1.0.md', 'SECURITY.md') &&
-      hasText('docs/release-notes-1.1.0.md', 'docs/integrations.md') &&
-      hasText('docs/release-notes-1.1.0.md', 'docs/environment.md') &&
+      hasText(releaseNotesPath, 'npm publish --tag latest') &&
+      hasText(releaseNotesPath, 'Node engine') &&
+      hasText(releaseNotesPath, 'terminal setup') &&
       hasText('docs/integrations.md', 'External Manager Contract') &&
       hasText('docs/integrations.md', 'generic-cli') &&
       hasText('docs/integrations.md', 'at-group-chat recipe') &&
@@ -500,14 +501,7 @@ const checks = [
       hasText('SECURITY.md', 'permissionProfile') &&
       hasText('SECURITY.md', 'AT_TEAM_DB_PATH') &&
       hasText('SECURITY.md', '/security/advisories/new') &&
-      hasText('docs/release-notes-1.1.0.md', 'AT Group Chat 1.1.0 Release Notes') &&
-      hasText('docs/release-notes-1.1.0.md', 'at-group-chat --version') &&
-      hasText('docs/release-notes-1.1.0.md', 'at-group-chat ask') &&
-      hasText('docs/release-notes-1.1.0.md', 'exit non-zero') &&
-      hasText('docs/release-notes-1.1.0.md', 'dispatch-work') &&
-      hasText('docs/release-notes-1.1.0.md', 'completion zsh') &&
-      hasText('docs/release-notes-1.1.0.md', 'npm install -g at-group-chat') &&
-      hasText('docs/release-notes-1.1.0.md', "from 'at-group-chat'") &&
+      hasText(releaseNotesPath, `AT Group Chat ${pkg.version} Release Notes`) &&
       hasText('scripts/package-smoke.mjs', "from 'at-group-chat'") &&
       hasText('CHANGELOG.md', 'at-group-chat ask') &&
       hasText('CHANGELOG.md', 'exit non-zero') &&

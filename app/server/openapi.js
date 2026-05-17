@@ -1,8 +1,10 @@
+import { AT_PACKAGE_VERSION } from './packageInfo.js';
+
 export const openApiSpec = {
   openapi: '3.1.0',
   info: {
     title: 'AT Group Chat Local API',
-    version: '1.1.0',
+    version: AT_PACKAGE_VERSION,
     description: 'Local manager-controlled AI agent team API for chat, work items, runs, agents, memory, and platform export.'
   },
   servers: [
