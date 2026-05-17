@@ -350,6 +350,8 @@ const checks = [
       hasText('scripts/at.mjs', 'at-group-chat init --github --manager-prompt') &&
       hasText('scripts/at.mjs', 'at-group-chat init --all') &&
       hasText('scripts/at.mjs', 'at-group-chat contract --json') &&
+      hasText('scripts/setup.mjs', 'selectWithArrows') &&
+      hasText('scripts/setup.mjs', 'Use ↑/↓ to choose') &&
       hasText('scripts/at.mjs', 'managerContract') &&
       hasText('server/managerContract.js', 'buildManagerContract') &&
       hasText('server/http.js', '/api/contract') &&

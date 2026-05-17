@@ -8,7 +8,7 @@ AT Group Chat 1.1.0 turns the project from a local group-chat UI into a develope
 - Codex roles run through Codex app-server instead of `codex exec`.
 - GitHub-like work items: `issue`, `proposal`, `review`, `decision`, and `artifact`.
 - HTTP, MCP, CLI, SDK, OpenAPI, webhooks, and Team as Code all use the same runtime.
-- Terminal setup wizard starts from npm install when a TTY is available.
+- Terminal setup wizard starts from npm install when a TTY is available, and interactive choices use ↑/↓ plus Enter instead of number prompts.
 - `at-group-chat doctor --json` gives CI and external agents a machine-readable readiness gate.
 - `at-group-chat --version` and `at-group-chat version --json` report the package/OpenAPI version from the installed package.
 - `at-group-chat token --env` generates separate local admin and webhook tokens.

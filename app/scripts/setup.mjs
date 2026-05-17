@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { execFileSync } from 'node:child_process';
 import { createInterface } from 'node:readline/promises';
+import { emitKeypressEvents } from 'node:readline';
 import { stdin as input, stdout as output } from 'node:process';
 import { existsSync, readFileSync, writeFileSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
@@ -152,6 +153,10 @@ async function confirm(rl, question, fallback = true) {
 }
 
 async function select(rl, title, choices, fallbackIndex = 0) {
+  if (input.isTTY && output.isTTY) {
+    return selectWithArrows(title, choices, fallbackIndex);
+  }
+
   console.log(title);
   choices.forEach((choice, index) => {
     const marker = index === fallbackIndex ? ' default' : '';
@@ -167,6 +172,65 @@ async function select(rl, title, choices, fallbackIndex = 0) {
     }
     console.log(`Please enter 1-${choices.length}.`);
   }
+}
+
+function renderChoice(outputStream, title, choices, selectedIndex) {
+  outputStream.write('\x1b[?25l');
+  outputStream.write(`\n${title}\n`);
+  choices.forEach((choice, index) => {
+    const active = index === selectedIndex;
+    const pointer = active ? '›' : ' ';
+    const label = active ? `\x1b[7m ${choice.label} \x1b[0m` : ` ${choice.label} `;
+    outputStream.write(`  ${pointer} ${label}\n`);
+    if (choice.description) {
+      outputStream.write(`    ${active ? choice.description : `\x1b[2m${choice.description}\x1b[0m`}\n`);
+    }
+  });
+  outputStream.write('\nUse ↑/↓ to choose, Enter to continue, q to cancel.\n');
+}
+
+function selectWithArrows(title, choices, fallbackIndex = 0) {
+  return new Promise((resolve, reject) => {
+    let selectedIndex = Math.min(Math.max(fallbackIndex, 0), choices.length - 1);
+    const lineCount = choices.reduce((count, choice) => count + 1 + (choice.description ? 1 : 0), 3);
+    const cleanup = () => {
+      input.off('keypress', onKeypress);
+      if (input.isTTY) input.setRawMode(false);
+      output.write('\x1b[?25h');
+    };
+    const redraw = (initial = false) => {
+      if (!initial) output.write(`\x1b[${lineCount}A\x1b[J`);
+      renderChoice(output, title, choices, selectedIndex);
+    };
+    const finish = () => {
+      cleanup();
+      output.write(`Selected: ${choices[selectedIndex].label}\n\n`);
+      resolve(choices[selectedIndex]);
+    };
+    const cancel = () => {
+      cleanup();
+      output.write('Setup cancelled.\n');
+      reject(new Error('Setup cancelled'));
+    };
+    const onKeypress = (_str, key = {}) => {
+      if (key.name === 'up' || (key.ctrl && key.name === 'p')) {
+        selectedIndex = (selectedIndex - 1 + choices.length) % choices.length;
+        redraw();
+      } else if (key.name === 'down' || (key.ctrl && key.name === 'n')) {
+        selectedIndex = (selectedIndex + 1) % choices.length;
+        redraw();
+      } else if (key.name === 'return' || key.name === 'enter') {
+        finish();
+      } else if (key.name === 'escape' || key.name === 'q' || (key.ctrl && key.name === 'c')) {
+        cancel();
+      }
+    };
+
+    emitKeypressEvents(input);
+    if (input.isTTY) input.setRawMode(true);
+    input.on('keypress', onKeypress);
+    redraw(true);
+  });
 }
 
 async function runInteractiveWizard({ rl, args, existing, cli }) {
@@ -252,7 +316,7 @@ async function runInteractiveWizard({ rl, args, existing, cli }) {
           description: 'Use a token you already generated elsewhere.'
         }
       );
-      const tokenChoice = await select(rl, 'API access token', tokenChoices, existing.AT_TEAM_API_TOKEN ? 0 : 1);
+      const tokenChoice = await select(rl, 'API access token', tokenChoices, 0);
       token = tokenChoice.value;
       if (token === 'paste') token = await ask(rl, 'Paste token', '');
     }
@@ -283,7 +347,7 @@ async function runInteractiveWizard({ rl, args, existing, cli }) {
           description: 'Webhook endpoint falls back to the main local API token.'
         }
       );
-      const hookChoice = await select(rl, 'Webhook/CI token', hookChoices, existing.AT_TEAM_HOOK_TOKEN ? 0 : 1);
+      const hookChoice = await select(rl, 'Webhook/CI token', hookChoices, 0);
       hookToken = hookChoice.value;
     }
   }

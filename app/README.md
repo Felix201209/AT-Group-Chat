@@ -129,6 +129,8 @@ at-group-chat completion bash
 at-group-chat openapi > at-openapi.json
 ```
 
+`at-group-chat setup` 是真正的 terminal wizard：在交互式终端里用 `↑/↓` 选择、`Enter` 确认、`q` 取消；在 CI、pipe、`--yes` 或 `--json` 场景下仍保持脚本友好的非交互输出。
+
 如果你只想像跑 CI 一样在终端里发起一次 AI 协作并看完结果，用 `ask`：
 
 ```bash
